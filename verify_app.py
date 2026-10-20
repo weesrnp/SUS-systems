@@ -24,5 +24,16 @@ def run_checks():
     assert "VIG_SANITARIA" not in all_group_ids
     print("[OK] GET /api/catalog -> Vigilâncias Epidemiológica e Sanitária removidas. Menus alinhados:", all_group_names)
 
+    r_health = client.get("/api/health")
+    assert r_health.status_code == 200
+    assert r_health.json()["status"] == "healthy"
+    print("[OK] GET /api/health -> Status saudável e clusters conectados")
+
+    r_health_alt = client.get("/health")
+    assert r_health_alt.status_code == 200
+    assert r_health_alt.json()["status"] == "healthy"
+    print("[OK] GET /health (fallback sem prefixo) -> Status saudável")
+
+
 if __name__ == "__main__":
     run_checks()
