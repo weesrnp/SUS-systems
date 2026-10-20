@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUS-systems — Central DataSUS, SIA, SIGTAP, CNES &amp; e-SUS APS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Motion Design & Interactive Charts Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <style>
+    /* ── Design System Tokens (Dark Mode Default) ────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg-canvas: #080C14;
+      --bg-surface: #0F1623;
+      --bg-elevated: #162032;
+      --bg-subtle: #111927;
+      --bg-hover: #1E293B;
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #8E9BAE;
+      --border-hairline: rgba(148, 163, 184, 0.12);
+      --border-strong: rgba(148, 163, 184, 0.22);
+      --accent-primary: #38BDF8;
+      --accent-primary-hover: #0284C7;
+      --accent-tint: rgba(56, 189, 248, 0.13);
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-emerald: #34D399;
+      --accent-emerald-tint: rgba(52, 211, 153, 0.14);
+      --accent-amber: #FBBF24;
+      --accent-amber-tint: rgba(251, 191, 36, 0.14);
+      --accent-crimson: #F87171;
+      --accent-crimson-tint: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-pop: 0 14px 32px rgba(0, 0, 0, 0.65);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      --grid-max: 1400px;
+    }
+
+    [data-theme="light"] {
+      --bg-canvas: #F4F6F9;
+      --bg-surface: #FFFFFF;
+      --bg-elevated: #F8FAFC;
+      --bg-subtle: #EDF1F7;
+      --bg-hover: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      --border-hairline: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --accent-primary: #0284C7;
+      --accent-primary-hover: #0369A1;
+      --accent-tint: rgba(2, 132, 199, 0.09);
+      --accent-glow: rgba(2, 132, 199, 0.18);
+      --accent-emerald: #059669;
+      --accent-emerald-tint: rgba(5, 150, 105, 0.10);
+      --accent-amber: #D97706;
+      --accent-amber-tint: rgba(217, 119, 6, 0.10);
+      --accent-crimson: #DC2626;
+      --accent-crimson-tint: rgba(220, 38, 38, 0.10);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-pop: 0 10px 25px -5px rgba(15, 23, 42, 0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: var(--accent-primary); color: #080C14; }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-canvas); }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      background-image: radial-gradient(circle at 50% 0%, var(--accent-tint) 0%, transparent 55%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 220ms ease, color 220ms ease;
+    }
+
+    /* ── Header Global (2 Tiers Aligned to 1400px Grid) ──────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15, 22, 35, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .header-top-row {
+      max-width: var(--grid-max);
+      margin: 0 auto;
+      height: 58px;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    /* ── SUS-systems Custom Logo with Subtle Motion ──────────────────────── */
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      flex-shrink: 0;
+      padding: 0.25rem 0;
+    }
+
+    .brand-emblem {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--accent-glow);
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
+    }
+
+    .brand-logo:hover .brand-emblem {
+      transform: scale(1.06) rotate(-4deg);
+      box-shadow: 0 0 22px var(--accent-primary);
+    }
+
+    .brand-wordmark {
+      display: flex;
+      align-items: baseline;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-sus {
+      font-weight: 800;
+      color: var(--accent-primary);
+    }
+
+    .brand-systems {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ── Primary Top Navigation with Sliding Active Pill ─────────────────── */
+    .top-groups-nav {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--bg-subtle);
+      padding: 0.25rem;
+      border-radius: 9px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .nav-active-glider {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: 0;
+      border-radius: 6px;
+      background: var(--accent-tint);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      box-shadow: 0 0 12px var(--accent-glow);
+      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-group-btn {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      padding: 0.38rem 0.85rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 160ms ease;
+    }
+
+    .top-group-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .top-group-btn.active {
+      color: var(--accent-primary);
+    }
+
+    .top-group-divider {
+      width: 1px;
+      height: 16px;
+      background: var(--border-strong);
+      margin: 0 0.2rem;
+      z-index: 1;
+    }
+
+    /* ── Compact Utility Icon Buttons (32x32px) ──────────────────────────── */
+    .header-utils {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    .util-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .util-icon-btn:hover {
+      background: var(--bg-elevated);
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    .util-icon-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2;
+    }
+
+    /* ── Tier 2: Submenus Bar Below Header ───────────────────────────────── */
+    .header-sub-row {
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .header-sub-inner {
+      max-width: var(--grid-max);
+      margin: 0 auto;
+      min-height: 42px;
+      padding: 0.3rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .sub-tabs-list {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .area-context-tag {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent-primary);
+      padding-right: 0.6rem;
+      border-right: 1px solid var(--border-strong);
+      margin-right: 0.25rem;
+    }
+
+    .sub-pill-btn {
+      padding: 0.28rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.77rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sub-pill-btn:hover {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+    }
+
+    .sub-pill-btn.active {
+      background: var(--bg-surface);
+      color: var(--accent-primary);
+      border-color: var(--border-strong);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── Main Content Canvas (Strictly Aligned 1400px Grid) ──────────────── */
+    .main-canvas {
+      flex: 1;
+      padding: 1.4rem 1.5rem 3rem;
+      max-width: var(--grid-max);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ws-panel { display: none; }
+    .ws-panel.active { display: block; }
+
+    /* ── Content Header Card ─────────────────────────────────────────────── */
+    .content-header {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 1.1rem 1.35rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb-line {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .content-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      margin-bottom: 0.35rem;
+    }
+
+    .ftp-url-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      background: var(--bg-subtle);
+      padding: 0.2rem 0.6rem;
+      border-radius: 5px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .source-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: var(--accent-emerald-tint);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    /* ── Telemetry & ECharts Analytics Row ───────────────────────────────── */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+      align-items: stretch;
+    }
+
+    @media (max-width: 960px) {
+      .analytics-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-stack {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 0.65rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.75rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 180ms ease, transform 180ms ease;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border-strong);
+      transform: translateX(2px);
+    }
+
+    .kpi-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .kpi-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .kpi-number {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .chart-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .chart-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+
+    .chart-card-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .echarts-box {
+      width: 100%;
+      height: 175px;
+    }
+
+    /* ── Normatives / Portarias Strip ────────────────────────────────────── */
+    .normatives-section { margin-bottom: 1.1rem; }
+
+    .normatives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .norm-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.45rem;
+      transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+    }
+
+    .norm-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .norm-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .norm-code {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
+    .norm-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .norm-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .norm-link {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .norm-link:hover { text-decoration: underline; }
+
+    /* ── High-Density Aligned Data Table ─────────────────────────────────── */
+    .table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      margin-bottom: 1.15rem;
+      overflow: visible;
+    }
+
+    .table-card-header {
+      padding: 0.75rem 1.15rem;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: var(--bg-subtle);
+      border-radius: 10px 10px 0 0;
+    }
+
+    .table-card-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .table-card-ftp {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .table-filter-input {
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      min-width: 240px;
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+
+    .table-filter-input:focus { border-color: var(--accent-primary); }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.62rem 1rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-hairline);
+      background: var(--bg-surface);
+    }
+
+    .data-table td {
+      padding: 0.62rem 1rem;
+      border-bottom: 1px solid var(--border-hairline);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    .data-table th.col-right, .data-table td.col-right { text-align: right; }
+    .data-table th.col-center, .data-table td.col-center { text-align: center; }
+
+    .data-table tbody tr {
+      transition: background-color 140ms ease;
+    }
+
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--bg-elevated); }
+
+    .col-desc-badge {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.77rem;
+    }
+
+    .file-link-btn {
+      background: none;
+      border: none;
+      color: var(--accent-primary);
+      font-family: var(--font-mono);
+      font-size: 0.79rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      transition: color 140ms ease;
+    }
+
+    .file-link-btn:hover {
+      text-decoration: underline;
+    }
+
+    .mono-cell {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+    }
+
+    .fresh-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.12rem 0.48rem;
+      border-radius: 5px;
+      font-size: 0.71rem;
+      font-weight: 600;
+      background: var(--accent-emerald-tint);
+      color: var(--accent-emerald);
+    }
+
+    .action-group {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.34rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: var(--accent-primary);
+      color: #080C14;
+      font-family: var(--font-sans);
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    [data-theme="light"] .btn-primary { color: #FFFFFF; }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-primary-hover);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .uf-select {
+      padding: 0.3rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── History Dropdown ('Anteriores') ─────────────────────────────────── */
+    .hist-wrap { position: relative; display: inline-block; }
+
+    .btn-hist {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.73rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn-hist:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .hist-popover {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 5px);
+      z-index: 60;
+      min-width: 195px;
+      max-height: 240px;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      box-shadow: var(--shadow-pop);
+      padding: 0.35rem;
+      list-style: none;
+      display: none;
+    }
+
+    .hist-wrap.open .hist-popover {
+      display: block;
+      animation: popIn 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .hist-item-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.38rem 0.55rem;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .hist-item-btn:hover {
+      background: var(--accent-tint);
+      color: var(--accent-primary);
+    }
+
+    /* ── Shimmer Skeleton Loading ────────────────────────────────────────── */
+    .shimmer-box {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .shimmer-line {
+      height: 36px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--bg-elevated) 50%, var(--bg-subtle) 75%);
+      background-size: 200% 100%;
+      animation: shimmerMove 1.3s infinite linear;
+    }
+
+    @keyframes shimmerMove {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Controls & KPI Strip for SIGTAP / Remessas ──────────────────────── */
+    .controls-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.9rem 1.15rem;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 0.25rem; }
+    .field-group label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .field-control {
+      padding: 0.4rem 0.68rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.79rem;
+      outline: none;
+    }
+
+    .field-control:focus { border-color: var(--accent-primary); }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .kpi-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 0.15rem;
+    }
+
+    .delta-pos { color: var(--accent-emerald); font-weight: 600; }
+    .delta-neg { color: var(--accent-crimson); font-weight: 600; }
+    .status-warn {
+      display: inline-block;
+      padding: 0.12rem 0.48rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--accent-amber-tint);
+      color: var(--accent-amber);
+    }
+
+    .state-box {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    /* ── Institutional Footer Aligned to Grid ────────────────────────────── */
+    .app-footer {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-hairline);
+      margin-top: auto;
+    }
+
+    .app-footer-inner {
+      max-width: var(--grid-max);
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .cluster-list { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+    .cluster-dot { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.69rem; }
+    .dot-online {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. HEADER ALINHADO: LOGO SUS-systems + MENUS COM GLIDER + BOTÕES COMPACTOS -->
+  <header class="site-header">
+    <div class="header-top-row">
+      <!-- Logotipo SUS-systems -->
+      <button type="button" class="brand-logo" id="btnHomeLogo" title="SUS-systems — Início">
+        <span class="brand-emblem" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 3H15V9H21V15H15V21H9V15H3V9H9V3Z" fill="#080C14"/>
+          </svg>
+        </span>
+        <span class="brand-wordmark">
+          <span class="brand-sus">SUS</span><span class="brand-systems">-systems</span>
+        </span>
+      </button>
+
+      <!-- Menus Principais Organizados -->
+      <nav class="top-groups-nav" id="topGroupsNav" aria-label="Sistemas do SUS">
+        <div class="nav-active-glider" id="navGlider"></div>
+      </nav>
+
+      <!-- Botões Compactos: Atualizar FTP + Tema (Sol no Modo Escuro / Lua no Modo Claro) -->
+      <div class="header-utils">
+        <button type="button" class="util-icon-btn" id="btnForceRefresh" title="Atualizar listagem FTP agora" aria-label="Atualizar FTP">
+          <svg id="iconRefresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+            <path d="M16 16h5v5"/>
+          </svg>
+        </button>
+
+        <button type="button" class="util-icon-btn" id="btnThemeToggle" title="Alternar Modo Claro / Escuro" aria-label="Alternar tema">
+          <!-- Ícone Sol (visível por padrão pois o site abre em Modo Escuro) -->
+          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/><path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/><path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <!-- Ícone Lua (visível quando em Modo Claro) -->
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra Inferior do Header: Submenus Alinhados -->
+    <div class="header-sub-row" id="headerSubRow">
+      <div class="header-sub-inner" id="headerSubInner"></div>
+    </div>
+  </header>
+
+  <!-- 2. ÁREA PRINCIPAL DE CONTEÚDO ALINHADA -->
+  <main class="main-canvas">
+
+    <!-- WORKSPACE 1: CATÁLOGO DE ARQUIVOS + TELEMETRIA ECHARTS -->
+    <section class="ws-panel active" id="ws-catalog">
+      <div id="catalogDynamicContent"></div>
+    </section>
+
+    <!-- WORKSPACE 2: SIGTAP CONSULTA & COMPARATIVO (Integrado ao menu SIGTAP) -->
+    <section class="ws-panel" id="ws-sigtap">
+      <div class="content-header">
+        <div>
+          <div class="breadcrumb-line">SIGTAP / CONSULTA &amp; COMPARATIVO DE COMPETÊNCIAS</div>
+          <h1 class="content-title">SIGTAP — Tabela Unificada de Procedimentos do SUS</h1>
+          <div class="ftp-url-bar">ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/</div>
+        </div>
+        <span class="source-badge">LEITURA DIRETA FTP</span>
+      </div>
+
+      <div class="controls-bar">
+        <div class="field-group">
+          <label for="sigtapCompNew">Competência Base / Atual</label>
+          <select id="sigtapCompNew" class="field-control"></select>
+        </div>
+        <div class="field-group">
+          <label for="sigtapQuery">Código ou Nome do Procedimento</label>
+          <input type="search" id="sigtapQuery" class="field-control" placeholder="Ex: 0301010072 ou consulta medica…" style="min-width:240px;" />
+        </div>
+        <div class="field-group">
+          <label for="sigtapGrupo">Grupo SIGTAP</label>
+          <select id="sigtapGrupo" class="field-control">
+            <option value="">Todos os Grupos</option>
+            <option value="01">01 - Promoção e Prevenção</option>
+            <option value="02">02 - Finalidade Diagnóstica</option>
+            <option value="03">03 - Procedimentos Clínicos</option>
+            <option value="04">04 - Procedimentos Cirúrgicos</option>
+            <option value="05">05 - Transplantes</option>
+            <option value="06">06 - Medicamentos</option>
+            <option value="07">07 - Órteses, Próteses e Materiais</option>
+            <option value="08">08 - Ações Complementares</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="sigtapFin">Financiamento</label>
+          <select id="sigtapFin" class="field-control">
+            <option value="">Todos</option>
+            <option value="01">01 - Atenção Básica (APS)</option>
+            <option value="04">04 - FAEC</option>
+            <option value="06">06 - MAC Ambulatorial/Hosp</option>
+            <option value="07">07 - Vigilância em Saúde</option>
+          </select>
+        </div>
+        <button type="button" class="btn-primary" id="btnSigtapSearch">Pesquisar</button>
+
+        <div class="field-group" style="margin-left:auto;">
+          <label for="sigtapCompOld">Comparar com Competência Anterior</label>
+          <select id="sigtapCompOld" class="field-control"></select>
+        </div>
+        <button type="button" class="btn-primary" id="btnSigtapDiff" style="background:var(--accent-emerald);color:#080C14;">⚡ Comparar Competências</button>
+      </div>
+
+      <div id="sigtapResultsContainer"></div>
+    </section>
+
+    <!-- WORKSPACE 3: PORTARIA GM/MS 7.639/2025 -->
+    <section class="ws-panel" id="ws-municipal">
+      <div class="content-header">
+        <div>
+          <div class="breadcrumb-line">PRAZOS LEGAIS &amp; KIT DE ATUALIZAÇÃO MENSAL</div>
+          <h1 class="content-title">Monitor de Sistemas Obrigatórios (Portaria GM/MS nº 7.639/2025)</h1>
+          <div class="ftp-url-bar">Pacotes Mensais Essenciais &amp; Prazos de Alimentação Obrigatória</div>
+        </div>
+        <span class="source-badge">PORTARIA GM/MS Nº 7.639/2025</span>
+      </div>
+
+      <div id="muniPackagesContainer"></div>
+      <div id="muniPortariaContainer"></div>
+    </section>
+
+    <!-- WORKSPACE 4: REMESSAS SIA (LOGCARGA) -->
+    <section class="ws-panel" id="ws-remessa">
+      <div class="content-header">
+        <div>
+          <div class="breadcrumb-line">SIA / LOGCARGA · AUDITORIA DE PROCESSAMENTO</div>
+          <h1 class="content-title">Acompanhamento de Entrega de Remessas Ambulatoriais (SIA)</h1>
+          <div class="ftp-url-bar">ftp://arpoador.datasus.gov.br/siasus/LogCarga/</div>
+        </div>
+      </div>
+
+      <form class="controls-bar" id="remessaForm">
+        <div class="field-group">
+          <label for="remIbgeInput">Código IBGE do Município (6 dígitos)</label>
+          <input type="text" id="remIbgeInput" class="field-control" value="410965" maxlength="7" />
+        </div>
+        <div class="field-group">
+          <label for="remAnoSelect">Ano da Competência</label>
+          <select id="remAnoSelect" class="field-control">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary">Consultar LogCarga no FTP</button>
+      </form>
+
+      <div id="remessaResultsContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- 3. RODAPÉ ALINHADO -->
+  <footer class="app-footer">
+    <div class="app-footer-inner">
+      <div class="cluster-list">
+        <span class="cluster-dot"><span class="dot-online"></span>arpoador.datasus.gov.br (SIA / CNES)</span>
+        <span class="cluster-dot"><span class="dot-online"></span>ftp2.datasus.gov.br (SIGTAP)</span>
+        <span class="cluster-dot"><span class="dot-online"></span>ftp.datasus.gov.br (CNES / PNI / TabWin)</span>
+      </div>
+      <div>
+        <span><strong>SUS-systems</strong> — Acesso direto aos servidores FTP DataSUS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const state = {
+      catalog: [],
+      ufs: [],
+      activeUf: "PR",
+      activeMuniIbge: "410965",
+      activeWorkspace: "catalog",
+      selectedGroup: "SIA",
+      selectedSub: "APAC",
+      sigtapCompetencias: [],
+      chartInstance: null
+    };
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatSizeMB(bytes) {
+      if (!bytes || bytes <= 0) return "–";
+      const mb = bytes / 1048576;
+      return mb < 0.1 ? (bytes / 1024).toFixed(1) + " KB" : mb.toFixed(2) + " MB";
+    }
+
+    function formatDateBR(isoStr) {
+      if (!isoStr) return "–";
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return "–";
+      const shifted = new Date(d.getTime() - 10800000);
+      return shifted.toLocaleString("pt-BR", {
+        timeZone: "UTC",
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function formatRelativeTime(isoStr) {
+      if (!isoStr) return "–";
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return "–";
+      const shifted = new Date(d.getTime() - 10800000);
+      const diffMs = Date.now() - shifted.getTime();
+      if (diffMs < 0) return "Recente";
+      const days = Math.floor(diffMs / 86400000);
+      if (days < 1) return `<span class="fresh-pill">🔥 menos de 24h</span>`;
+      if (days < 30) return `${days} dia${days > 1 ? "s" : ""}`;
+      const months = Math.floor(days / 30);
+      if (months < 12) return `${months} ${months > 1 ? "meses" : "mês"}`;
+      const years = Math.floor(months / 12);
+      return `mais de ${years} ano${years > 1 ? "s" : ""}`;
+    }
+
+    function buildDownloadUrl(baseFtpUrl, fileName) {
+      const params = new URLSearchParams({ base: baseFtpUrl, file: fileName });
+      return `/api/ftp-download?${params.toString()}`;
+    }
+
+    function triggerDownload(baseFtpUrl, fileName) {
+      window.location.href = buildDownloadUrl(baseFtpUrl, fileName);
+    }
+
+    function getAllGroups() {
+      const list = [];
+      for (const area of state.catalog) {
+        for (const grp of area.groups) {
+          list.push({ ...grp, areaTitle: area.area_title, areaBadge: area.area_badge });
+        }
+      }
+      return list;
+    }
+
+    // ── Motion Design: Sliding Glider & Staggered Cascades ──────────────────
+    function updateNavGlider() {
+      const nav = document.getElementById("topGroupsNav");
+      const glider = document.getElementById("navGlider");
+      const activeBtn = nav ? nav.querySelector(".top-group-btn.active") : null;
+      if (!activeBtn || !glider) {
+        if (glider) glider.style.width = "0px";
+        return;
+      }
+      const navRect = nav.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      const offsetLeft = btnRect.left - navRect.left - 4;
+      glider.style.width = `${btnRect.width}px`;
+      glider.style.transform = `translateX(${offsetLeft}px)`;
+    }
+
+    function runEntranceMotion(containerEl) {
+      if (typeof window.anime !== "function") return;
+      const cards = containerEl.querySelectorAll(".content-header, .kpi-card, .chart-card, .norm-card, .table-card");
+      anime({
+        targets: cards,
+        opacity: [0, 1],
+        translateY: [14, 0],
+        duration: 420,
+        delay: anime.stagger(45),
+        easing: "easeOutCubic"
+      });
+
+      const rows = containerEl.querySelectorAll(".data-table tbody tr");
+      if (rows.length > 0 && rows.length <= 80) {
+        anime({
+          targets: rows,
+          opacity: [0, 1],
+          translateX: [-8, 0],
+          duration: 320,
+          delay: anime.stagger(16, { start: 90 }),
+          easing: "easeOutQuad"
+        });
+      }
+    }
+
+    function animateCounters(containerEl) {
+      if (typeof window.anime !== "function") return;
+      containerEl.querySelectorAll("[data-count-target]").forEach(el => {
+        const targetVal = parseFloat(el.dataset.countTarget || "0");
+        const isFloat = el.dataset.countFloat === "true";
+        const suffix = el.dataset.countSuffix || "";
+        const obj = { val: 0 };
+        anime({
+          targets: obj,
+          val: targetVal,
+          duration: 750,
+          easing: "easeOutExpo",
+          update: () => {
+            el.textContent = (isFloat ? obj.val.toFixed(1) : Math.round(obj.val).toLocaleString("pt-BR")) + suffix;
+          }
+        });
+      });
+    }
+
+    // ── ECharts Dark Analytics Renderer ─────────────────────────────────────
+    function renderDirectoryChart(sections) {
+      const chartDom = document.getElementById("ftpAnalyticsChart");
+      if (!chartDom || typeof window.echarts === "undefined") return;
+
+      if (state.chartInstance) {
+        state.chartInstance.dispose();
+      }
+
+      const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+      state.chartInstance = echarts.init(chartDom);
+
+      // Coleta os maiores arquivos ou com mais histórico para plotar
+      const allFiles = [];
+      for (const sec of sections) {
+        for (const f of (sec.files || [])) {
+          let sizeBytes = f.size || 0;
+          if (!sizeBytes && f.ufBySigla && f.ufBySigla[state.activeUf]) {
+            sizeBytes = f.ufBySigla[state.activeUf].size || 0;
+          }
+          const histCount = (f.history ? f.history.length : 0) +
+            (f.ufHistoryBySigla && f.ufHistoryBySigla[state.activeUf] ? f.ufHistoryBySigla[state.activeUf].length : 0);
+          allFiles.push({
+            label: (f.description && f.description !== "–" ? f.description : f.name).slice(0, 22),
+            mb: +(sizeBytes / 1048576).toFixed(2),
+            versions: histCount + 1
+          });
+        }
+      }
+
+      const topItems = allFiles.slice(0, 8);
+      const labels = topItems.map(x => x.label);
+      const mbData = topItems.map(x => x.mb);
+      const verData = topItems.map(x => x.versions);
+
+      const textColor = isDark ? "#94A3B8" : "#64748B";
+      const splitColor = isDark ? "rgba(148,163,184,0.10)" : "rgba(15,23,42,0.07)";
+
+      state.chartInstance.setOption({
+        backgroundColor: "transparent",
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: isDark ? "#0F1623" : "#FFFFFF",
+          borderColor: isDark ? "#334155" : "#CBD5E1",
+          textStyle: { color: isDark ? "#F8FAFC" : "#0F172A", fontSize: 12 }
+        },
+        grid: { left: 48, right: 48, top: 24, bottom: 28 },
+        xAxis: {
+          type: "category",
+          data: labels,
+          axisLabel: { color: textColor, fontSize: 10, interval: 0, rotate: labels.length > 5 ? 12 : 0 },
+          axisLine: { lineStyle: { color: splitColor } }
+        },
+        yAxis: [
+          {
+            type: "value",
+            name: "MB",
+            nameTextStyle: { color: textColor, fontSize: 10 },
+            axisLabel: { color: textColor, fontSize: 10 },
+            splitLine: { lineStyle: { color: splitColor } }
+          },
+          {
+            type: "value",
+            name: "Versões",
+            nameTextStyle: { color: textColor, fontSize: 10 },
+            axisLabel: { color: textColor, fontSize: 10 },
+            splitLine: { show: false }
+          }
+        ],
+        series: [
+          {
+            name: "Tamanho (MB)",
+            type: "bar",
+            barMaxWidth: 28,
+            data: mbData,
+            itemStyle: {
+              borderRadius: [5, 5, 0, 0],
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "#38BDF8" },
+                { offset: 1, color: "rgba(2, 132, 199, 0.25)" }
+              ])
+            }
+          },
+          {
+            name: "Versões no FTP",
+            type: "line",
+            yAxisIndex: 1,
+            smooth: true,
+            data: verData,
+            symbolSize: 6,
+            itemStyle: { color: "#34D399" },
+            lineStyle: { width: 2, color: "#34D399" }
+          }
+        ]
+      });
+    }
+
+    // ── Renderização do Menu no Header (Topo) e Submenus (Embaixo) ──────────
+    function renderHeaderMenus() {
+      const topNav = document.getElementById("topGroupsNav");
+      const subRow = document.getElementById("headerSubRow");
+      const subInner = document.getElementById("headerSubInner");
+      const groups = getAllGroups();
+
+      let topHtml = `<div class="nav-active-glider" id="navGlider"></div>`;
+      topHtml += groups.map(grp => {
+        const isActive =
+          (state.activeWorkspace === "catalog" || state.activeWorkspace === "remessa" || state.activeWorkspace === "sigtap") &&
+          state.selectedGroup === grp.id;
+        return `
+          <button type="button" class="top-group-btn ${isActive ? "active" : ""}" data-top-group="${escapeHtml(grp.id)}">
+            <span>${escapeHtml(grp.name)}</span>
+          </button>
+        `;
+      }).join("");
+
+      topHtml += `
+        <span class="top-group-divider" aria-hidden="true"></span>
+        <button type="button" class="top-group-btn ${state.activeWorkspace === "municipal" ? "active" : ""}" data-top-ws="municipal">
+          <span>Portaria 7.639</span>
+        </button>
+      `;
+
+      topNav.innerHTML = topHtml;
+
+      topNav.querySelectorAll("[data-top-group]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const gId = btn.dataset.topGroup;
+          const grpObj = groups.find(g => g.id === gId);
+          if (!grpObj || !grpObj.subGroups.length) return;
+          state.selectedGroup = gId;
+          const firstSub = grpObj.subGroups[0];
+          state.selectedSub = firstSub.name;
+
+          if (firstSub.specialView === "sigtap") {
+            switchWorkspace("sigtap", true);
+          } else if (firstSub.specialView === "remessa") {
+            switchWorkspace("remessa", true);
+          } else {
+            switchWorkspace("catalog", false);
+            loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+          }
+          renderHeaderMenus();
+        });
+      });
+
+      topNav.querySelectorAll("[data-top-ws]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          switchWorkspace(btn.dataset.topWs, true);
+          renderHeaderMenus();
+        });
+      });
+
+      const currentGroup = groups.find(g => g.id === state.selectedGroup);
+      if (state.activeWorkspace !== "municipal" && currentGroup) {
+        subRow.style.display = "block";
+        subInner.innerHTML = `
+          <div class="sub-tabs-list">
+            <span class="area-context-tag">${escapeHtml(currentGroup.areaTitle)}</span>
+            ${currentGroup.subGroups.map(sub => {
+              const isSubActive = state.selectedSub === sub.name;
+              return `
+                <button type="button" class="sub-pill-btn ${isSubActive ? "active" : ""}"
+                        data-sub-name="${escapeHtml(sub.name)}"
+                        data-special-view="${escapeHtml(sub.specialView || "")}">
+                  ${escapeHtml(sub.name)}
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+
+        subInner.querySelectorAll("[data-sub-name]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const sName = btn.dataset.subName;
+            const spView = btn.dataset.specialView;
+            state.selectedSub = sName;
+
+            if (spView === "remessa") {
+              switchWorkspace("remessa", true);
+              renderHeaderMenus();
+              return;
+            }
+            if (spView === "sigtap") {
+              switchWorkspace("sigtap", true);
+              renderHeaderMenus();
+              return;
+            }
+            switchWorkspace("catalog", false);
+            renderHeaderMenus();
+            loadSubgroupContent(state.selectedGroup, sName, false);
+          });
+        });
+      } else {
+        subRow.style.display = "none";
+      }
+
+      requestAnimationFrame(updateNavGlider);
+    }
+
+    function switchWorkspace(wsName, triggerLoad = true) {
+      state.activeWorkspace = wsName;
+      document.querySelectorAll(".ws-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === `ws-${wsName}`);
+      });
+
+      if (!triggerLoad) return;
+      if (wsName === "municipal") {
+        loadMunicipalSummary();
+      } else if (wsName === "sigtap") {
+        initSigtapExplorer();
+      } else if (wsName === "remessa") {
+        loadRemessaTable(document.getElementById("remIbgeInput").value, document.getElementById("remAnoSelect").value);
+      }
+    }
+
+    // ── Carregamento de Subgrupo, Gráficos e Tabelas FTP ────────────────────
+    async function loadSubgroupContent(groupId, subName, forceRefresh = false) {
+      const container = document.getElementById("catalogDynamicContent");
+      container.innerHTML = `
+        <div class="table-card shimmer-box">
+          <div class="shimmer-line" style="width: 45%;"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line"></div>
+        </div>
+      `;
+
+      try {
+        const params = new URLSearchParams({
+          group_id: groupId,
+          sub_name: subName,
+          force_refresh: forceRefresh ? "true" : "false"
+        });
+        const resp = await fetch(`/api/subgroup-data?${params.toString()}`);
+        if (!resp.ok) throw new Error(await resp.text());
+        const data = await resp.json();
+        renderSubgroupView(data);
+      } catch (err) {
+        container.innerHTML = `<div class="table-card"><div class="state-box">Erro ao carregar subgrupo: ${escapeHtml(err.message)}</div></div>`;
+      }
+    }
+
+    function renderSubgroupView(data) {
+      const container = document.getElementById("catalogDynamicContent");
+      const sections = data.sections || [];
+
+      // Calcula KPIs do diretório para animação numérica
+      let totalFamilies = 0;
+      let totalHistory = 0;
+      let totalBytes = 0;
+
+      sections.forEach(sec => {
+        (sec.files || []).forEach(f => {
+          totalFamilies += 1;
+          totalHistory += (f.history ? f.history.length : 0) + 1;
+          let sz = f.size || 0;
+          if (!sz && f.ufBySigla && f.ufBySigla[state.activeUf]) {
+            sz = f.ufBySigla[state.activeUf].size || 0;
+          }
+          totalBytes += sz;
+        });
+      });
+      const totalMB = +(totalBytes / 1048576).toFixed(1);
+
+      let html = `
+        <div class="content-header">
+          <div>
+            <div class="breadcrumb-line">${escapeHtml(data.groupId)} / ${escapeHtml(data.subName)}</div>
+            <h1 class="content-title">${escapeHtml(data.title)}</h1>
+            <div class="ftp-url-bar">${escapeHtml(data.primaryFtpUrl)}</div>
+          </div>
+          <span class="source-badge">CONEXÃO: ${escapeHtml(data.sourceSummary)}</span>
+        </div>
+
+        <!-- Painel de Telemetria & Gráfico ECharts -->
+        <div class="analytics-grid">
+          <div class="kpi-stack">
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Famílias de Pacotes</span>
+                <span class="kpi-sub">Agrupados no diretório</span>
+              </div>
+              <span class="kpi-number" data-count-target="${totalFamilies}">0</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Versões Catalogadas</span>
+                <span class="kpi-sub">Atuais + Histórico FTP</span>
+              </div>
+              <span class="kpi-number" data-count-target="${totalHistory}">0</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Volume das Últimas Versões</span>
+                <span class="kpi-sub">Soma dos pacotes principais</span>
+              </div>
+              <span class="kpi-number" data-count-target="${totalMB}" data-count-float="true" data-count-suffix=" MB">0 MB</span>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-head">
+              <span class="chart-card-title">📊 Telemetria de Volume (MB) &amp; Série Histórica de Versões no FTP</span>
+              <span class="table-card-ftp">${escapeHtml(data.subName)}</span>
+            </div>
+            <div id="ftpAnalyticsChart" class="echarts-box"></div>
+          </div>
+        </div>
+      `;
+
+      if (data.normatives && data.normatives.length > 0) {
+        html += `
+          <div class="normatives-section">
+            <div class="normatives-grid">
+              ${data.normatives.map(n => `
+                <div class="norm-card">
+                  <div>
+                    <div class="norm-card-top">
+                      <span class="norm-code">${escapeHtml(n.code)}</span>
+                      <span class="norm-tag">${escapeHtml(n.tag)}</span>
+                    </div>
+                    <p class="norm-title" style="margin-top:0.35rem;">${escapeHtml(n.title)}</p>
+                  </div>
+                  <a class="norm-link" href="${escapeHtml(n.url)}" ${n.url.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>
+                    <span>Abrir referência →</span>
+                  </a>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      sections.forEach((sec, secIdx) => {
+        const tableId = `ftp-sec-table-${secIdx}`;
+        const showDesc = Boolean(sec.showDescriptionColumn);
+        html += `
+          <div class="table-card" data-sec-idx="${secIdx}">
+            <div class="table-card-header">
+              <div>
+                <div class="table-card-title">${escapeHtml(sec.title)}</div>
+                <div class="table-card-ftp">${escapeHtml(sec.ftpUrl)}</div>
+              </div>
+              ${sec.showNameFilter ? `
+                <input type="search" class="table-filter-input" data-filter-table="${tableId}" placeholder="Filtrar por nome ou descrição…" autocomplete="off" />
+              ` : ""}
+            </div>
+            ${sec.files.length === 0 ? `
+              <div class="state-box">Nenhum arquivo retornado neste diretório.</div>
+            ` : `
+              <table class="data-table" id="${tableId}">
+                <thead>
+                  <tr>
+                    ${showDesc ? `<th style="width:22%">Descrição</th>` : ""}
+                    <th>Arquivo</th>
+                    <th style="width:14%">Disponibilizado</th>
+                    <th style="width:15%">Data FTP</th>
+                    <th class="col-right" style="width:10%">Tamanho</th>
+                    <th class="col-right" style="width:18%">Ação / UF</th>
+                    <th class="col-right" style="width:13%">Anteriores</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sec.files.map((f, fIdx) => renderFileRowHtml(f, sec.ftpUrl, showDesc, `${secIdx}-${fIdx}`)).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      bindTableInteractions(container);
+      runEntranceMotion(container);
+      animateCounters(container);
+      renderDirectoryChart(sections);
+    }
+
+    function renderFileRowHtml(f, ftpUrl, showDesc, rowKey) {
+      const isUf = f.kind === "uf_sigla" || f.kind === "uf_cod" || f.kind === "dsihd017";
+      const ufMap = f.ufBySigla || {};
+      const ufHistMap = f.ufHistoryBySigla || {};
+      const availableUfs = Object.keys(ufMap).sort();
+
+      const defaultUf = isUf && availableUfs.includes(state.activeUf) ? state.activeUf : "";
+      const activeMeta = isUf && defaultUf ? ufMap[defaultUf] : null;
+
+      const fileNameToUse = isUf ? (activeMeta ? activeMeta.name : f.displayName) : f.displayName;
+      const actualDownloadName = isUf ? (activeMeta ? activeMeta.name : "") : f.name;
+      const modAt = isUf ? (activeMeta ? activeMeta.modifiedAt : null) : f.modifiedAt;
+      const sizeBytes = isUf ? (activeMeta ? activeMeta.size : 0) : f.size;
+      const histEntries = isUf ? (defaultUf && ufHistMap[defaultUf] ? ufHistMap[defaultUf] : []) : (f.history || []);
+
+      const rowPayload = encodeURIComponent(JSON.stringify({ f, ftpUrl }));
+
+      return `
+        <tr data-row-key="${rowKey}" data-row-payload="${rowPayload}">
+          ${showDesc ? `<td class="col-desc-badge">${escapeHtml(f.description || "–")}</td>` : ""}
+          <td>
+            ${(!isUf || activeMeta) ? `
+              <button type="button" class="file-link-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(actualDownloadName)}">
+                ${escapeHtml(fileNameToUse)}
+              </button>
+            ` : `<span class="mono-cell">${escapeHtml(f.displayName)}</span>`}
+          </td>
+          <td class="cell-avail">${modAt ? formatRelativeTime(modAt) : "–"}</td>
+          <td class="mono-cell cell-date">${modAt ? formatDateBR(modAt) : "–"}</td>
+          <td class="mono-cell cell-size col-right">${sizeBytes ? formatSizeMB(sizeBytes) : "–"}</td>
+          <td class="col-right">
+            <div class="action-group">
+              <button type="button" class="btn-primary btn-row-dl"
+                      ${(isUf && !activeMeta) ? "disabled" : ""}
+                      data-dl-base="${escapeHtml(ftpUrl)}"
+                      data-dl-file="${escapeHtml(actualDownloadName)}">
+                <span>↓ Download</span>
+              </button>
+              ${isUf ? `
+                <select class="uf-select" aria-label="Selecionar UF">
+                  <option value="">UF…</option>
+                  ${availableUfs.map(u => `<option value="${u}" ${u === defaultUf ? "selected" : ""}>${u}</option>`).join("")}
+                </select>
+              ` : ""}
+            </div>
+          </td>
+          <td class="cell-hist col-right">
+            ${renderHistoryPopoverHtml(ftpUrl, histEntries)}
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderHistoryPopoverHtml(ftpUrl, entries) {
+      if (!entries || entries.length === 0) {
+        return `<span style="color:var(--text-muted)">–</span>`;
+      }
+      return `
+        <div class="hist-wrap">
+          <button type="button" class="btn-hist">
+            <span>Anteriores (${entries.length})</span>
+            <span>▾</span>
+          </button>
+          <ul class="hist-popover">
+            ${entries.map(e => {
+              const label = e.label || (e.ym ? `${e.ym.slice(0, 4)}/${e.ym.slice(4)}` : e.name);
+              return `
+                <li>
+                  <button type="button" class="hist-item-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(e.name)}">
+                    <span>${escapeHtml(label)}</span>
+                    <span style="color:var(--text-muted)">↓</span>
+                  </button>
+                </li>
+              `;
+            }).join("")}
+          </ul>
+        </div>
+      `;
+    }
+
+    function bindTableInteractions(rootEl) {
+      rootEl.querySelectorAll(".norm-link").forEach(a => {
+        const href = a.getAttribute("href") || "";
+        if (href === "#workspace-municipal") {
+          a.addEventListener("click", e => {
+            e.preventDefault();
+            switchWorkspace("municipal", true);
+            renderHeaderMenus();
+          });
+        } else if (href === "#workspace-sigtap") {
+          a.addEventListener("click", e => {
+            e.preventDefault();
+            state.selectedGroup = "SIGTAP";
+            state.selectedSub = "Consulta & Comparativo";
+            switchWorkspace("sigtap", true);
+            renderHeaderMenus();
+          });
+        }
+      });
+
+      rootEl.querySelectorAll("[data-dl-file]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const base = btn.dataset.dlBase;
+          const file = btn.dataset.dlFile;
+          if (base && file) triggerDownload(base, file);
+        });
+      });
+
+      rootEl.querySelectorAll(".btn-hist").forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          const wrap = btn.closest(".hist-wrap");
+          const wasOpen = wrap.classList.contains("open");
+          document.querySelectorAll(".hist-wrap.open").forEach(w => w.classList.remove("open"));
+          if (!wasOpen) wrap.classList.add("open");
+        });
+      });
+
+      rootEl.querySelectorAll(".uf-select").forEach(sel => {
+        sel.addEventListener("change", () => {
+          const tr = sel.closest("tr");
+          const payload = JSON.parse(decodeURIComponent(tr.dataset.rowPayload));
+          const { f, ftpUrl } = payload;
+          const chosenUf = sel.value;
+          const meta = chosenUf && f.ufBySigla ? f.ufBySigla[chosenUf] : null;
+          const hist = chosenUf && f.ufHistoryBySigla && f.ufHistoryBySigla[chosenUf] ? f.ufHistoryBySigla[chosenUf] : [];
+
+          const nameCell = tr.querySelector("td:nth-child(" + (tr.querySelector(".col-desc-badge") ? 2 : 1) + ")");
+          if (meta) {
+            nameCell.innerHTML = `<button type="button" class="file-link-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(meta.name)}">${escapeHtml(meta.name)}</button>`;
+            nameCell.querySelector("[data-dl-file]").addEventListener("click", () => triggerDownload(ftpUrl, meta.name));
+          } else {
+            nameCell.innerHTML = `<span class="mono-cell">${escapeHtml(f.displayName)}</span>`;
+          }
+
+          tr.querySelector(".cell-avail").innerHTML = meta ? formatRelativeTime(meta.modifiedAt) : "–";
+          tr.querySelector(".cell-date").textContent = meta ? formatDateBR(meta.modifiedAt) : "–";
+          tr.querySelector(".cell-size").textContent = meta ? formatSizeMB(meta.size) : "–";
+
+          const dlBtn = tr.querySelector(".btn-row-dl");
+          dlBtn.disabled = !meta;
+          dlBtn.dataset.dlFile = meta ? meta.name : "";
+
+          const histCell = tr.querySelector(".cell-hist");
+          histCell.innerHTML = renderHistoryPopoverHtml(ftpUrl, hist);
+          bindTableInteractions(histCell);
+        });
+      });
+
+      rootEl.querySelectorAll("[data-filter-table]").forEach(input => {
+        input.addEventListener("input", () => {
+          const tbl = document.getElementById(input.dataset.filterTable);
+          if (!tbl) return;
+          const q = input.value.trim().toLowerCase();
+          tbl.querySelectorAll("tbody tr").forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(q) ? "" : "none";
+          });
+        });
+      });
+    }
+
+    // ── Portaria 7.639/2025 & Pacotes Essenciais ────────────────────────────
+    async function loadMunicipalSummary() {
+      const pkgBox = document.getElementById("muniPackagesContainer");
+      const portBox = document.getElementById("muniPortariaContainer");
+      pkgBox.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+
+      try {
+        const params = new URLSearchParams({ ibge: state.activeMuniIbge, uf: state.activeUf, ano: "2026" });
+        const resp = await fetch(`/api/municipal/summary?${params.toString()}`);
+        const data = await resp.json();
+
+        pkgBox.innerHTML = `
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">📦 Kit de Atualização Mensal Obrigatória (${escapeHtml(data.municipality.uf)})</div>
+              <span class="table-card-ftp">Últimas versões disponíveis nos servidores FTP do DataSUS</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Sistema / Finalidade</th>
+                  <th>Arquivo Oficial no FTP</th>
+                  <th>Competência</th>
+                  <th>Disponibilizado</th>
+                  <th class="col-right">Tamanho</th>
+                  <th class="col-right">Download Direto</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.essentialPackages.map(p => `
+                  <tr>
+                    <td class="col-desc-badge">${escapeHtml(p.category)}</td>
+                    <td class="mono-cell">${escapeHtml(p.name)}</td>
+                    <td class="mono-cell">${p.ym ? `${p.ym.slice(0,4)}/${p.ym.slice(4)}` : "Atual"}</td>
+                    <td>${formatRelativeTime(p.modifiedAt)}</td>
+                    <td class="mono-cell col-right">${formatSizeMB(p.size)}</td>
+                    <td class="col-right">
+                      <a class="btn-primary" href="${escapeHtml(buildDownloadUrl(p.ftpUrl, p.name))}">↓ Baixar Pacote</a>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        portBox.innerHTML = `
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">🛡️ Matriz de Monitoramento — Portaria GM/MS nº 7.639/2025</div>
+              <span class="table-card-ftp">Prevenção de bloqueio de 50% (2 meses) e suspensão de 100% (3 meses) de transferências</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:5%">#</th>
+                  <th style="width:22%">Sistema</th>
+                  <th style="width:22%">Prazo Legal</th>
+                  <th style="width:12%">Órgão</th>
+                  <th>Impacto / Risco Financeiro</th>
+                  <th class="col-right" style="width:14%">Acesso</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.portaria7639.map(item => `
+                  <tr>
+                    <td class="mono-cell">${item.order}</td>
+                    <td>
+                      <div class="col-desc-badge">${escapeHtml(item.sigla)}</div>
+                      <div style="font-size:0.73rem;color:var(--text-muted)">${escapeHtml(item.nome)}</div>
+                    </td>
+                    <td><span class="status-warn">${escapeHtml(item.prazo)}</span></td>
+                    <td class="mono-cell">${escapeHtml(item.orgao)}</td>
+                    <td style="font-size:0.76rem;">${escapeHtml(item.risco)}</td>
+                    <td class="col-right">
+                      <button type="button" class="btn-hist" data-jump-group="${escapeHtml(item.ftpGroup)}" data-jump-sub="${escapeHtml(item.ftpSub)}">
+                        Abrir →
+                      </button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        portBox.querySelectorAll("[data-jump-group]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.selectedGroup = btn.dataset.jumpGroup;
+            state.selectedSub = btn.dataset.jumpSub;
+            switchWorkspace("catalog", false);
+            renderHeaderMenus();
+            loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+          });
+        });
+
+        runEntranceMotion(document.getElementById("ws-municipal"));
+      } catch (err) {
+        pkgBox.innerHTML = `<div class="table-card"><div class="state-box">Erro ao carregar resumo: ${escapeHtml(err.message)}</div></div>`;
+      }
+    }
+
+    // ── SIGTAP Consulta & Comparativo ───────────────────────────────────────
+    async function initSigtapExplorer() {
+      const selNew = document.getElementById("sigtapCompNew");
+      const selOld = document.getElementById("sigtapCompOld");
+      if (state.sigtapCompetencias.length === 0) {
+        document.getElementById("sigtapResultsContainer").innerHTML =
+          `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+        const resp = await fetch("/api/sigtap/competencias");
+        const data = await resp.json();
+        state.sigtapCompetencias = data.competencias || [];
+
+        const opts = state.sigtapCompetencias.map(c =>
+          `<option value="${c.competencia}">${c.label} (${c.file})</option>`
+        ).join("");
+        selNew.innerHTML = opts;
+        selOld.innerHTML = opts;
+        if (state.sigtapCompetencias.length > 1) {
+          selOld.selectedIndex = 1;
+        }
+      }
+      runSigtapSearch();
+    }
+
+    async function runSigtapSearch() {
+      const comp = document.getElementById("sigtapCompNew").value;
+      const q = document.getElementById("sigtapQuery").value;
+      const grupo = document.getElementById("sigtapGrupo").value;
+      const fin = document.getElementById("sigtapFin").value;
+      const box = document.getElementById("sigtapResultsContainer");
+
+      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      try {
+        const params = new URLSearchParams({ comp, q, grupo, financiamento: fin, limit: "120" });
+        const resp = await fetch(`/api/sigtap/explore?${params.toString()}`);
+        if (!resp.ok) throw new Error(await resp.text());
+        const data = await resp.json();
+
+        box.innerHTML = `
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">Competência Ativa</div>
+              <div class="kpi-val">${escapeHtml(data.competencia.slice(0,4))}/${escapeHtml(data.competencia.slice(4))}</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Total de Procedimentos no SIGTAP</div>
+              <div class="kpi-val" data-count-target="${data.totalInTable}">0</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Exibindo no Filtro</div>
+              <div class="kpi-val" data-count-target="${data.returnedCount}">0</div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">Procedimentos da Tabela Unificada (${escapeHtml(data.file)})</div>
+              <a class="btn-primary" href="${escapeHtml(buildDownloadUrl('ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/', data.file))}">↓ Baixar ZIP Completo</a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:14%">Código SIGTAP</th>
+                  <th>Nome do Procedimento</th>
+                  <th style="width:16%">Complexidade</th>
+                  <th style="width:18%">Financiamento</th>
+                  <th style="width:12%">Idade</th>
+                  <th class="col-right" style="width:10%">Valor SA</th>
+                  <th class="col-right" style="width:10%">Valor Hosp</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.items.map(p => `
+                  <tr>
+                    <td class="mono-cell" style="color:var(--accent-primary);font-weight:600;">${escapeHtml(p.formattedCode)}</td>
+                    <td class="col-desc-badge">${escapeHtml(p.name)}</td>
+                    <td>${escapeHtml(p.complexidade)}</td>
+                    <td style="font-size:0.75rem;">${escapeHtml(p.financiamento)}</td>
+                    <td class="mono-cell">${escapeHtml(p.idadeMin)} a ${escapeHtml(p.idadeMax)}</td>
+                    <td class="mono-cell col-right">R$ ${p.vlSA.toFixed(2)}</td>
+                    <td class="mono-cell col-right">R$ ${p.vlTotalHosp.toFixed(2)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+        runEntranceMotion(box);
+        animateCounters(box);
+      } catch (err) {
+        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao consultar SIGTAP: ${escapeHtml(err.message)}</div></div>`;
+      }
+    }
+
+    async function runSigtapDiff() {
+      const compNew = document.getElementById("sigtapCompNew").value;
+      const compOld = document.getElementById("sigtapCompOld").value;
+      const box = document.getElementById("sigtapResultsContainer");
+
+      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      try {
+        const params = new URLSearchParams({ comp_new: compNew, comp_old: compOld });
+        const resp = await fetch(`/api/sigtap/diff?${params.toString()}`);
+        if (!resp.ok) throw new Error(await resp.text());
+        const d = await resp.json();
+
+        box.innerHTML = `
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">Novos Procedimentos Incluídos</div>
+              <div class="kpi-val delta-pos" data-count-target="${d.summary.addedCount}">0</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Procedimentos Com Reajuste (R$)</div>
+              <div class="kpi-val" style="color:var(--accent-primary)" data-count-target="${d.summary.valueChangedCount}">0</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Alterações de Regra / Nome / Idade</div>
+              <div class="kpi-val" style="color:var(--accent-amber)" data-count-target="${d.summary.ruleChangedCount}">0</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Procedimentos Excluídos/Revogados</div>
+              <div class="kpi-val delta-neg" data-count-target="${d.summary.removedCount}">0</div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">💰 Reajustes de Valor entre ${escapeHtml(d.compOld)} e ${escapeHtml(d.compNew)} (${d.summary.valueChangedCount})</div>
+            </div>
+            ${d.valueChanged.length === 0 ? `<div class="state-box">Nenhum procedimento teve alteração de valor monetário entre estas competências.</div>` : `
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Procedimento</th>
+                    <th class="col-right">Amb Anterior</th>
+                    <th class="col-right">Amb Novo</th>
+                    <th class="col-right">Δ Amb (SA)</th>
+                    <th class="col-right">Δ Hosp (SH+SP)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${d.valueChanged.map(v => `
+                    <tr>
+                      <td class="mono-cell" style="font-weight:600">${escapeHtml(v.formattedCode)}</td>
+                      <td class="col-desc-badge">${escapeHtml(v.name)}</td>
+                      <td class="mono-cell col-right">R$ ${v.oldSA.toFixed(2)}</td>
+                      <td class="mono-cell col-right">R$ ${v.newSA.toFixed(2)}</td>
+                      <td class="mono-cell col-right ${v.deltaSA >= 0 ? 'delta-pos' : 'delta-neg'}">${v.deltaSA >= 0 ? '+' : ''}R$ ${v.deltaSA.toFixed(2)}</td>
+                      <td class="mono-cell col-right ${(v.deltaSH + v.deltaSP) >= 0 ? 'delta-pos' : 'delta-neg'}">${(v.deltaSH + v.deltaSP) >= 0 ? '+' : ''}R$ ${(v.deltaSH + v.deltaSP).toFixed(2)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">✨ Novos Procedimentos Incluídos em ${escapeHtml(d.compNew)} (${d.summary.addedCount})</div>
+            </div>
+            ${d.added.length === 0 ? `<div class="state-box">Nenhum código novo incluído nesta competência.</div>` : `
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Procedimento</th>
+                    <th>Complexidade</th>
+                    <th>Financiamento</th>
+                    <th class="col-right">Valor SA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${d.added.map(a => `
+                    <tr>
+                      <td class="mono-cell delta-pos">${escapeHtml(a.formattedCode)}</td>
+                      <td class="col-desc-badge">${escapeHtml(a.name)}</td>
+                      <td>${escapeHtml(a.complexidade)}</td>
+                      <td>${escapeHtml(a.financiamento)}</td>
+                      <td class="mono-cell col-right">R$ ${a.vlSA.toFixed(2)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+        `;
+        runEntranceMotion(box);
+        animateCounters(box);
+      } catch (err) {
+        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao calcular comparativo: ${escapeHtml(err.message)}</div></div>`;
+      }
+    }
+
+    // ── Remessas SIA (LogCarga) ─────────────────────────────────────────────
+    async function loadRemessaTable(ibge, ano) {
+      const box = document.getElementById("remessaResultsContainer");
+      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      try {
+        const params = new URLSearchParams({ ibge, ano });
+        const resp = await fetch(`/api/remessa?${params.toString()}`);
+        const data = await resp.json();
+        const rows = data.rows || [];
+
+        if (rows.length === 0) {
+          box.innerHTML = `<div class="table-card"><div class="state-box">Nenhuma remessa encontrada para o código IBGE ${escapeHtml(ibge)} em ${escapeHtml(ano)}.</div></div>`;
+          return;
+        }
+
+        box.innerHTML = `
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">Histórico de Remessas Processadas — IBGE ${escapeHtml(ibge)} (${escapeHtml(ano)})</div>
+              <span class="table-card-ftp">${escapeHtml(data.ftpUrl || "ftp://arpoador.datasus.gov.br/siasus/LogCarga/")}</span>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Competência</th>
+                  <th>Remessa</th>
+                  <th>Recebido em</th>
+                  <th>Verificado em</th>
+                  <th>Carga em</th>
+                  <th>Status / Arquivo de Log</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map(r => `
+                  <tr>
+                    <td class="mono-cell" style="font-weight:700">${escapeHtml(r.competencia)}</td>
+                    <td class="mono-cell">${escapeHtml(r.remessa)}</td>
+                    <td class="mono-cell">${escapeHtml(r.recebidoEm)}</td>
+                    <td class="mono-cell">${escapeHtml(r.verificadoEm)}</td>
+                    <td class="mono-cell">${escapeHtml(r.cargaEm)}</td>
+                    <td>
+                      ${r.statusFile ? `
+                        <a class="file-link-btn" href="${escapeHtml(buildDownloadUrl(data.ftpUrl || 'ftp://arpoador.datasus.gov.br/siasus/LogCarga/', r.statusFile))}">
+                          ${escapeHtml(r.status)} (↓ Baixar Log)
+                        </a>
+                      ` : escapeHtml(r.status)}
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+        runEntranceMotion(box);
+      } catch (err) {
+        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao consultar remessas: ${escapeHtml(err.message)}</div></div>`;
+      }
+    }
+
+    // ── Boot & Event Listeners ──────────────────────────────────────────────
+    async function bootApp() {
+      document.addEventListener("click", () => {
+        document.querySelectorAll(".hist-wrap.open").forEach(w => w.classList.remove("open"));
+      });
+
+      window.addEventListener("resize", () => {
+        updateNavGlider();
+        if (state.chartInstance) state.chartInstance.resize();
+      });
+
+      document.getElementById("btnHomeLogo").addEventListener("click", () => {
+        state.selectedGroup = "SIA";
+        state.selectedSub = "APAC";
+        switchWorkspace("catalog", false);
+        renderHeaderMenus();
+        loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+      });
+
+      document.getElementById("btnForceRefresh").addEventListener("click", () => {
+        const icon = document.getElementById("iconRefresh");
+        if (typeof window.anime === "function") {
+          anime({ targets: icon, rotate: [0, 360], duration: 550, easing: "easeInOutSine" });
+        }
+        if (state.activeWorkspace === "catalog") {
+          loadSubgroupContent(state.selectedGroup, state.selectedSub, true);
+        } else if (state.activeWorkspace === "municipal") {
+          loadMunicipalSummary();
+        }
+      });
+
+      // Alternar Tema (Abre em Dark Mode por padrão -> Sol visível)
+      document.getElementById("btnThemeToggle").addEventListener("click", () => {
+        const htmlEl = document.documentElement;
+        const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        htmlEl.setAttribute("data-theme", next);
+        document.getElementById("iconSun").style.display = next === "dark" ? "block" : "none";
+        document.getElementById("iconMoon").style.display = next === "dark" ? "none" : "block";
+        if (state.activeWorkspace === "catalog") {
+          loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+        }
+      });
+
+      document.getElementById("btnSigtapSearch").addEventListener("click", runSigtapSearch);
+      document.getElementById("sigtapQuery").addEventListener("keydown", e => {
+        if (e.key === "Enter") runSigtapSearch();
+      });
+      document.getElementById("btnSigtapDiff").addEventListener("click", runSigtapDiff);
+
+      document.getElementById("remessaForm").addEventListener("submit", e => {
+        e.preventDefault();
+        loadRemessaTable(
+          document.getElementById("remIbgeInput").value,
+          document.getElementById("remAnoSelect").value
+        );
+      });
+
+      const resp = await fetch("/api/catalog");
+      const data = await resp.json();
+      state.catalog = data.areas || [];
+      state.ufs = data.ufs || [];
+
+      renderHeaderMenus();
+      loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+    }
+
+    bootApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+services:
+  sus-systems:
+    build: .
+    container_name: sus-systems-app
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

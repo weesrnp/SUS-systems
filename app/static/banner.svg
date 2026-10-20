@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070b14"/>
+      <stop offset="50%" stop-color="#0a1222"/>
+      <stop offset="100%" stop-color="#05080f"/>
+    </linearGradient>
+
+    <!-- Brand Cyan-Emerald Gradient -->
+    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <!-- Accent Violet-Cyan Gradient -->
+    <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#3b82f6" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Badge Gradient -->
+    <linearGradient id="badge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.4"/>
+      <circle cx="40" cy="40" r="1" fill="#06b6d4" fill-opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="420" fill="url(#bg-grad)"/>
+  <rect width="1200" height="420" fill="url(#grid)"/>
+
+  <!-- Ambient Radial Glows -->
+  <circle cx="150" cy="180" r="160" fill="#06b6d4" opacity="0.12" filter="url(#glow)"/>
+  <circle cx="1050" cy="120" r="180" fill="#10b981" opacity="0.08" filter="url(#glow)"/>
+  <circle cx="600" cy="380" r="220" fill="#3b82f6" opacity="0.06" filter="url(#glow)"/>
+
+  <!-- Decorative Wave / Telemetry Line -->
+  <path d="M 0,340 C 150,310 250,380 400,330 C 550,280 650,360 800,320 C 950,280 1050,350 1200,310" 
+        fill="none" stroke="url(#glow-grad)" stroke-width="2" opacity="0.45"/>
+  <path d="M 0,360 C 200,330 350,390 550,340 C 750,290 900,370 1200,330" 
+        fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.25" stroke-dasharray="6,6"/>
+
+  <!-- ================= LEFT: TECH EMBLEM & LOGO ICON ================= -->
+  <g transform="translate(130, 200)">
+    <!-- Pulse Hexagon Rings -->
+    <polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" 
+             fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3" stroke-dasharray="4,4"/>
+    
+    <polygon points="0,-72 62.3,-36 62.3,36 0,72 -62.3,36 -62.3,-36" 
+             fill="#0b1329" stroke="url(#brand-grad)" stroke-width="2.5" filter="url(#soft-glow)"/>
+
+    <!-- Inner Core Cross with Modern Medical / Data Cuts -->
+    <path d="M -13,-40 L 13,-40 Q 15,-40 15,-38 L 15,-15 L 38,-15 Q 40,-15 40,-13 L 40,13 Q 40,15 38,15 L 15,15 L 15,38 Q 15,40 13,40 L -13,40 Q -15,40 -15,38 L -15,15 L -38,15 Q -40,15 -40,13 L -40,-13 Q -40,-15 -38,-15 L -15,-15 L -15,-38 Q -15,-40 -13,-40 Z" 
+          fill="url(#brand-grad)"/>
+
+    <!-- Tech Circuit Nodes on Cross -->
+    <circle cx="0" cy="0" r="6" fill="#ffffff" filter="url(#soft-glow)"/>
+    <circle cx="0" cy="-26" r="3" fill="#ffffff" opacity="0.9"/>
+    <circle cx="0" cy="26" r="3" fill="#ffffff" opacity="0.9"/>
+    <circle cx="-26" cy="0" r="3" fill="#ffffff" opacity="0.9"/>
+    <circle cx="26" cy="0" r="3" fill="#ffffff" opacity="0.9"/>
+
+    <!-- Orbital Nodes -->
+    <circle cx="-73.6" cy="42.5" r="4" fill="#06b6d4" filter="url(#soft-glow)"/>
+    <circle cx="73.6" cy="-42.5" r="4" fill="#10b981" filter="url(#soft-glow)"/>
+    <circle cx="0" cy="-85" r="3" fill="#38bdf8"/>
+    <circle cx="0" cy="85" r="3" fill="#34d399"/>
+  </g>
+
+  <!-- ================= CENTER & RIGHT: TYPOGRAPHY & SPECS ================= -->
+  <g transform="translate(270, 75)">
+    <!-- Version & Scope Pill -->
+    <g transform="translate(0, 0)">
+      <rect width="280" height="28" rx="14" fill="#0f172a" stroke="#06b6d4" stroke-width="1.2" opacity="0.9"/>
+      <circle cx="14" cy="14" r="5" fill="#10b981" filter="url(#soft-glow)"/>
+      <text x="28" y="18" fill="#a5f3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2">
+        DATA PLATFORM &amp; AUDIT SUITE • v2.2
+      </text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="62" font-weight="900" letter-spacing="-1.5">
+      <tspan fill="#f8fafc">SUS-</tspan><tspan fill="url(#brand-grad)">systems</tspan>
+    </text>
+
+    <!-- Subtitle / Tagline -->
+    <text x="2" y="118" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="0.2">
+      Hub Moderno de Extração, Auditoria &amp; Telemetria do Datasus
+    </text>
+
+    <!-- Description -->
+    <text x="2" y="152" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="400">
+      Streaming HTTP direto de bases governamentais massivas • Bypass de limite de 4.5MB da Vercel
+    </text>
+    <text x="2" y="174" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400">
+      Positional SIGTAP 330-cols Parser • Auditoria Portaria GM/MS 7.639 • 100% Local &amp; Sem Telemetria Externa
+    </text>
+
+    <!-- ================= FEATURE BADGE PILLS ================= -->
+    <g transform="translate(0, 215)">
+      <!-- Badge 1: FastAPI -->
+      <g transform="translate(0, 0)">
+        <rect width="135" height="34" rx="8" fill="url(#badge-grad)" stroke="#1e293b" stroke-width="1.2"/>
+        <circle cx="16" cy="17" r="4" fill="#009688"/>
+        <text x="28" y="21" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600">FastAPI 0.115</text>
+      </g>
+
+      <!-- Badge 2: Passive FTP RFC 959 -->
+      <g transform="translate(145, 0)">
+        <rect width="180" height="34" rx="8" fill="url(#badge-grad)" stroke="#1e293b" stroke-width="1.2"/>
+        <circle cx="16" cy="17" r="4" fill="#06b6d4"/>
+        <text x="28" y="21" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600">Passive FTP RFC 959</text>
+      </g>
+
+      <!-- Badge 3: Apache ECharts 5.5 -->
+      <g transform="translate(335, 0)">
+        <rect width="165" height="34" rx="8" fill="url(#badge-grad)" stroke="#1e293b" stroke-width="1.2"/>
+        <circle cx="16" cy="17" r="4" fill="#e11d48"/>
+        <text x="28" y="21" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600">Apache ECharts 5.5</text>
+      </g>
+
+      <!-- Badge 4: Anime.js -->
+      <g transform="translate(510, 0)">
+        <rect width="145" height="34" rx="8" fill="url(#badge-grad)" stroke="#1e293b" stroke-width="1.2"/>
+        <circle cx="16" cy="17" r="4" fill="#a855f7"/>
+        <text x="28" y="21" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600">Anime.js Motion</text>
+      </g>
+
+      <!-- Badge 5: Docker & 1-Click -->
+      <g transform="translate(665, 0)">
+        <rect width="160" height="34" rx="8" fill="url(#badge-grad)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.6"/>
+        <circle cx="16" cy="17" r="4" fill="#10b981"/>
+        <text x="28" y="21" fill="#a7f3d0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="700">Docker &amp; 1-Click Run</text>
+      </g>
+    </g>
+
+    <!-- Metric Telemetry Cards (Mini Right Stat Box) -->
+    <g transform="translate(580, -20)">
+      <rect width="245" height="92" rx="10" fill="#0b1329" stroke="#1e293b" stroke-width="1.2" opacity="0.85"/>
+      <text x="16" y="24" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10.5" font-weight="700" letter-spacing="1">FTP CLUSTERS CONECTADOS</text>
+      <text x="16" y="46" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700">arpoador • ftp • ftp2</text>
+      <text x="16" y="65" fill="#10b981" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600">● 7 Sistemas Integrados e Auditados</text>
+      <text x="16" y="80" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10.5">Streaming Chunked 64KB HTTP/1.1</text>
+    </g>
+  </g>
+
+  <!-- Top Accent Border -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#brand-grad)"/>
+</svg>
