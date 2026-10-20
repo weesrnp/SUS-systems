@@ -5,7 +5,7 @@ DownloadSUS Pro v2.0 — FastAPI Backend & BFF
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import APIRouter, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -57,7 +57,10 @@ def serve_spa():
     return FileResponse(str(STATIC_DIR / "index.html"))
 
 
-@app.get("/api/catalog")
+api_router = APIRouter()
+
+
+@api_router.get("/catalog")
 def api_get_catalog():
     return {
         "areas": CATALOG_AREAS,
@@ -66,7 +69,7 @@ def api_get_catalog():
     }
 
 
-@app.get("/api/subgroup-data")
+@api_router.get("/subgroup-data")
 def api_get_subgroup_data(
     group_id: str = Query(..., description="ID do grupo (ex: SIA, SIH, CNES, VIG_EPIDEMIOLOGICA)"),
     sub_name: str = Query(..., description="Nome do subgrupo"),
@@ -113,7 +116,7 @@ def api_get_subgroup_data(
     }
 
 
-@app.get("/api/ftp-list")
+@api_router.get("/ftp-list")
 def api_raw_ftp_list(
     url: str = Query(..., description="URL FTP completa"),
     force_refresh: bool = Query(False),
@@ -122,7 +125,7 @@ def api_raw_ftp_list(
     return JSONResponse(content=entries, headers={"X-DataSUS-Source": mode})
 
 
-@app.get("/api/ftp-download")
+@api_router.get("/ftp-download")
 def api_ftp_download(
     base: str = Query(..., description="URL base do diretório FTP"),
     file: str = Query(..., description="Nome do arquivo no FTP"),
@@ -142,7 +145,7 @@ def api_ftp_download(
     return StreamingResponse(stream_gen, media_type="application/octet-stream", headers=headers)
 
 
-@app.get("/api/remessa")
+@api_router.get("/remessa")
 def api_get_remessa(
     ibge: str = Query("410965", description="Código IBGE do município (6 ou 7 dígitos)"),
     ano: str = Query("2026", description="Ano da competência"),
@@ -150,7 +153,7 @@ def api_get_remessa(
     return fetch_remessas_sia(ibge=ibge, ano=ano)
 
 
-@app.get("/api/municipal/summary")
+@api_router.get("/municipal/summary")
 def api_municipal_summary(
     ibge: str = Query("410965", description="Código IBGE do município"),
     uf: str = Query("PR", description="Sigla da UF"),
@@ -159,12 +162,12 @@ def api_municipal_summary(
     return get_municipal_summary(ibge=ibge, uf=uf, ano=ano)
 
 
-@app.get("/api/sigtap/competencias")
+@api_router.get("/sigtap/competencias")
 def api_sigtap_competencias(force_refresh: bool = Query(False)):
     return {"competencias": list_sigtap_competencias(force_refresh=force_refresh)}
 
 
-@app.get("/api/sigtap/explore")
+@api_router.get("/sigtap/explore")
 def api_sigtap_explore(
     comp: str = Query(..., description="Competência YYYYMM"),
     q: str = Query("", description="Termo de busca (código ou nome)"),
@@ -186,7 +189,7 @@ def api_sigtap_explore(
         raise HTTPException(status_code=400, detail=str(exc))
 
 
-@app.get("/api/health")
+@api_router.get("/health")
 def api_health():
     return {
         "status": "healthy",
@@ -196,7 +199,7 @@ def api_health():
     }
 
 
-@app.get("/api/sigtap/diff")
+@api_router.get("/sigtap/diff")
 def api_sigtap_diff(
     comp_new: str = Query(..., description="Competência mais recente YYYYMM"),
     comp_old: str = Query(..., description="Competência anterior YYYYMM"),
@@ -205,3 +208,8 @@ def api_sigtap_diff(
         return diff_sigtap_competencias(comp_new=comp_new, comp_old=comp_old)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+
+app.include_router(api_router, prefix="/api")
+app.include_router(api_router, prefix="")
+
