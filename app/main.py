@@ -186,6 +186,16 @@ def api_sigtap_explore(
         raise HTTPException(status_code=400, detail=str(exc))
 
 
+@app.get("/api/health")
+def api_health():
+    return {
+        "status": "healthy",
+        "app": "SUS-systems",
+        "version": "2.2.0",
+        "ftp_clusters": ["arpoador.datasus.gov.br", "ftp.datasus.gov.br", "ftp2.datasus.gov.br"],
+    }
+
+
 @app.get("/api/sigtap/diff")
 def api_sigtap_diff(
     comp_new: str = Query(..., description="Competência mais recente YYYYMM"),
