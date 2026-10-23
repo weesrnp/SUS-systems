@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <!-- Motion Design & Interactive Charts Libraries -->
+  <!-- Motion Design Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <style>
     /* ── Design System Tokens (Dark Mode Default) ────────────────────────── */
     :root, [data-theme="dark"] {
@@ -389,97 +388,6 @@
       border: 1px solid rgba(52, 211, 153, 0.25);
     }
 
-    /* ── Telemetry & ECharts Analytics Row ───────────────────────────────── */
-    .analytics-grid {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 1rem;
-      margin-bottom: 1.1rem;
-      align-items: stretch;
-    }
-
-    @media (max-width: 960px) {
-      .analytics-grid { grid-template-columns: 1fr; }
-    }
-
-    .kpi-stack {
-      display: grid;
-      grid-template-rows: repeat(3, 1fr);
-      gap: 0.65rem;
-    }
-
-    .kpi-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 10px;
-      padding: 0.75rem 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: border-color 180ms ease, transform 180ms ease;
-    }
-
-    .kpi-card:hover {
-      border-color: var(--border-strong);
-      transform: translateX(2px);
-    }
-
-    .kpi-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-
-    .kpi-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-
-    .kpi-sub {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .kpi-number {
-      font-family: var(--font-mono);
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--accent-primary);
-    }
-
-    .chart-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 10px;
-      padding: 0.85rem 1.1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .chart-card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.35rem;
-    }
-
-    .chart-card-title {
-      font-size: 0.76rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-secondary);
-    }
-
-    .echarts-box {
-      width: 100%;
-      height: 175px;
-    }
-
     /* ── Normatives / Portarias Strip ────────────────────────────────────── */
     .normatives-section { margin-bottom: 1.1rem; }
 
@@ -849,6 +757,14 @@
 
     .field-control:focus { border-color: var(--accent-primary); }
 
+    .kpi-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
     .kpi-strip {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -955,16 +871,16 @@
         </button>
 
         <button type="button" class="util-icon-btn" id="btnThemeToggle" title="Alternar Modo Claro / Escuro" aria-label="Alternar tema">
-          <!-- Ícone Sol (visível por padrão pois o site abre em Modo Escuro) -->
-          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Ícone Sol (visível quando em Modo Escuro) -->
+          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2"/><path d="M12 20v2"/>
             <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
             <path d="M2 12h2"/><path d="M20 12h2"/>
             <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
           </svg>
-          <!-- Ícone Lua (visível quando em Modo Claro) -->
-          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <!-- Ícone Lua (visível por padrão pois o site abre em Modo Claro) -->
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
           </svg>
         </button>
@@ -980,7 +896,7 @@
   <!-- 2. ÁREA PRINCIPAL DE CONTEÚDO ALINHADA -->
   <main class="main-canvas">
 
-    <!-- WORKSPACE 1: CATÁLOGO DE ARQUIVOS + TELEMETRIA ECHARTS -->
+    <!-- WORKSPACE 1: CATÁLOGO DE ARQUIVOS -->
     <section class="ws-panel active" id="ws-catalog">
       <div id="catalogDynamicContent"></div>
     </section>
@@ -1111,8 +1027,7 @@
       activeWorkspace: "catalog",
       selectedGroup: "SIA",
       selectedSub: "APAC",
-      sigtapCompetencias: [],
-      chartInstance: null
+      sigtapCompetencias: []
     };
 
     function escapeHtml(str) {
@@ -1192,16 +1107,23 @@
       glider.style.transform = `translateX(${offsetLeft}px)`;
     }
 
+    // O anime.js deixa "transform: translate(0)" inline ao terminar. Isso cria um
+    // stacking context por card/linha e prende o popover "Anteriores" atrás do card seguinte.
+    function clearMotionTransform(anim) {
+      anim.animatables.forEach(a => { a.target.style.transform = ""; });
+    }
+
     function runEntranceMotion(containerEl) {
       if (typeof window.anime !== "function") return;
-      const cards = containerEl.querySelectorAll(".content-header, .kpi-card, .chart-card, .norm-card, .table-card");
+      const cards = containerEl.querySelectorAll(".content-header, .norm-card, .table-card");
       anime({
         targets: cards,
         opacity: [0, 1],
         translateY: [14, 0],
         duration: 420,
         delay: anime.stagger(45),
-        easing: "easeOutCubic"
+        easing: "easeOutCubic",
+        complete: clearMotionTransform
       });
 
       const rows = containerEl.querySelectorAll(".data-table tbody tr");
@@ -1212,7 +1134,8 @@
           translateX: [-8, 0],
           duration: 320,
           delay: anime.stagger(16, { start: 90 }),
-          easing: "easeOutQuad"
+          easing: "easeOutQuad",
+          complete: clearMotionTransform
         });
       }
     }
@@ -1233,103 +1156,6 @@
             el.textContent = (isFloat ? obj.val.toFixed(1) : Math.round(obj.val).toLocaleString("pt-BR")) + suffix;
           }
         });
-      });
-    }
-
-    // ── ECharts Dark Analytics Renderer ─────────────────────────────────────
-    function renderDirectoryChart(sections) {
-      const chartDom = document.getElementById("ftpAnalyticsChart");
-      if (!chartDom || typeof window.echarts === "undefined") return;
-
-      if (state.chartInstance) {
-        state.chartInstance.dispose();
-      }
-
-      const isDark = document.documentElement.getAttribute("data-theme") !== "light";
-      state.chartInstance = echarts.init(chartDom);
-
-      // Coleta os maiores arquivos ou com mais histórico para plotar
-      const allFiles = [];
-      for (const sec of sections) {
-        for (const f of (sec.files || [])) {
-          let sizeBytes = f.size || 0;
-          if (!sizeBytes && f.ufBySigla && f.ufBySigla[state.activeUf]) {
-            sizeBytes = f.ufBySigla[state.activeUf].size || 0;
-          }
-          const histCount = (f.history ? f.history.length : 0) +
-            (f.ufHistoryBySigla && f.ufHistoryBySigla[state.activeUf] ? f.ufHistoryBySigla[state.activeUf].length : 0);
-          allFiles.push({
-            label: (f.description && f.description !== "–" ? f.description : f.name).slice(0, 22),
-            mb: +(sizeBytes / 1048576).toFixed(2),
-            versions: histCount + 1
-          });
-        }
-      }
-
-      const topItems = allFiles.slice(0, 8);
-      const labels = topItems.map(x => x.label);
-      const mbData = topItems.map(x => x.mb);
-      const verData = topItems.map(x => x.versions);
-
-      const textColor = isDark ? "#94A3B8" : "#64748B";
-      const splitColor = isDark ? "rgba(148,163,184,0.10)" : "rgba(15,23,42,0.07)";
-
-      state.chartInstance.setOption({
-        backgroundColor: "transparent",
-        tooltip: {
-          trigger: "axis",
-          backgroundColor: isDark ? "#0F1623" : "#FFFFFF",
-          borderColor: isDark ? "#334155" : "#CBD5E1",
-          textStyle: { color: isDark ? "#F8FAFC" : "#0F172A", fontSize: 12 }
-        },
-        grid: { left: 48, right: 48, top: 24, bottom: 28 },
-        xAxis: {
-          type: "category",
-          data: labels,
-          axisLabel: { color: textColor, fontSize: 10, interval: 0, rotate: labels.length > 5 ? 12 : 0 },
-          axisLine: { lineStyle: { color: splitColor } }
-        },
-        yAxis: [
-          {
-            type: "value",
-            name: "MB",
-            nameTextStyle: { color: textColor, fontSize: 10 },
-            axisLabel: { color: textColor, fontSize: 10 },
-            splitLine: { lineStyle: { color: splitColor } }
-          },
-          {
-            type: "value",
-            name: "Versões",
-            nameTextStyle: { color: textColor, fontSize: 10 },
-            axisLabel: { color: textColor, fontSize: 10 },
-            splitLine: { show: false }
-          }
-        ],
-        series: [
-          {
-            name: "Tamanho (MB)",
-            type: "bar",
-            barMaxWidth: 28,
-            data: mbData,
-            itemStyle: {
-              borderRadius: [5, 5, 0, 0],
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#38BDF8" },
-                { offset: 1, color: "rgba(2, 132, 199, 0.25)" }
-              ])
-            }
-          },
-          {
-            name: "Versões no FTP",
-            type: "line",
-            yAxisIndex: 1,
-            smooth: true,
-            data: verData,
-            symbolSize: 6,
-            itemStyle: { color: "#34D399" },
-            lineStyle: { width: 2, color: "#34D399" }
-          }
-        ]
       });
     }
 
@@ -1483,24 +1309,6 @@
       const container = document.getElementById("catalogDynamicContent");
       const sections = data.sections || [];
 
-      // Calcula KPIs do diretório para animação numérica
-      let totalFamilies = 0;
-      let totalHistory = 0;
-      let totalBytes = 0;
-
-      sections.forEach(sec => {
-        (sec.files || []).forEach(f => {
-          totalFamilies += 1;
-          totalHistory += (f.history ? f.history.length : 0) + 1;
-          let sz = f.size || 0;
-          if (!sz && f.ufBySigla && f.ufBySigla[state.activeUf]) {
-            sz = f.ufBySigla[state.activeUf].size || 0;
-          }
-          totalBytes += sz;
-        });
-      });
-      const totalMB = +(totalBytes / 1048576).toFixed(1);
-
       let html = `
         <div class="content-header">
           <div>
@@ -1509,41 +1317,6 @@
             <div class="ftp-url-bar">${escapeHtml(data.primaryFtpUrl)}</div>
           </div>
           <span class="source-badge">CONEXÃO: ${escapeHtml(data.sourceSummary)}</span>
-        </div>
-
-        <!-- Painel de Telemetria & Gráfico ECharts -->
-        <div class="analytics-grid">
-          <div class="kpi-stack">
-            <div class="kpi-card">
-              <div class="kpi-meta">
-                <span class="kpi-label">Famílias de Pacotes</span>
-                <span class="kpi-sub">Agrupados no diretório</span>
-              </div>
-              <span class="kpi-number" data-count-target="${totalFamilies}">0</span>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-meta">
-                <span class="kpi-label">Versões Catalogadas</span>
-                <span class="kpi-sub">Atuais + Histórico FTP</span>
-              </div>
-              <span class="kpi-number" data-count-target="${totalHistory}">0</span>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-meta">
-                <span class="kpi-label">Volume das Últimas Versões</span>
-                <span class="kpi-sub">Soma dos pacotes principais</span>
-              </div>
-              <span class="kpi-number" data-count-target="${totalMB}" data-count-float="true" data-count-suffix=" MB">0 MB</span>
-            </div>
-          </div>
-
-          <div class="chart-card">
-            <div class="chart-card-head">
-              <span class="chart-card-title">📊 Telemetria de Volume (MB) &amp; Série Histórica de Versões no FTP</span>
-              <span class="table-card-ftp">${escapeHtml(data.subName)}</span>
-            </div>
-            <div id="ftpAnalyticsChart" class="echarts-box"></div>
-          </div>
         </div>
       `;
 
@@ -1611,8 +1384,6 @@
       container.innerHTML = html;
       bindTableInteractions(container);
       runEntranceMotion(container);
-      animateCounters(container);
-      renderDirectoryChart(sections);
     }
 
     function renderFileRowHtml(f, ftpUrl, showDesc, rowKey) {
@@ -2138,10 +1909,7 @@
         document.querySelectorAll(".hist-wrap.open").forEach(w => w.classList.remove("open"));
       });
 
-      window.addEventListener("resize", () => {
-        updateNavGlider();
-        if (state.chartInstance) state.chartInstance.resize();
-      });
+      window.addEventListener("resize", updateNavGlider);
 
       document.getElementById("btnHomeLogo").addEventListener("click", () => {
         state.selectedGroup = "SIA";
@@ -2163,16 +1931,13 @@
         }
       });
 
-      // Alternar Tema (Abre em Dark Mode por padrão -> Sol visível)
+      // Alternar Tema (Abre em Modo Claro por padrão -> Lua visível)
       document.getElementById("btnThemeToggle").addEventListener("click", () => {
         const htmlEl = document.documentElement;
         const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
         htmlEl.setAttribute("data-theme", next);
         document.getElementById("iconSun").style.display = next === "dark" ? "block" : "none";
         document.getElementById("iconMoon").style.display = next === "dark" ? "none" : "block";
-        if (state.activeWorkspace === "catalog") {
-          loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
-        }
       });
 
       document.getElementById("btnSigtapSearch").addEventListener("click", runSigtapSearch);
