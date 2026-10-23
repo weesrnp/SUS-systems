@@ -15,7 +15,7 @@
 
 O **SUS-systems** é uma aplicação open-source para consultar, baixar e auditar dados públicos do Datasus (Ministério da Saúde). 
 
-O projeto elimina a necessidade de clientes FTP legados e converte estruturas de arquivos antigas em fluxos HTTP diretos, com suporte a streaming de arquivos grandes, parser posicional da tabela SIGTAP e matriz de conformidade para a Portaria GM/MS nº 7.639/2025.
+O projeto elimina a necessidade de clientes FTP legados e converte estruturas de arquivos antigas em fluxos HTTP diretos, com suporte a streaming de arquivos grandes e parser posicional da tabela SIGTAP.
 
 🌐 **Acesso online:** [sus-systems.vercel.app](https://sus-systems.vercel.app)  
 💻 **Execução local:** recomendada para extração massiva de bases completas (sem limites de payload).
@@ -32,7 +32,7 @@ flowchart TD
 
     subgraph Core["SUS-systems"]
         Bridge["Motor HTTP & Chunks 64KB"]
-        Parsers["Parser SIGTAP & Matriz Portaria 7.639"]
+        Parsers["Parser SIGTAP & LogCarga SIA"]
     end
 
     subgraph Origem["Clusters Oficiais Datasus"]
@@ -50,8 +50,7 @@ flowchart TD
 
 - **Download sem cliente FTP:** Navegadores modernos removeram o suporte ao protocolo `ftp://`. O SUS-systems atua como ponte transparente em HTTP.
 - **Leitor SIGTAP integrado:** Lê os registros posicionais do arquivo `tb_procedimento.txt` sem depender de ferramentas legadas de 32 bits.
-- **Auditoria da Portaria 7.639/2025:** Painel de conformidade e elegibilidade de procedimentos para equipes de Atenção Primária (eSF, eAP e eMulti).
-- **Interface responsiva:** Tema escuro nativo, navegação por abas com transições fluidas e busca instantânea de arquivos e tabelas.
+- **Interface responsiva:** Tema claro por padrão (com opção de escuro), navegação por abas com transições fluidas e busca instantânea de arquivos e tabelas.
 - **Autonomia local:** Roda diretamente no Windows, Linux ou via container Docker sem exigência de banco de dados externo.
 
 ---
@@ -60,13 +59,12 @@ flowchart TD
 
 | Sistema | Sigla / Área | Conteúdo Principal |
 | :--- | :--- | :--- |
-| **SIA** | Ambulatorial | Produção ambulatorial, boletins BPA e APAC por UF e competência |
+| **SIA** | Ambulatorial | BPA, BDSIA, FPO, RAAS e acompanhamento de remessas (LogCarga) |
 | **SIGTAP** | Tabela Unificada | Procedimentos, compatibilidades, medicamentos e valores SUS |
 | **CNES** | Estabelecimentos | Dados cadastrais de unidades de saúde, profissionais e leitos |
 | **e-SUS APS** | Atenção Primária | Pacotes de instalação e migração do Prontuário Eletrônico (PEC) |
-| **PNI & SISVAN** | Imunização / Nutrição | Boletins vacinais históricos e acompanhamento nutricional |
-| **TabWin & DBC** | Tabuladores | Utilitários de tabulação, arquivos de definição (DEF) e conversão (CNV) |
-| **Portaria 7.639** | Matriz Financeira APS | Validação de elegibilidade e conformidade para cofinanciamento |
+| **PNI & SISVAN** | Imunização / Nutrição | Base histórica do SI-PNI (até 2019) e atalho para o SISVAN Web |
+| **TabWin & DBC** | Tabuladores | Instalador e manual do TabWin e atalho para os microdados .DBC |
 
 ---
 
@@ -121,7 +119,6 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8090
 | `GET /api/browse?system_id=...` | Listagem em tempo real de arquivos e subpastas no Datasus |
 | `GET /api/download?system_id=...&file_path=...` | Streaming HTTP direto do arquivo selecionado |
 | `GET /api/sigtap/explore?comp=...&q=...` | Consulta de procedimentos na tabela unificada |
-| `GET /api/municipal/matrix` | Matriz de conformidade da Portaria GM/MS 7.639/2025 |
 
 Documentação Swagger interativa: `http://127.0.0.1:8090/docs`
 

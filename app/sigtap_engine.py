@@ -27,13 +27,15 @@ COMPLEXIDADE_MAP = {
     "3": "Alta Complexidade (AC)",
 }
 
+# Fallback com os nomes oficiais de tb_financiamento.txt (o ZIP da competência sobrescreve)
 FINANCIAMENTO_DEFAULT = {
-    "01": "Atenção Básica (PAB / Cofinanciamento APS)",
+    "01": "Atenção Básica (PAB)",
     "02": "Assistência Farmacêutica",
-    "04": "FAEC — Fundo de Ações Estratégicas e Compensação",
-    "06": "MAC — Média e Alta Complexidade Ambulatorial e Hospitalar",
-    "07": "Vigilância em Saúde (SVSA / VISA)",
-    "08": "Incentivos / Outros",
+    "04": "Fundo de Ações Estratégicas e Compensações (FAEC)",
+    "05": "Incentivo - MAC",
+    "06": "Média e Alta Complexidade (MAC)",
+    "07": "Vigilância em Saúde",
+    "08": "Gestão do SUS",
 }
 
 
@@ -76,7 +78,9 @@ def _parse_age(raw_age: str) -> str:
     if not s or not s.isdigit():
         return "–"
     val = int(s)
-    if val == 0 or val >= 9999:
+    if val >= 9999:
+        return "Não se aplica"
+    if val == 0:
         return "Livre"
     years = val // 12
     months = val % 12
@@ -122,14 +126,15 @@ def load_sigtap_competencia(competencia: str) -> Dict[str, Any]:
                     if co_fin and no_fin:
                         fin_map[co_fin] = no_fin
 
-        # 2. Procedimentos (layout posicional oficial 330 colunas)
+        # 2. Procedimentos (layout posicional oficial de 336 colunas, conforme
+        #    tb_procedimento_layout.txt: VL_SH/VL_SA/VL_SP têm 12 posições cada)
         proc_file = next((v for k, v in names_map.items() if k.endswith("tb_procedimento.txt")), None)
         if not proc_file:
             raise ValueError("Arquivo tb_procedimento.txt não localizado dentro do ZIP.")
 
         raw_proc = zf.read(proc_file).decode("latin-1", errors="replace")
         for ln in raw_proc.splitlines():
-            if len(ln) < 320:
+            if len(ln) < 326:
                 continue
             code = ln[0:10].strip()
             if not code:
@@ -140,11 +145,11 @@ def load_sigtap_competencia(competencia: str) -> Dict[str, Any]:
             qt_max = ln[262:266].strip()
             vl_idade_min = ln[274:278].strip()
             vl_idade_max = ln[278:282].strip()
-            vl_sh = _parse_cents(ln[282:292])
-            vl_sa = _parse_cents(ln[292:302])
-            vl_sp = _parse_cents(ln[302:312])
-            co_fin = ln[312:314].strip()
-            co_rub = ln[314:320].strip()
+            vl_sh = _parse_cents(ln[282:294])
+            vl_sa = _parse_cents(ln[294:306])
+            vl_sp = _parse_cents(ln[306:318])
+            co_fin = ln[318:320].strip()
+            co_rub = ln[320:326].strip()
 
             procs[code] = {
                 "code": code,

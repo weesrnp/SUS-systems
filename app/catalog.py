@@ -2,12 +2,12 @@
 """
 Catálogo Mestre — SUS-systems v2.2
 Organizado e alinhado com os sistemas ativos:
-1. SIA (APAC, BPA, FPO, RAAS, SIA, Remessa)
+1. SIA (BPA, SIA, FPO, RAAS, Remessa)
 2. SIGTAP (Aplicativo, Tabelas, Nota Técnica, Outros, Consulta & Comparativo)
 3. CNES (Aplicativo SCNES, Arquivos da aplicação, Arquivos para outros sistemas, Base de dados, Outros)
-4. e-SUS APS (Equipes ESF & LEDI)
-5. PNI & SISVAN (Imunização PNI, SISVAN)
-6. TabWin & DBC (TabWin, Microdados SIA, Microdados CNES)
+4. e-SUS APS (Equipes & LEDI)
+5. PNI & SISVAN (PNI histórico; SISVAN só tem sistema web)
+6. TabWin & DBC (TabWin; microdados pela página oficial do DataSUS)
 """
 
 from typing import Dict, List, Any
@@ -60,20 +60,6 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                 "icon": "activity",
                 "subGroups": [
                     {
-                        "name": "APAC",
-                        "title": "APAC — Alta Complexidade / Magnético",
-                        "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/APAC/",
-                        "sections": [
-                            {"title": "Instaladores e Versões APAC", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/APAC/", "showNameFilter": True},
-                            {"title": "BDSIA — Base de Dados SIA", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["BDSIA"], "showNameFilter": False},
-                            {"title": "EQUIPES ESF BRASIL (CNES)", "ftpUrl": "ftp://arpoador.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESESFBRASIL"], "showNameFilter": False},
-                        ],
-                        "normatives": [
-                            {"code": "Manual Operacional APAC", "title": "Manual Técnico de Faturamento APAC/SIA e Regras de Autorização", "tag": "SAES/MS", "url": "https://wiki.saude.gov.br/siasus/"},
-                            {"code": "Portaria GM/MS 7.639/2025", "title": "Prazo obrigatório de envio SIASUS: até o dia 15 de cada mês", "tag": "Prazo Legal", "url": "#workspace-municipal"}
-                        ]
-                    },
-                    {
                         "name": "BPA",
                         "title": "BPA — Boletim de Produção Ambulatorial",
                         "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/BPA/",
@@ -84,6 +70,16 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                         ],
                         "normatives": [
                             {"code": "BPA Consolidado (BPA-C) & Individualizado (BPA-I)", "title": "Exportação magnética com validação obrigatória de CNS/CPF e CBO", "tag": "Faturamento", "url": "https://wiki.saude.gov.br/siasus/"}
+                        ]
+                    },
+                    {
+                        "name": "SIA",
+                        "title": "SIA — Sistema de Informações Ambulatoriais Principal",
+                        "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/",
+                        "sections": [
+                            {"title": "Aplicativo SIA & Notas de Versão", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["SIA", "LERNOTAS.TXT"], "showNameFilter": False},
+                            {"title": "BDSIA — Competências Mensais", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["BDSIA"], "showNameFilter": False},
+                            {"title": "Outros Utilitários SIA", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "excludePrefixes": ["SIA", "BDSIA", "LERNOTAS.TXT"], "showNameFilter": True},
                         ]
                     },
                     {
@@ -102,16 +98,6 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                             {"title": "Instaladores RAAS", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/raas/", "showNameFilter": True},
                             {"title": "BDSIA — Base de Dados SIA", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["BDSIA"], "showNameFilter": False},
                             {"title": "EQUIPES ESF BRASIL (CNES)", "ftpUrl": "ftp://arpoador.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESESFBRASIL"], "showNameFilter": False},
-                        ]
-                    },
-                    {
-                        "name": "SIA",
-                        "title": "SIA — Sistema de Informações Ambulatoriais Principal",
-                        "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/",
-                        "sections": [
-                            {"title": "Aplicativo SIA & Notas de Versão", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["SIA", "LERNOTAS.TXT"], "showNameFilter": False},
-                            {"title": "BDSIA — Competências Mensais", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "includePrefixes": ["BDSIA"], "showNameFilter": False},
-                            {"title": "Outros Utilitários SIA", "ftpUrl": "ftp://arpoador.datasus.gov.br/siasus/SIA/", "excludePrefixes": ["SIA", "BDSIA", "LERNOTAS.TXT"], "showNameFilter": True},
                         ]
                     },
                     {
@@ -139,7 +125,7 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                         "title": "SIGTAP — Tabelas Unificadas Mensais (Competências)",
                         "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/",
                         "sections": [
-                            {"title": "Pacotes Mensais TabelaUnificada_YYYYMM.zip", "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/", "includePrefixes": ["TabelaUnificada_"], "showNameFilter": False}
+                            {"title": "Pacotes Mensais da Tabela Unificada", "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/", "includePrefixes": ["TabelaUnificada_"], "showNameFilter": False}
                         ],
                         "normatives": [
                             {"code": "Consulta & Comparativo de Competências SIGTAP", "title": "Consulte procedimentos, valores (SA/SH/SP) e compare reajustes entre duas competências na aba 'Consulta & Comparativo'", "tag": "SIGTAP Online", "url": "#workspace-sigtap"}
@@ -150,7 +136,7 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                         "title": "SIGTAP Desktop — Instalador do Aplicativo",
                         "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/",
                         "sections": [
-                            {"title": "Instalador SIGTAP (sigtap-setup)", "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/", "includePrefixes": ["sigtap-setup"], "showNameFilter": False}
+                            {"title": "Instalador do SIGTAP", "ftpUrl": "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/", "includePrefixes": ["sigtap-setup"], "showNameFilter": False}
                         ]
                     },
                     {
@@ -197,7 +183,7 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                         "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/",
                         "sections": [
                             {"title": "Arquivos Nacionais da Aplicação CNES", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": [r["startsWith"] for r in CNES_APP_DESCRIPTIONS if "startsWith" in r], "includeRegexes": [r["regex"] for r in CNES_APP_DESCRIPTIONS if "regex" in r], "descriptionRules": CNES_APP_DESCRIPTIONS, "showNameFilter": True},
-                            {"title": "Arquivo Único por UF (SCNES_ARQUIVOS_UF)", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["SCNES_ARQUIVOS_"], "descriptionRules": [{"description": "ARQUIVO ÚNICO/UF", "startsWith": "SCNES_ARQUIVOS_"}], "showNameFilter": False}
+                            {"title": "Arquivo Único por UF", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["SCNES_ARQUIVOS_"], "descriptionRules": [{"description": "ARQUIVO ÚNICO/UF", "startsWith": "SCNES_ARQUIVOS_"}], "showNameFilter": False}
                         ]
                     },
                     {
@@ -213,7 +199,7 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                         "title": "CNES — Base de Dados Nacional Completa",
                         "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/",
                         "sections": [
-                            {"title": "Pacotes BASE_DE_DADOS_CNES_YYYYMM.ZIP", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["BASE_DE_DADOS_CNES_"], "showNameFilter": False}
+                            {"title": "Base de Dados Nacional (mensal)", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["BASE_DE_DADOS_CNES_"], "showNameFilter": False}
                         ]
                     },
                     {
@@ -253,18 +239,17 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                 "icon": "heart-pulse",
                 "subGroups": [
                     {
-                        "name": "Equipes ESF & LEDI",
-                        "title": "e-SUS APS — Equipes ESF, Profissionais CNES & Padrão LEDI 8.7.0",
+                        "name": "Equipes & LEDI",
+                        "title": "e-SUS APS — Equipes e Profissionais para Importação",
                         "ftpUrl": "ftp://arpoador.datasus.gov.br/cnes/",
                         "sections": [
-                            {"title": "EQUIPES ESF BRASIL (Arquivo Mensal de Equipes para Importação)", "ftpUrl": "ftp://arpoador.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESESFBRASIL"], "showNameFilter": False},
-                            {"title": "Equipes, Profissionais e Saúde Indígena (CNES Nacional)", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESBRASIL_", "PROFISSIONAIS_BRASIL_", "SAUDE_INDIGENA_"], "descriptionRules": CNES_APP_DESCRIPTIONS, "showNameFilter": False}
+                            {"title": "Equipes ESF Brasil (importação mensal)", "ftpUrl": "ftp://arpoador.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESESFBRASIL"], "showNameFilter": False},
+                            {"title": "Equipes, Profissionais e Saúde Indígena (CNES)", "ftpUrl": "ftp://ftp.datasus.gov.br/cnes/", "includePrefixes": ["EQUIPESBRASIL_", "PROFISSIONAIS_BRASIL_", "SAUDE_INDIGENA_"], "descriptionRules": CNES_APP_DESCRIPTIONS, "showNameFilter": False}
                         ],
                         "normatives": [
-                            {"code": "LEDI 8.7.0 (Apache Thrift / REST API)", "title": "Layout e-SUS APS de Dados e Interface: endpoint REST /api/v1/recebimento/ficha, priorização obrigatória do CPF e suporte a CNPJ Alfanumérico (IN RFB 2.229)", "tag": "Interoperabilidade", "url": "https://sisab.saude.gov.br/"},
-                            {"code": "Portaria GM/MS nº 3.493/2024 & SAPS nº 161/2024", "title": "Novo Cofinanciamento Federal da APS: 15 Indicadores de Qualidade (C1 a C7 para eSF, B1 a B6 para Saúde Bucal e M1 a M2 para eMulti)", "tag": "Financiamento APS", "url": "https://egestorab.saude.gov.br/"},
-                            {"code": "Nota Técnica PSE nº 30/2024 & nº 7/2026", "title": "Programa Saúde na Escola Ciclo 2025/2026: 14 ações temáticas registradas via Ficha de Atividade Coletiva (FAC) com código INEP", "tag": "PSE / Escola", "url": "https://sisab.saude.gov.br/"},
-                            {"code": "Portal Oficial de Downloads e-SUS APS", "title": "Instaladores oficiais do e-SUS PEC (Windows/Linux), Treinamento e APKs (e-SUS Território, Vacinação, Atividade Coletiva)", "tag": "Download Oficial SAPS", "url": "https://sisaps.saude.gov.br/esus/"}
+                            {"code": "Instaladores e-SUS APS", "title": "PEC (Windows/Linux) e aplicativos do e-SUS APS no portal oficial da SAPS", "tag": "Download Oficial", "url": "https://sisaps.saude.gov.br/esus/"},
+                            {"code": "LEDI APS 8.7.0", "title": "Layout de envio de fichas ao SISAB (Thrift / REST)", "tag": "Interoperabilidade", "url": "https://sisab.saude.gov.br/"},
+                            {"code": "Portaria GM/MS 3.493/2024", "title": "Cofinanciamento federal da APS e indicadores de qualidade", "tag": "Financiamento APS", "url": "https://egestorab.saude.gov.br/"}
                         ]
                     }
                 ]
@@ -275,27 +260,17 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                 "icon": "syringe",
                 "subGroups": [
                     {
-                        "name": "SI-PNI Imunização",
-                        "title": "PNI — Programa Nacional de Imunizações & Integração RNDS",
+                        "name": "PNI (histórico)",
+                        "title": "SI-PNI — Base Histórica de Imunizações (até 2019)",
                         "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/PNI/",
                         "sections": [
-                            {"title": "Repositório Público PNI (FTP DataSUS)", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/PNI/", "showNameFilter": True}
+                            {"title": "Notas Técnicas de Cobertura e Doses Aplicadas (PDF)", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/PNI/DOCS/", "showNameFilter": False},
+                            {"title": "Definições e Conversões para TabWin (DEF / CNV)", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/PNI/AUXILIARES/", "showNameFilter": True}
                         ],
                         "normatives": [
-                            {"code": "Calendário Nacional de Vacinação PNI 2026", "title": "Esquema atualizado: VIP exclusiva (extinção VOP), Rotavírus ampliado até 24m, HPV dose única (9-14 anos), dTpa a cada gestação (>=20 sem)", "tag": "Norma Técnica PNI", "url": "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/c/calendario-nacional-de-vacinacao"},
-                            {"code": "Portaria GM/MS nº 7.639/2025 (RNDS 48h)", "title": "Transmissão obrigatória dos registros de vacinação (e-SUS PEC / Novo SI-PNI) para a RNDS em até 48 horas", "tag": "Interoperabilidade", "url": "#workspace-municipal"},
-                            {"code": "Lei Federal nº 13.595/2018 (Lei Ruth Brilhante)", "title": "Atribuições integradas de ACE (Agente de Combate às Endemias) e ACS no controle vetorial de arboviroses e busca ativa vacinal", "tag": "ACS / ACE", "url": "#workspace-municipal"}
-                        ]
-                    },
-                    {
-                        "name": "SISVAN Nutricional",
-                        "title": "SISVAN — Vigilância Alimentar e Nutricional & Bolsa Família",
-                        "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/SISVAN/",
-                        "sections": [
-                            {"title": "Repositório Público SISVAN (FTP DataSUS)", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/SISVAN/", "showNameFilter": True}
-                        ],
-                        "normatives": [
-                            {"code": "Condicionalidades de Saúde do Bolsa Família", "title": "Acompanhamento semestral obrigatório de peso, altura, pré-natal e vacinação (fator multiplicador de vulnerabilidade no cofinanciamento APS)", "tag": "e-Gestor / PBF", "url": "https://egestorab.saude.gov.br/"}
+                            {"code": "Calendário Nacional de Vacinação", "title": "Esquema vigente do PNI no portal do Ministério da Saúde", "tag": "PNI", "url": "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/c/calendario-nacional-de-vacinacao"},
+                            {"code": "SISVAN Web", "title": "O SISVAN não publica arquivos no FTP; relatórios e acompanhamento ficam no sistema web", "tag": "Nutrição", "url": "https://sisaps.saude.gov.br/sisvan/"},
+                            {"code": "Condicionalidades do Bolsa Família", "title": "Acompanhamento semestral de saúde dos beneficiários no e-Gestor AB", "tag": "e-Gestor / PBF", "url": "https://egestorab.saude.gov.br/"}
                         ]
                     }
                 ]
@@ -314,29 +289,13 @@ CATALOG_AREAS: List[Dict[str, Any]] = [
                 "subGroups": [
                     {
                         "name": "TabWin",
-                        "title": "TabWin — Tabulador para Windows, Mapas e Conversores",
+                        "title": "TabWin — Tabulador para Windows",
                         "ftpUrl": "ftp://ftp.datasus.gov.br/tabwin/tabwin/",
                         "sections": [
-                            {"title": "Pacotes TabWin (FTP DataSUS)", "ftpUrl": "ftp://ftp.datasus.gov.br/tabwin/tabwin/", "showNameFilter": True}
+                            {"title": "Instalador, Manual e Utilitários", "ftpUrl": "ftp://ftp.datasus.gov.br/tabwin/tabwin/", "showNameFilter": False}
                         ],
                         "normatives": [
-                            {"code": "Formato .DBC (PKWARE DataSUS)", "title": "Os microdados públicos do DataSUS são distribuídos em formato .DBC (DBF comprimido) compatível com TabWin, PySUS e R (read.dbc)", "tag": "Ciência de Dados", "url": "https://datasus.saude.gov.br/transferencia-de-arquivos/"}
-                        ]
-                    },
-                    {
-                        "name": "Microdados SIA",
-                        "title": "Repositório Dissemin — Produção Ambulatorial (PA / APAC)",
-                        "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/",
-                        "sections": [
-                            {"title": "Diretório Dissemin SIASUS", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/", "showNameFilter": True}
-                        ]
-                    },
-                    {
-                        "name": "Microdados CNES",
-                        "title": "Repositório Dissemin — Microdados Históricos CNES",
-                        "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/",
-                        "sections": [
-                            {"title": "Diretório Dissemin CNES", "ftpUrl": "ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/", "showNameFilter": True}
+                            {"code": "Microdados .DBC (SIA, CNES, SIH…)", "title": "Seleção por sistema, UF e competência na página oficial de transferência de arquivos do DataSUS. Abre no TabWin, PySUS ou R (read.dbc)", "tag": "Microdados", "url": "https://datasus.saude.gov.br/transferencia-de-arquivos/"}
                         ]
                     }
                 ]

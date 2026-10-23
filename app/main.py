@@ -17,7 +17,6 @@ from app.ftp_engine import (
     process_and_group_files,
     stream_ftp_file,
 )
-from app.municipal_engine import get_municipal_summary, PRESET_MUNICIPALITIES
 from app.sigtap_engine import (
     diff_sigtap_competencias,
     list_sigtap_competencias,
@@ -65,7 +64,6 @@ def api_get_catalog():
     return {
         "areas": CATALOG_AREAS,
         "ufs": sorted(UF_CODE_MAP.values()),
-        "municipalities": PRESET_MUNICIPALITIES,
     }
 
 
@@ -153,15 +151,6 @@ def api_get_remessa(
     return fetch_remessas_sia(ibge=ibge, ano=ano)
 
 
-@api_router.get("/municipal/summary")
-def api_municipal_summary(
-    ibge: str = Query("410965", description="Código IBGE do município"),
-    uf: str = Query("PR", description="Sigla da UF"),
-    ano: str = Query("2026", description="Ano para consulta de remessa"),
-):
-    return get_municipal_summary(ibge=ibge, uf=uf, ano=ano)
-
-
 @api_router.get("/sigtap/competencias")
 def api_sigtap_competencias(force_refresh: bool = Query(False)):
     return {"competencias": list_sigtap_competencias(force_refresh=force_refresh)}
@@ -212,4 +201,16 @@ def api_sigtap_diff(
 
 app.include_router(api_router, prefix="/api")
 app.include_router(api_router, prefix="")
+
+
+# Na Vercel a pasta public/ já fica na raiz; aqui os ícones saem de app/static.
+# Registrada por último para não capturar as rotas da API montadas sem prefixo.
+ROOT_ICONS = {"favicon.svg", "favicon.ico", "apple-touch-icon.png"}
+
+
+@app.get("/{icon_name}", include_in_schema=False)
+def serve_root_icon(icon_name: str):
+    if icon_name not in ROOT_ICONS:
+        raise HTTPException(status_code=404)
+    return FileResponse(str(STATIC_DIR / icon_name))
 

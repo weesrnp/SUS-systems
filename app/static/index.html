@@ -4,70 +4,95 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SUS-systems — Central DataSUS, SIA, SIGTAP, CNES &amp; e-SUS APS</title>
+  <meta name="theme-color" content="#F4F6F9" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- Motion Design Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
   <style>
-    /* ── Design System Tokens (Dark Mode Default) ────────────────────────── */
+    /* ── Design System Tokens (Modo Escuro) ──────────────────────────────── */
     :root, [data-theme="dark"] {
+      color-scheme: dark;
       --bg-canvas: #080C14;
       --bg-surface: #0F1623;
       --bg-elevated: #162032;
       --bg-subtle: #111927;
       --bg-hover: #1E293B;
+      --header-bg: rgba(15, 22, 35, 0.88);
       --text-primary: #F8FAFC;
       --text-secondary: #CBD5E1;
       --text-muted: #8E9BAE;
       --border-hairline: rgba(148, 163, 184, 0.12);
       --border-strong: rgba(148, 163, 184, 0.22);
       --accent-primary: #38BDF8;
-      --accent-primary-hover: #0284C7;
+      --accent-primary-hover: #7DD3FC;
+      --on-accent: #080C14;
       --accent-tint: rgba(56, 189, 248, 0.13);
-      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-glow: rgba(56, 189, 248, 0.32);
       --accent-emerald: #34D399;
       --accent-emerald-tint: rgba(52, 211, 153, 0.14);
       --accent-amber: #FBBF24;
       --accent-amber-tint: rgba(251, 191, 36, 0.14);
       --accent-crimson: #F87171;
       --accent-crimson-tint: rgba(248, 113, 113, 0.14);
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
-      --shadow-pop: 0 14px 32px rgba(0, 0, 0, 0.65);
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+      --shadow-pop: 0 10px 20px -6px rgba(0, 0, 0, 0.6);
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
       --grid-max: 1400px;
+      --page-gutter: 1.5rem;
+      --card-pad-x: 1.25rem;
     }
 
+    /* Modo Claro (padrão). Pares de cor medidos para WCAG AA (≥ 4,5:1) */
     [data-theme="light"] {
+      color-scheme: light;
       --bg-canvas: #F4F6F9;
       --bg-surface: #FFFFFF;
       --bg-elevated: #F8FAFC;
       --bg-subtle: #EDF1F7;
       --bg-hover: #E2E8F0;
+      --header-bg: rgba(255, 255, 255, 0.9);
       --text-primary: #0F172A;
       --text-secondary: #334155;
-      --text-muted: #64748B;
+      --text-muted: #5B6B80;
       --border-hairline: #E2E8F0;
       --border-strong: #CBD5E1;
-      --accent-primary: #0284C7;
-      --accent-primary-hover: #0369A1;
-      --accent-tint: rgba(2, 132, 199, 0.09);
-      --accent-glow: rgba(2, 132, 199, 0.18);
-      --accent-emerald: #059669;
-      --accent-emerald-tint: rgba(5, 150, 105, 0.10);
-      --accent-amber: #D97706;
-      --accent-amber-tint: rgba(217, 119, 6, 0.10);
-      --accent-crimson: #DC2626;
-      --accent-crimson-tint: rgba(220, 38, 38, 0.10);
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-      --shadow-pop: 0 10px 25px -5px rgba(15, 23, 42, 0.14);
+      --accent-primary: #0369A1;
+      --accent-primary-hover: #075985;
+      --on-accent: #FFFFFF;
+      --accent-tint: rgba(3, 105, 161, 0.08);
+      --accent-glow: rgba(3, 105, 161, 0.24);
+      --accent-emerald: #047857;
+      --accent-emerald-tint: rgba(4, 120, 87, 0.10);
+      --accent-amber: #92400E;
+      --accent-amber-tint: rgba(146, 64, 14, 0.10);
+      --accent-crimson: #B91C1C;
+      --accent-crimson-tint: rgba(185, 28, 28, 0.08);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-pop: 0 8px 18px -6px rgba(15, 23, 42, 0.18);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    ::selection { background: var(--accent-primary); color: #080C14; }
+    ::selection { background: var(--accent-primary); color: var(--on-accent); }
+    :focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    a, .file-link-btn { text-underline-offset: 3px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
 
     /* Custom Scrollbars */
+    html { scrollbar-color: var(--border-strong) var(--bg-canvas); }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-canvas); }
     ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
@@ -76,8 +101,6 @@
     body {
       font-family: var(--font-sans);
       background: var(--bg-canvas);
-      background-image: radial-gradient(circle at 50% 0%, var(--accent-tint) 0%, transparent 55%);
-      background-attachment: fixed;
       color: var(--text-primary);
       font-size: 0.875rem;
       line-height: 1.5;
@@ -93,34 +116,31 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(15, 22, 35, 0.85);
+      background: var(--header-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border-hairline);
     }
 
-    [data-theme="light"] .site-header {
-      background: rgba(255, 255, 255, 0.88);
-    }
-
     .header-top-row {
       max-width: var(--grid-max);
       margin: 0 auto;
-      height: 58px;
-      padding: 0 1.5rem;
+      min-height: 58px;
+      padding: 0 var(--page-gutter);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1.25rem;
     }
 
-    /* ── SUS-systems Custom Logo with Subtle Motion ──────────────────────── */
+    /* ── SUS-systems Logo ────────────────────────────────────────────────── */
     .brand-logo {
       display: inline-flex;
       align-items: center;
       gap: 0.65rem;
       background: none;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       flex-shrink: 0;
@@ -135,14 +155,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 16px var(--accent-glow);
-      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .brand-logo:hover .brand-emblem {
-      transform: scale(1.06) rotate(-4deg);
-      box-shadow: 0 0 22px var(--accent-primary);
-    }
+    .brand-logo:hover .brand-emblem { transform: rotate(-6deg); }
 
     .brand-wordmark {
       display: flex;
@@ -167,22 +183,26 @@
       display: flex;
       align-items: center;
       gap: 0.25rem;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
       background: var(--bg-subtle);
       padding: 0.25rem;
       border-radius: 9px;
       border: 1px solid var(--border-hairline);
     }
 
+    .top-groups-nav::-webkit-scrollbar { display: none; }
+
     .nav-active-glider {
       position: absolute;
       top: 4px;
       bottom: 4px;
-      left: 4px;
+      left: 0;
       width: 0;
       border-radius: 6px;
       background: var(--accent-tint);
-      border: 1px solid rgba(56, 189, 248, 0.32);
-      box-shadow: 0 0 12px var(--accent-glow);
+      border: 1px solid var(--accent-glow);
       transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms cubic-bezier(0.22, 1, 0.36, 1);
       pointer-events: none;
       z-index: 0;
@@ -193,37 +213,24 @@
       z-index: 1;
       display: inline-flex;
       align-items: center;
-      gap: 0.38rem;
-      padding: 0.38rem 0.85rem;
+      padding: 0.45rem 0.85rem;
       border-radius: 6px;
       border: none;
       background: transparent;
       color: var(--text-secondary);
       font-family: var(--font-sans);
-      font-size: 0.79rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      flex-shrink: 0;
       transition: color 160ms ease;
     }
 
-    .top-group-btn:hover {
-      color: var(--text-primary);
-    }
+    .top-group-btn:hover { color: var(--text-primary); }
+    .top-group-btn.active { color: var(--accent-primary); }
 
-    .top-group-btn.active {
-      color: var(--accent-primary);
-    }
-
-    .top-group-divider {
-      width: 1px;
-      height: 16px;
-      background: var(--border-strong);
-      margin: 0 0.2rem;
-      z-index: 1;
-    }
-
-    /* ── Compact Utility Icon Buttons (32x32px) ──────────────────────────── */
+    /* ── Compact Utility Icon Buttons ────────────────────────────────────── */
     .header-utils {
       display: flex;
       align-items: center;
@@ -232,8 +239,8 @@
     }
 
     .util-icon-btn {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 7px;
       border: 1px solid var(--border-strong);
       background: var(--bg-surface);
@@ -242,14 +249,13 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 180ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
     }
 
     .util-icon-btn:hover {
       background: var(--bg-elevated);
       color: var(--accent-primary);
       border-color: var(--accent-primary);
-      transform: translateY(-1px);
     }
 
     .util-icon-btn svg {
@@ -267,44 +273,53 @@
     .header-sub-inner {
       max-width: var(--grid-max);
       margin: 0 auto;
-      min-height: 42px;
-      padding: 0.3rem 1.5rem;
+      min-height: 44px;
+      padding: 0.35rem var(--page-gutter);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
     }
 
     .sub-tabs-list {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
-      flex-wrap: wrap;
+      gap: 0.75rem;
+      min-width: 0;
+      width: 100%;
     }
 
     .area-context-tag {
-      font-family: var(--font-mono);
-      font-size: 0.66rem;
-      font-weight: 600;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--accent-primary);
-      padding-right: 0.6rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      white-space: nowrap;
+      padding-right: 0.75rem;
       border-right: 1px solid var(--border-strong);
-      margin-right: 0.25rem;
+    }
+
+    /* Pílulas num container próprio: a 2ª linha alinha com a 1ª pílula, não com a borda */
+    .sub-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      min-width: 0;
     }
 
     .sub-pill-btn {
-      padding: 0.28rem 0.75rem;
+      padding: 0.36rem 0.75rem;
       border-radius: 6px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-secondary);
       font-family: var(--font-sans);
-      font-size: 0.77rem;
+      font-size: 0.78rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 150ms cubic-bezier(0.22, 1, 0.36, 1);
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
     }
 
     .sub-pill-btn:hover {
@@ -323,7 +338,7 @@
     /* ── Main Content Canvas (Strictly Aligned 1400px Grid) ──────────────── */
     .main-canvas {
       flex: 1;
-      padding: 1.4rem 1.5rem 3rem;
+      padding: 1.4rem var(--page-gutter) 3rem;
       max-width: var(--grid-max);
       width: 100%;
       margin: 0 auto;
@@ -337,58 +352,55 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
       border-radius: 10px;
-      padding: 1.1rem 1.35rem;
+      padding: 1.1rem var(--card-pad-x);
       margin-bottom: 1rem;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 0.75rem 1rem;
       flex-wrap: wrap;
     }
 
-    .breadcrumb-line {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent-primary);
-      margin-bottom: 0.2rem;
-    }
+    .content-heading { min-width: 0; }
 
     .content-title {
-      font-size: 1.18rem;
+      font-size: 1.2rem;
       font-weight: 700;
+      line-height: 1.3;
       color: var(--text-primary);
       letter-spacing: -0.015em;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.45rem;
     }
 
     .ftp-url-bar {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
+      display: inline-block;
+      max-width: 100%;
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
       background: var(--bg-subtle);
       padding: 0.2rem 0.6rem;
       border-radius: 5px;
       border: 1px solid var(--border-hairline);
+      overflow-wrap: anywhere;
     }
 
     .source-badge {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-weight: 600;
       padding: 0.25rem 0.6rem;
       border-radius: 6px;
       background: var(--accent-emerald-tint);
       color: var(--accent-emerald);
-      border: 1px solid rgba(52, 211, 153, 0.25);
+      white-space: nowrap;
     }
 
-    /* ── Normatives / Portarias Strip ────────────────────────────────────── */
+    .source-badge.is-offline {
+      background: var(--accent-crimson-tint);
+      color: var(--accent-crimson);
+    }
+
+    /* ── Normatives / Referências Strip ──────────────────────────────────── */
     .normatives-section { margin-bottom: 1.1rem; }
 
     .normatives-grid {
@@ -401,149 +413,174 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
       border-radius: 10px;
-      padding: 0.85rem 1.1rem;
+      padding: 0.9rem var(--card-pad-x);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.45rem;
-      transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+      gap: 0.5rem;
+      transition: border-color 160ms ease;
     }
 
-    .norm-card:hover {
-      border-color: var(--accent-primary);
-      transform: translateY(-2px);
-    }
+    .norm-card:hover, .norm-card:focus-within { border-color: var(--border-strong); }
 
     .norm-card-top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 0.5rem;
     }
 
     .norm-code {
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      font-weight: 600;
-      color: var(--accent-primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text-primary);
     }
 
     .norm-tag {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      font-weight: 600;
       padding: 0.1rem 0.45rem;
       border-radius: 4px;
       background: var(--bg-subtle);
       color: var(--text-secondary);
       border: 1px solid var(--border-hairline);
+      white-space: nowrap;
     }
 
     .norm-title {
       font-size: 0.8rem;
       color: var(--text-secondary);
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .norm-link {
-      font-size: 0.74rem;
+      align-self: flex-start;
+      font-size: 0.76rem;
       font-weight: 600;
       color: var(--accent-primary);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
+      padding: 0.2rem 0;
     }
 
     .norm-link:hover { text-decoration: underline; }
 
     /* ── High-Density Aligned Data Table ─────────────────────────────────── */
+    /* overflow:hidden é seguro: o popover "Anteriores" é position:fixed e escapa do recorte */
     .table-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
       border-radius: 10px;
       margin-bottom: 1.15rem;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .table-card-header {
-      padding: 0.75rem 1.15rem;
+      padding: 0.8rem var(--card-pad-x);
       border-bottom: 1px solid var(--border-hairline);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 0.6rem 1rem;
       flex-wrap: wrap;
       background: var(--bg-subtle);
-      border-radius: 10px 10px 0 0;
     }
 
+    .table-card-heading { min-width: 0; }
+
     .table-card-title {
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       font-weight: 700;
+      line-height: 1.35;
       color: var(--text-primary);
     }
 
     .table-card-ftp {
+      display: block;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
+      overflow-wrap: anywhere;
     }
 
     .table-filter-input {
-      padding: 0.35rem 0.7rem;
+      padding: 0.42rem 0.7rem;
       border-radius: 6px;
       border: 1px solid var(--border-strong);
       background: var(--bg-surface);
       color: var(--text-primary);
       font-family: var(--font-sans);
-      font-size: 0.75rem;
-      min-width: 240px;
-      outline: none;
+      font-size: 0.78rem;
+      min-width: 260px;
       transition: border-color 150ms ease;
     }
 
+    .table-filter-input::placeholder { color: var(--text-muted); }
     .table-filter-input:focus { border-color: var(--accent-primary); }
+
+    .table-scroll { overflow-x: auto; }
 
     .data-table {
       width: 100%;
+      min-width: 760px;
       border-collapse: collapse;
       font-variant-numeric: tabular-nums;
     }
 
     .data-table th {
       text-align: left;
-      padding: 0.62rem 1rem;
-      font-size: 0.68rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border-hairline);
       background: var(--bg-surface);
+      white-space: nowrap;
     }
 
     .data-table td {
-      padding: 0.62rem 1rem;
+      padding: 0.6rem 0.85rem;
       border-bottom: 1px solid var(--border-hairline);
       font-size: 0.8125rem;
       color: var(--text-secondary);
       vertical-align: middle;
     }
 
+    /* Primeira e última coluna usam o mesmo recuo do cabeçalho do card */
+    .data-table th:first-child, .data-table td:first-child { padding-left: var(--card-pad-x); }
+    .data-table th:last-child, .data-table td:last-child { padding-right: var(--card-pad-x); }
+
     .data-table th.col-right, .data-table td.col-right { text-align: right; }
-    .data-table th.col-center, .data-table td.col-center { text-align: center; }
 
-    .data-table tbody tr {
-      transition: background-color 140ms ease;
-    }
-
+    .data-table tbody tr { transition: background-color 140ms ease; }
     .data-table tbody tr:last-child td { border-bottom: none; }
     .data-table tbody tr:hover td { background: var(--bg-elevated); }
+    .data-table tbody tr.row-err td { background: var(--accent-crimson-tint); }
+
+    /* Grade fixa: tabelas empilhadas na mesma página alinham as colunas entre si */
+    .data-table.is-catalog { table-layout: fixed; min-width: 960px; }
+    .data-table.is-catalog.has-desc { min-width: 1120px; }
+    .is-catalog .col-desc { width: 160px; }
+    .is-catalog .col-avail { width: 132px; }
+    .is-catalog .col-date { width: 150px; }
+    .is-catalog .col-size { width: 100px; }
+    .is-catalog .col-action { width: 204px; }
+    .is-catalog .col-hist { width: 160px; }
+
+    .data-table.is-sigtap { table-layout: fixed; min-width: 1080px; }
+    .is-sigtap .col-code { width: 140px; }
+    .is-sigtap .col-comp { width: 170px; }
+    .is-sigtap .col-fin { width: 200px; }
+    .is-sigtap .col-age { width: 150px; }
+    .is-sigtap .col-money { width: 120px; }
 
     .col-desc-badge {
       font-weight: 600;
       color: var(--text-primary);
-      font-size: 0.77rem;
+      font-size: 0.78rem;
     }
 
     .file-link-btn {
@@ -553,31 +590,50 @@
       font-family: var(--font-mono);
       font-size: 0.79rem;
       font-weight: 500;
+      line-height: 1.4;
       cursor: pointer;
       text-align: left;
-      padding: 0;
-      transition: color 140ms ease;
+      padding: 0.15rem 0;
+      overflow-wrap: anywhere;
     }
 
-    .file-link-btn:hover {
-      text-decoration: underline;
-    }
+    .file-link-btn:hover { text-decoration: underline; }
 
     .mono-cell {
       font-family: var(--font-mono);
       font-size: 0.76rem;
     }
 
+    .code-cell {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      white-space: nowrap;
+    }
+
+    .cell-avail, .cell-date, .cell-size, .cell-nowrap { white-space: nowrap; }
+
     .fresh-pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
-      padding: 0.12rem 0.48rem;
+      gap: 0.35rem;
+      padding: 0.14rem 0.5rem;
       border-radius: 5px;
-      font-size: 0.71rem;
+      font-size: 0.72rem;
       font-weight: 600;
       background: var(--accent-emerald-tint);
       color: var(--accent-emerald);
+      white-space: nowrap;
+    }
+
+    .fresh-pill::before, .status-pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
     }
 
     .action-group {
@@ -587,79 +643,95 @@
       gap: 0.4rem;
     }
 
-    .btn-primary {
+    /* ── Botões ──────────────────────────────────────────────────────────── */
+    .btn-primary, .btn-secondary {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
-      padding: 0.34rem 0.75rem;
+      gap: 0.4rem;
+      padding: 0.42rem 0.8rem;
       border-radius: 6px;
       border: 1px solid transparent;
-      background: var(--accent-primary);
-      color: #080C14;
       font-family: var(--font-sans);
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
       text-decoration: none;
-      transition: transform 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background-color 150ms ease, box-shadow 150ms ease, color 150ms ease;
     }
 
-    [data-theme="light"] .btn-primary { color: #FFFFFF; }
+    .btn-primary {
+      background: var(--accent-primary);
+      color: var(--on-accent);
+    }
 
     .btn-primary:hover:not(:disabled) {
       background: var(--accent-primary-hover);
-      color: #FFFFFF;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px var(--accent-glow);
+      box-shadow: 0 3px 8px -2px var(--accent-glow);
     }
 
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .btn-secondary:hover { background: var(--accent-tint); }
+
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
 
     .uf-select {
-      padding: 0.3rem 0.45rem;
+      padding: 0.38rem 0.45rem;
       border-radius: 6px;
       border: 1px solid var(--border-strong);
       background: var(--bg-subtle);
       color: var(--text-primary);
       font-family: var(--font-mono);
-      font-size: 0.73rem;
+      font-size: 0.74rem;
       font-weight: 600;
       cursor: pointer;
     }
 
     /* ── History Dropdown ('Anteriores') ─────────────────────────────────── */
-    .hist-wrap { position: relative; display: inline-block; }
+    .hist-wrap { display: inline-block; }
 
     .btn-hist {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      padding: 0.3rem 0.6rem;
+      padding: 0.38rem 0.6rem;
       border-radius: 6px;
       border: 1px solid var(--border-strong);
       background: var(--bg-subtle);
       color: var(--text-secondary);
       font-family: var(--font-sans);
-      font-size: 0.73rem;
+      font-size: 0.74rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 140ms ease;
+      white-space: nowrap;
+      transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
     }
 
-    .btn-hist:hover {
+    .btn-hist:hover, .btn-hist[aria-expanded="true"] {
       background: var(--bg-hover);
       color: var(--text-primary);
       border-color: var(--accent-primary);
     }
 
+    /* Posicionado por JS em coordenadas da janela: nunca fica atrás de outro card nem é cortado */
     .hist-popover {
-      position: absolute;
-      right: 0;
-      top: calc(100% + 5px);
-      z-index: 60;
-      min-width: 195px;
-      max-height: 240px;
+      position: fixed;
+      z-index: 80;
+      min-width: 200px;
+      max-height: 260px;
       overflow-y: auto;
       background: var(--bg-surface);
       border: 1px solid var(--border-strong);
@@ -672,12 +744,12 @@
 
     .hist-wrap.open .hist-popover {
       display: block;
-      animation: popIn 160ms cubic-bezier(0.22, 1, 0.36, 1);
+      animation: popIn 140ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     @keyframes popIn {
-      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .hist-item-btn {
@@ -685,25 +757,26 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.38rem 0.55rem;
+      gap: 0.75rem;
+      padding: 0.42rem 0.55rem;
       border: none;
       border-radius: 5px;
       background: transparent;
       color: var(--text-primary);
       font-family: var(--font-mono);
-      font-size: 0.73rem;
+      font-size: 0.74rem;
       cursor: pointer;
       text-align: left;
     }
 
-    .hist-item-btn:hover {
+    .hist-item-btn:hover, .hist-item-btn:focus-visible {
       background: var(--accent-tint);
       color: var(--accent-primary);
     }
 
     /* ── Shimmer Skeleton Loading ────────────────────────────────────────── */
     .shimmer-box {
-      padding: 1.5rem;
+      padding: 1.5rem var(--card-pad-x);
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
@@ -722,89 +795,143 @@
       100% { background-position: -200% 0; }
     }
 
-    /* ── Controls & KPI Strip for SIGTAP / Remessas ──────────────────────── */
+    /* ── Controls (SIGTAP / Remessas) ────────────────────────────────────── */
     .controls-bar {
       background: var(--bg-surface);
       border: 1px solid var(--border-hairline);
       border-radius: 10px;
-      padding: 0.9rem 1.15rem;
+      padding: 0.95rem var(--card-pad-x);
       margin-bottom: 1.1rem;
       display: flex;
-      align-items: flex-end;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 0.9rem;
     }
 
-    .field-group { display: flex; flex-direction: column; gap: 0.25rem; }
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+
+    .controls-row + .controls-row {
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .field-group.is-wide { flex: 1 1 260px; }
+
     .field-group label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-secondary);
     }
 
     .field-control {
-      padding: 0.4rem 0.68rem;
+      min-height: 34px;
+      padding: 0.42rem 0.7rem;
       border-radius: 6px;
       border: 1px solid var(--border-strong);
       background: var(--bg-subtle);
       color: var(--text-primary);
       font-family: var(--font-sans);
-      font-size: 0.79rem;
-      outline: none;
+      font-size: 0.8rem;
+      max-width: 100%;
     }
 
+    .field-control::placeholder { color: var(--text-muted); }
     .field-control:focus { border-color: var(--accent-primary); }
 
-    .kpi-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+    /* ── Resumo em linha (SIGTAP / Comparativo) ──────────────────────────── */
+    .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1.5rem;
+      padding: 0.65rem var(--card-pad-x);
+      border-bottom: 1px solid var(--border-hairline);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
     }
 
-    .kpi-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1.1rem;
-    }
-
-    .kpi-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 10px;
-      padding: 0.85rem 1.1rem;
-    }
-
-    .kpi-val {
+    .summary-line strong {
       font-family: var(--font-mono);
-      font-size: 1.3rem;
-      font-weight: 700;
+      font-size: 0.86rem;
       color: var(--text-primary);
-      margin-top: 0.15rem;
+      margin-right: 0.15rem;
     }
+
+    .summary-line strong.delta-pos { color: var(--accent-emerald); }
+    .summary-line strong.delta-neg { color: var(--accent-crimson); }
+    .summary-line strong.delta-warn { color: var(--accent-amber); }
+    .summary-line strong.delta-info { color: var(--accent-primary); }
 
     .delta-pos { color: var(--accent-emerald); font-weight: 600; }
     .delta-neg { color: var(--accent-crimson); font-weight: 600; }
-    .status-warn {
-      display: inline-block;
-      padding: 0.12rem 0.48rem;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      background: var(--accent-amber-tint);
-      color: var(--accent-amber);
+
+    .cap-note {
+      padding: 0.55rem var(--card-pad-x);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-hairline);
     }
 
+    /* ── Status das remessas ─────────────────────────────────────────────── */
+    .status-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.14rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-ok { background: var(--accent-emerald-tint); color: var(--accent-emerald); }
+    .status-err { background: var(--accent-crimson-tint); color: var(--accent-crimson); }
+    .status-neutral { background: var(--bg-subtle); color: var(--text-secondary); }
+
+    .link-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .link-inline:hover { text-decoration: underline; }
+
+    /* ── Estados vazios e de erro ────────────────────────────────────────── */
     .state-box {
-      padding: 2rem 1rem;
+      padding: 2rem var(--card-pad-x);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
       text-align: center;
       color: var(--text-muted);
       font-size: 0.84rem;
     }
+
+    .state-box strong { color: var(--text-primary); font-size: 0.9rem; }
+    .state-box.is-error strong { color: var(--accent-crimson); }
 
     /* ── Institutional Footer Aligned to Grid ────────────────────────────── */
     .app-footer {
@@ -816,24 +943,78 @@
     .app-footer-inner {
       max-width: var(--grid-max);
       margin: 0 auto;
-      padding: 0.85rem 1.5rem;
+      padding: 0.85rem var(--page-gutter);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.75rem;
-      font-size: 0.74rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
     }
 
-    .cluster-list { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
-    .cluster-dot { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.69rem; }
-    .dot-online {
-      width: 7px;
-      height: 7px;
+    .cluster-list { display: flex; align-items: center; gap: 0.4rem 1.1rem; flex-wrap: wrap; }
+
+    .cluster-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .cluster-dot::before {
+      content: "";
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 8px var(--accent-emerald);
+      background: var(--border-strong);
+    }
+
+    /* ── Responsivo ──────────────────────────────────────────────────────── */
+    /* Laptop: a data exata sai da grade e fica no title de "Disponibilizado" */
+    @media (max-width: 1200px) {
+      .data-table.is-catalog .col-date { display: none; }
+      .data-table.is-catalog { min-width: 810px; }
+      .data-table.is-catalog.has-desc { min-width: 970px; }
+    }
+
+    @media (max-width: 960px) {
+      :root { --page-gutter: 1rem; }
+      .header-top-row {
+        flex-wrap: wrap;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        row-gap: 0.5rem;
+      }
+      .top-groups-nav { order: 3; width: 100%; }
+      .main-canvas { padding-top: 1rem; padding-bottom: 2.5rem; }
+    }
+
+    @media (max-width: 640px) {
+      :root { --card-pad-x: 1rem; }
+      .area-context-tag { display: none; }
+      .sub-pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+      .sub-pills::-webkit-scrollbar { display: none; }
+      .content-header { flex-direction: column; }
+      .normatives-grid { grid-template-columns: 1fr; }
+      .table-filter-input { min-width: 0; width: 100%; }
+      .table-card-header > * { flex: 1 1 100%; }
+      .controls-row > .field-group, .controls-row > .btn-primary, .controls-row > .btn-secondary { flex: 1 1 100%; }
+      .field-control { width: 100%; }
+    }
+
+    /* Toque: alvos de pelo menos 40px */
+    @media (pointer: coarse) {
+      .top-group-btn, .sub-pill-btn, .btn-primary, .btn-secondary, .btn-hist,
+      .uf-select, .field-control, .table-filter-input, .hist-item-btn { min-height: 40px; }
+      .util-icon-btn { width: 40px; height: 40px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shimmer-line { animation: none; }
+      .hist-wrap.open .hist-popover { animation: none; }
+      .nav-active-glider, .brand-emblem { transition: none; }
     }
   </style>
 </head>
@@ -843,13 +1024,13 @@
   <header class="site-header">
     <div class="header-top-row">
       <!-- Logotipo SUS-systems -->
-      <button type="button" class="brand-logo" id="btnHomeLogo" title="SUS-systems — Início">
+      <button type="button" class="brand-logo" id="btnHomeLogo" title="SUS-systems — Início" aria-label="SUS-systems: voltar ao início">
         <span class="brand-emblem" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 3H15V9H21V15H15V21H9V15H3V9H9V3Z" fill="#080C14"/>
           </svg>
         </span>
-        <span class="brand-wordmark">
+        <span class="brand-wordmark" aria-hidden="true">
           <span class="brand-sus">SUS</span><span class="brand-systems">-systems</span>
         </span>
       </button>
@@ -861,8 +1042,8 @@
 
       <!-- Botões Compactos: Atualizar FTP + Tema (Sol no Modo Escuro / Lua no Modo Claro) -->
       <div class="header-utils">
-        <button type="button" class="util-icon-btn" id="btnForceRefresh" title="Atualizar listagem FTP agora" aria-label="Atualizar FTP">
-          <svg id="iconRefresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="util-icon-btn" id="btnForceRefresh" title="Atualizar a tela atual" aria-label="Atualizar a tela atual">
+          <svg id="iconRefresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
             <path d="M3 3v5h5"/>
             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
@@ -870,9 +1051,9 @@
           </svg>
         </button>
 
-        <button type="button" class="util-icon-btn" id="btnThemeToggle" title="Alternar Modo Claro / Escuro" aria-label="Alternar tema">
+        <button type="button" class="util-icon-btn" id="btnThemeToggle" title="Ativar modo escuro" aria-label="Ativar modo escuro">
           <!-- Ícone Sol (visível quando em Modo Escuro) -->
-          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;" aria-hidden="true">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2"/><path d="M12 20v2"/>
             <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
@@ -880,7 +1061,7 @@
             <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
           </svg>
           <!-- Ícone Lua (visível por padrão pois o site abre em Modo Claro) -->
-          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
           </svg>
         </button>
@@ -893,6 +1074,9 @@
     </div>
   </header>
 
+  <!-- Anúncios para leitor de tela (carregando / carregado / erro) -->
+  <div id="liveStatus" class="sr-only" role="status" aria-live="polite"></div>
+
   <!-- 2. ÁREA PRINCIPAL DE CONTEÚDO ALINHADA -->
   <main class="main-canvas">
 
@@ -904,99 +1088,88 @@
     <!-- WORKSPACE 2: SIGTAP CONSULTA & COMPARATIVO (Integrado ao menu SIGTAP) -->
     <section class="ws-panel" id="ws-sigtap">
       <div class="content-header">
-        <div>
-          <div class="breadcrumb-line">SIGTAP / CONSULTA &amp; COMPARATIVO DE COMPETÊNCIAS</div>
-          <h1 class="content-title">SIGTAP — Tabela Unificada de Procedimentos do SUS</h1>
+        <div class="content-heading">
+          <h1 class="content-title">SIGTAP — Consulta e Comparativo de Competências</h1>
           <div class="ftp-url-bar">ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/</div>
         </div>
-        <span class="source-badge">LEITURA DIRETA FTP</span>
+        <span class="source-badge">Leitura direta do FTP</span>
       </div>
 
       <div class="controls-bar">
-        <div class="field-group">
-          <label for="sigtapCompNew">Competência Base / Atual</label>
-          <select id="sigtapCompNew" class="field-control"></select>
+        <div class="controls-row">
+          <div class="field-group">
+            <label for="sigtapCompNew">Competência</label>
+            <select id="sigtapCompNew" class="field-control"></select>
+          </div>
+          <div class="field-group is-wide">
+            <label for="sigtapQuery">Código ou nome do procedimento</label>
+            <input type="search" id="sigtapQuery" class="field-control" placeholder="Ex.: 0301010072 ou consulta médica" autocomplete="off" />
+          </div>
+          <div class="field-group">
+            <label for="sigtapGrupo">Grupo</label>
+            <select id="sigtapGrupo" class="field-control">
+              <option value="">Todos os grupos</option>
+              <option value="01">01 · Promoção e prevenção</option>
+              <option value="02">02 · Finalidade diagnóstica</option>
+              <option value="03">03 · Procedimentos clínicos</option>
+              <option value="04">04 · Procedimentos cirúrgicos</option>
+              <option value="05">05 · Transplantes</option>
+              <option value="06">06 · Medicamentos</option>
+              <option value="07">07 · Órteses, próteses e materiais</option>
+              <option value="08">08 · Ações complementares</option>
+              <option value="09">09 · Ofertas de cuidados integrados</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="sigtapFin">Financiamento</label>
+            <select id="sigtapFin" class="field-control">
+              <option value="">Todos</option>
+              <option value="01">01 · Atenção Básica (PAB)</option>
+              <option value="02">02 · Assistência Farmacêutica</option>
+              <option value="04">04 · FAEC</option>
+              <option value="05">05 · Incentivo MAC</option>
+              <option value="06">06 · Média e Alta Complexidade</option>
+              <option value="07">07 · Vigilância em Saúde</option>
+              <option value="08">08 · Gestão do SUS</option>
+            </select>
+          </div>
+          <button type="button" class="btn-primary" id="btnSigtapSearch">Pesquisar</button>
         </div>
-        <div class="field-group">
-          <label for="sigtapQuery">Código ou Nome do Procedimento</label>
-          <input type="search" id="sigtapQuery" class="field-control" placeholder="Ex: 0301010072 ou consulta medica…" style="min-width:240px;" />
-        </div>
-        <div class="field-group">
-          <label for="sigtapGrupo">Grupo SIGTAP</label>
-          <select id="sigtapGrupo" class="field-control">
-            <option value="">Todos os Grupos</option>
-            <option value="01">01 - Promoção e Prevenção</option>
-            <option value="02">02 - Finalidade Diagnóstica</option>
-            <option value="03">03 - Procedimentos Clínicos</option>
-            <option value="04">04 - Procedimentos Cirúrgicos</option>
-            <option value="05">05 - Transplantes</option>
-            <option value="06">06 - Medicamentos</option>
-            <option value="07">07 - Órteses, Próteses e Materiais</option>
-            <option value="08">08 - Ações Complementares</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label for="sigtapFin">Financiamento</label>
-          <select id="sigtapFin" class="field-control">
-            <option value="">Todos</option>
-            <option value="01">01 - Atenção Básica (APS)</option>
-            <option value="04">04 - FAEC</option>
-            <option value="06">06 - MAC Ambulatorial/Hosp</option>
-            <option value="07">07 - Vigilância em Saúde</option>
-          </select>
-        </div>
-        <button type="button" class="btn-primary" id="btnSigtapSearch">Pesquisar</button>
 
-        <div class="field-group" style="margin-left:auto;">
-          <label for="sigtapCompOld">Comparar com Competência Anterior</label>
-          <select id="sigtapCompOld" class="field-control"></select>
+        <div class="controls-row">
+          <div class="field-group">
+            <label for="sigtapCompOld">Comparar a competência acima com</label>
+            <select id="sigtapCompOld" class="field-control"></select>
+          </div>
+          <button type="button" class="btn-secondary" id="btnSigtapDiff">Comparar competências</button>
         </div>
-        <button type="button" class="btn-primary" id="btnSigtapDiff" style="background:var(--accent-emerald);color:#080C14;">⚡ Comparar Competências</button>
       </div>
 
       <div id="sigtapResultsContainer"></div>
     </section>
 
-    <!-- WORKSPACE 3: PORTARIA GM/MS 7.639/2025 -->
-    <section class="ws-panel" id="ws-municipal">
-      <div class="content-header">
-        <div>
-          <div class="breadcrumb-line">PRAZOS LEGAIS &amp; KIT DE ATUALIZAÇÃO MENSAL</div>
-          <h1 class="content-title">Monitor de Sistemas Obrigatórios (Portaria GM/MS nº 7.639/2025)</h1>
-          <div class="ftp-url-bar">Pacotes Mensais Essenciais &amp; Prazos de Alimentação Obrigatória</div>
-        </div>
-        <span class="source-badge">PORTARIA GM/MS Nº 7.639/2025</span>
-      </div>
-
-      <div id="muniPackagesContainer"></div>
-      <div id="muniPortariaContainer"></div>
-    </section>
-
-    <!-- WORKSPACE 4: REMESSAS SIA (LOGCARGA) -->
+    <!-- WORKSPACE 3: REMESSAS SIA (LOGCARGA) -->
     <section class="ws-panel" id="ws-remessa">
       <div class="content-header">
-        <div>
-          <div class="breadcrumb-line">SIA / LOGCARGA · AUDITORIA DE PROCESSAMENTO</div>
-          <h1 class="content-title">Acompanhamento de Entrega de Remessas Ambulatoriais (SIA)</h1>
+        <div class="content-heading">
+          <h1 class="content-title">Remessas do SIA — Acompanhamento de Processamento (LogCarga)</h1>
           <div class="ftp-url-bar">ftp://arpoador.datasus.gov.br/siasus/LogCarga/</div>
         </div>
       </div>
 
       <form class="controls-bar" id="remessaForm">
-        <div class="field-group">
-          <label for="remIbgeInput">Código IBGE do Município (6 dígitos)</label>
-          <input type="text" id="remIbgeInput" class="field-control" value="410965" maxlength="7" />
+        <div class="controls-row">
+          <div class="field-group">
+            <label for="remIbgeInput">Código IBGE do município (6 ou 7 dígitos)</label>
+            <input type="text" id="remIbgeInput" class="field-control" value="410965" maxlength="7"
+                   inputmode="numeric" pattern="\d{6,7}" required title="Informe o código IBGE com 6 ou 7 dígitos" />
+          </div>
+          <div class="field-group">
+            <label for="remAnoSelect">Ano da competência</label>
+            <select id="remAnoSelect" class="field-control"></select>
+          </div>
+          <button type="submit" class="btn-primary">Consultar remessas</button>
         </div>
-        <div class="field-group">
-          <label for="remAnoSelect">Ano da Competência</label>
-          <select id="remAnoSelect" class="field-control">
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-primary">Consultar LogCarga no FTP</button>
       </form>
 
       <div id="remessaResultsContainer"></div>
@@ -1008,9 +1181,10 @@
   <footer class="app-footer">
     <div class="app-footer-inner">
       <div class="cluster-list">
-        <span class="cluster-dot"><span class="dot-online"></span>arpoador.datasus.gov.br (SIA / CNES)</span>
-        <span class="cluster-dot"><span class="dot-online"></span>ftp2.datasus.gov.br (SIGTAP)</span>
-        <span class="cluster-dot"><span class="dot-online"></span>ftp.datasus.gov.br (CNES / PNI / TabWin)</span>
+        <span>Servidores DataSUS:</span>
+        <span class="cluster-dot">arpoador.datasus.gov.br (SIA / CNES)</span>
+        <span class="cluster-dot">ftp2.datasus.gov.br (SIGTAP)</span>
+        <span class="cluster-dot">ftp.datasus.gov.br (CNES / PNI / TabWin)</span>
       </div>
       <div>
         <span><strong>SUS-systems</strong> — Acesso direto aos servidores FTP DataSUS</span>
@@ -1019,15 +1193,36 @@
   </footer>
 
   <script>
+    const DEFAULT_GROUP = "SIA";
+    const DEFAULT_SUB = "BPA";
+    const SIGTAP_FTP = "ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/";
+    const LOGCARGA_FTP = "ftp://arpoador.datasus.gov.br/siasus/LogCarga/";
+
     const state = {
       catalog: [],
       ufs: [],
       activeUf: "PR",
-      activeMuniIbge: "410965",
       activeWorkspace: "catalog",
-      selectedGroup: "SIA",
-      selectedSub: "APAC",
-      sigtapCompetencias: []
+      selectedGroup: DEFAULT_GROUP,
+      selectedSub: DEFAULT_SUB,
+      sigtapCompetencias: [],
+      sigtapLoaded: false,
+      remessaLoadedKey: ""
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Ícones SVG de traço único (herdam a cor do texto)
+    const ICON_DOWNLOAD = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>`;
+    const ICON_CHEVRON = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+
+    const SOURCE_LABELS = {
+      CACHE: "Fonte: cache (10 min)",
+      FTP_DIRECT: "Fonte: FTP direto",
+      HTTPS_BRIDGE: "Fonte: espelho HTTPS",
+      HTTPS_MIRROR: "Fonte: espelho HTTPS",
+      READY: "Fonte: pronta",
+      OFFLINE: "Sem conexão com o FTP"
     };
 
     function escapeHtml(str) {
@@ -1035,13 +1230,18 @@
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
+    // ── Formatação pt-BR ────────────────────────────────────────────────────
     function formatSizeMB(bytes) {
       if (!bytes || bytes <= 0) return "–";
       const mb = bytes / 1048576;
-      return mb < 0.1 ? (bytes / 1024).toFixed(1) + " KB" : mb.toFixed(2) + " MB";
+      if (mb < 0.1) {
+        return (bytes / 1024).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " KB";
+      }
+      return mb.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " MB";
     }
 
     function formatDateBR(isoStr) {
@@ -1064,12 +1264,80 @@
       const diffMs = Date.now() - shifted.getTime();
       if (diffMs < 0) return "Recente";
       const days = Math.floor(diffMs / 86400000);
-      if (days < 1) return `<span class="fresh-pill">🔥 menos de 24h</span>`;
-      if (days < 30) return `${days} dia${days > 1 ? "s" : ""}`;
+      if (days < 1) return `<span class="fresh-pill">menos de 24h</span>`;
+      if (days < 30) return `há ${days} dia${days > 1 ? "s" : ""}`;
       const months = Math.floor(days / 30);
-      if (months < 12) return `${months} ${months > 1 ? "meses" : "mês"}`;
+      if (months < 12) return `há ${months} ${months > 1 ? "meses" : "mês"}`;
       const years = Math.floor(months / 12);
-      return `mais de ${years} ano${years > 1 ? "s" : ""}`;
+      return `há mais de ${years} ano${years > 1 ? "s" : ""}`;
+    }
+
+    function formatBRL(value) {
+      return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function formatSignedBRL(value) {
+      const v = Number(value || 0);
+      return (v > 0 ? "+" : v < 0 ? "−" : "") + formatBRL(Math.abs(v));
+    }
+
+    function formatCount(n) {
+      return Number(n || 0).toLocaleString("pt-BR");
+    }
+
+    // "202608" → "08/2026"; "2026/08" → "08/2026"; "202607b" → "07/2026 (b)". Versões ("0605") passam direto.
+    function formatCompetencia(raw) {
+      const s = String(raw ?? "");
+      const m = s.match(/^(\d{4})\/?(\d{2})([a-z])?$/i);
+      if (m && +m[2] >= 1 && +m[2] <= 12) return `${m[2]}/${m[1]}${m[3] ? ` (${m[3]})` : ""}`;
+      return s;
+    }
+
+    function formatAgeRange(min, max) {
+      return min === max ? min : `${min} a ${max}`;
+    }
+
+    // ── Estados: carregando, erro e anúncios ────────────────────────────────
+    function announce(message) {
+      const el = document.getElementById("liveStatus");
+      el.textContent = "";
+      requestAnimationFrame(() => { el.textContent = message; });
+    }
+
+    function loadingHtml(label) {
+      return `
+        <div class="table-card shimmer-box" aria-busy="true">
+          <span class="sr-only">${escapeHtml(label)}</span>
+          <div class="shimmer-line" style="width: 45%;"></div>
+          <div class="shimmer-line"></div>
+          <div class="shimmer-line"></div>
+        </div>
+      `;
+    }
+
+    // O backend devolve {"detail": "..."} nos erros HTTP; mostra só a mensagem
+    function readableError(err) {
+      const msg = String(err && err.message ? err.message : err || "");
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed && parsed.detail) return String(parsed.detail);
+      } catch (_) { /* texto simples */ }
+      if (/failed to fetch|networkerror/i.test(msg)) return "Sem resposta do servidor. Verifique a conexão.";
+      return msg || "Erro desconhecido.";
+    }
+
+    function showError(box, title, err, retry) {
+      box.innerHTML = `
+        <div class="table-card">
+          <div class="state-box is-error" role="alert">
+            <strong>${escapeHtml(title)}</strong>
+            <span>${escapeHtml(readableError(err))}</span>
+            <button type="button" class="btn-secondary">Tentar novamente</button>
+          </div>
+        </div>
+      `;
+      box.querySelector("button").addEventListener("click", retry);
+      announce(title);
     }
 
     function buildDownloadUrl(baseFtpUrl, fileName) {
@@ -1091,7 +1359,7 @@
       return list;
     }
 
-    // ── Motion Design: Sliding Glider & Staggered Cascades ──────────────────
+    // ── Motion Design: Sliding Glider & Entrada Discreta ────────────────────
     function updateNavGlider() {
       const nav = document.getElementById("topGroupsNav");
       const glider = document.getElementById("navGlider");
@@ -1100,63 +1368,68 @@
         if (glider) glider.style.width = "0px";
         return;
       }
-      const navRect = nav.getBoundingClientRect();
-      const btnRect = activeBtn.getBoundingClientRect();
-      const offsetLeft = btnRect.left - navRect.left - 4;
-      glider.style.width = `${btnRect.width}px`;
-      glider.style.transform = `translateX(${offsetLeft}px)`;
+      // offsetLeft é relativo ao nav: continua certo quando o menu rola na horizontal (celular)
+      glider.style.width = `${activeBtn.offsetWidth}px`;
+      glider.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+      const left = activeBtn.offsetLeft;
+      const right = left + activeBtn.offsetWidth;
+      if (left < nav.scrollLeft || right > nav.scrollLeft + nav.clientWidth) {
+        nav.scrollLeft = left - 8;
+      }
     }
 
-    // O anime.js deixa "transform: translate(0)" inline ao terminar. Isso cria um
-    // stacking context por card/linha e prende o popover "Anteriores" atrás do card seguinte.
-    function clearMotionTransform(anim) {
-      anim.animatables.forEach(a => { a.target.style.transform = ""; });
-    }
-
+    // Só opacidade: transform num ancestral criaria um bloco de contenção e
+    // deslocaria o popover "Anteriores" (position: fixed).
     function runEntranceMotion(containerEl) {
-      if (typeof window.anime !== "function") return;
+      if (typeof window.anime !== "function" || reducedMotion.matches) return;
       const cards = containerEl.querySelectorAll(".content-header, .norm-card, .table-card");
       anime({
         targets: cards,
         opacity: [0, 1],
-        translateY: [14, 0],
-        duration: 420,
-        delay: anime.stagger(45),
-        easing: "easeOutCubic",
-        complete: clearMotionTransform
+        duration: 260,
+        delay: anime.stagger(40),
+        easing: "easeOutQuad"
       });
-
-      const rows = containerEl.querySelectorAll(".data-table tbody tr");
-      if (rows.length > 0 && rows.length <= 80) {
-        anime({
-          targets: rows,
-          opacity: [0, 1],
-          translateX: [-8, 0],
-          duration: 320,
-          delay: anime.stagger(16, { start: 90 }),
-          easing: "easeOutQuad",
-          complete: clearMotionTransform
-        });
-      }
     }
 
-    function animateCounters(containerEl) {
-      if (typeof window.anime !== "function") return;
-      containerEl.querySelectorAll("[data-count-target]").forEach(el => {
-        const targetVal = parseFloat(el.dataset.countTarget || "0");
-        const isFloat = el.dataset.countFloat === "true";
-        const suffix = el.dataset.countSuffix || "";
-        const obj = { val: 0 };
-        anime({
-          targets: obj,
-          val: targetVal,
-          duration: 750,
-          easing: "easeOutExpo",
-          update: () => {
-            el.textContent = (isFloat ? obj.val.toFixed(1) : Math.round(obj.val).toLocaleString("pt-BR")) + suffix;
-          }
-        });
-      });
+    // ── Navegação (menu, submenu e link direto via #GRUPO/Subgrupo) ─────────
+    function findSub(groupId, subName) {
+      const grp = getAllGroups().find(g => g.id === groupId);
+      return grp ? grp.subGroups.find(s => s.name === subName) || null : null;
+    }
+
+    function navigateTo(groupId, subName, forceRefresh = false) {
+      const sub = findSub(groupId, subName);
+      if (!sub) return false;
+      state.selectedGroup = groupId;
+      state.selectedSub = subName;
+
+      if (sub.specialView === "sigtap") {
+        switchWorkspace("sigtap", true);
+      } else if (sub.specialView === "remessa") {
+        switchWorkspace("remessa", true);
+      } else {
+        switchWorkspace("catalog", false);
+        loadSubgroupContent(groupId, subName, forceRefresh);
+      }
+      renderHeaderMenus();
+      return true;
+    }
+
+    function syncHash() {
+      const hash = `#${encodeURIComponent(state.selectedGroup)}/${encodeURIComponent(state.selectedSub)}`;
+      if (location.hash !== hash) history.replaceState(null, "", hash);
+    }
+
+    function readHash() {
+      const raw = location.hash.replace(/^#/, "");
+      if (!raw.includes("/")) return null;
+      const [g, ...rest] = raw.split("/");
+      try {
+        return { groupId: decodeURIComponent(g), subName: decodeURIComponent(rest.join("/")) };
+      } catch (_) {
+        return null;
+      }
     }
 
     // ── Renderização do Menu no Header (Topo) e Submenus (Embaixo) ──────────
@@ -1168,97 +1441,52 @@
 
       let topHtml = `<div class="nav-active-glider" id="navGlider"></div>`;
       topHtml += groups.map(grp => {
-        const isActive =
-          (state.activeWorkspace === "catalog" || state.activeWorkspace === "remessa" || state.activeWorkspace === "sigtap") &&
-          state.selectedGroup === grp.id;
+        const isActive = state.selectedGroup === grp.id;
         return `
-          <button type="button" class="top-group-btn ${isActive ? "active" : ""}" data-top-group="${escapeHtml(grp.id)}">
-            <span>${escapeHtml(grp.name)}</span>
+          <button type="button" class="top-group-btn ${isActive ? "active" : ""}" data-top-group="${escapeHtml(grp.id)}" ${isActive ? 'aria-current="page"' : ""}>
+            ${escapeHtml(grp.name)}
           </button>
         `;
       }).join("");
-
-      topHtml += `
-        <span class="top-group-divider" aria-hidden="true"></span>
-        <button type="button" class="top-group-btn ${state.activeWorkspace === "municipal" ? "active" : ""}" data-top-ws="municipal">
-          <span>Portaria 7.639</span>
-        </button>
-      `;
 
       topNav.innerHTML = topHtml;
 
       topNav.querySelectorAll("[data-top-group]").forEach(btn => {
         btn.addEventListener("click", () => {
-          const gId = btn.dataset.topGroup;
-          const grpObj = groups.find(g => g.id === gId);
+          const grpObj = groups.find(g => g.id === btn.dataset.topGroup);
           if (!grpObj || !grpObj.subGroups.length) return;
-          state.selectedGroup = gId;
-          const firstSub = grpObj.subGroups[0];
-          state.selectedSub = firstSub.name;
-
-          if (firstSub.specialView === "sigtap") {
-            switchWorkspace("sigtap", true);
-          } else if (firstSub.specialView === "remessa") {
-            switchWorkspace("remessa", true);
-          } else {
-            switchWorkspace("catalog", false);
-            loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
-          }
-          renderHeaderMenus();
-        });
-      });
-
-      topNav.querySelectorAll("[data-top-ws]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          switchWorkspace(btn.dataset.topWs, true);
-          renderHeaderMenus();
+          navigateTo(grpObj.id, grpObj.subGroups[0].name);
         });
       });
 
       const currentGroup = groups.find(g => g.id === state.selectedGroup);
-      if (state.activeWorkspace !== "municipal" && currentGroup) {
+      if (currentGroup) {
         subRow.style.display = "block";
         subInner.innerHTML = `
-          <div class="sub-tabs-list">
+          <nav class="sub-tabs-list" aria-label="Seções de ${escapeHtml(currentGroup.name)}">
             <span class="area-context-tag">${escapeHtml(currentGroup.areaTitle)}</span>
-            ${currentGroup.subGroups.map(sub => {
-              const isSubActive = state.selectedSub === sub.name;
-              return `
-                <button type="button" class="sub-pill-btn ${isSubActive ? "active" : ""}"
-                        data-sub-name="${escapeHtml(sub.name)}"
-                        data-special-view="${escapeHtml(sub.specialView || "")}">
-                  ${escapeHtml(sub.name)}
-                </button>
-              `;
-            }).join("")}
-          </div>
+            <div class="sub-pills">
+              ${currentGroup.subGroups.map(sub => {
+                const isSubActive = state.selectedSub === sub.name;
+                return `
+                  <button type="button" class="sub-pill-btn ${isSubActive ? "active" : ""}"
+                          data-sub-name="${escapeHtml(sub.name)}" ${isSubActive ? 'aria-current="page"' : ""}>
+                    ${escapeHtml(sub.name)}
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </nav>
         `;
 
         subInner.querySelectorAll("[data-sub-name]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const sName = btn.dataset.subName;
-            const spView = btn.dataset.specialView;
-            state.selectedSub = sName;
-
-            if (spView === "remessa") {
-              switchWorkspace("remessa", true);
-              renderHeaderMenus();
-              return;
-            }
-            if (spView === "sigtap") {
-              switchWorkspace("sigtap", true);
-              renderHeaderMenus();
-              return;
-            }
-            switchWorkspace("catalog", false);
-            renderHeaderMenus();
-            loadSubgroupContent(state.selectedGroup, sName, false);
-          });
+          btn.addEventListener("click", () => navigateTo(state.selectedGroup, btn.dataset.subName));
         });
       } else {
         subRow.style.display = "none";
       }
 
+      syncHash();
       requestAnimationFrame(updateNavGlider);
     }
 
@@ -1267,28 +1495,33 @@
       document.querySelectorAll(".ws-panel").forEach(panel => {
         panel.classList.toggle("active", panel.id === `ws-${wsName}`);
       });
+      closeAllPopovers();
 
       if (!triggerLoad) return;
-      if (wsName === "municipal") {
-        loadMunicipalSummary();
-      } else if (wsName === "sigtap") {
+      if (wsName === "sigtap") {
         initSigtapExplorer();
       } else if (wsName === "remessa") {
-        loadRemessaTable(document.getElementById("remIbgeInput").value, document.getElementById("remAnoSelect").value);
+        loadRemessaTable();
       }
     }
 
-    // ── Carregamento de Subgrupo, Gráficos e Tabelas FTP ────────────────────
+    function refreshActiveView() {
+      if (state.activeWorkspace === "catalog") {
+        loadSubgroupContent(state.selectedGroup, state.selectedSub, true);
+      } else if (state.activeWorkspace === "sigtap") {
+        state.sigtapCompetencias = [];
+        state.sigtapLoaded = false;
+        initSigtapExplorer();
+      } else if (state.activeWorkspace === "remessa") {
+        loadRemessaTable(true);
+      }
+    }
+
+    // ── Carregamento de Subgrupo e Tabelas FTP ──────────────────────────────
     async function loadSubgroupContent(groupId, subName, forceRefresh = false) {
       const container = document.getElementById("catalogDynamicContent");
-      container.innerHTML = `
-        <div class="table-card shimmer-box">
-          <div class="shimmer-line" style="width: 45%;"></div>
-          <div class="shimmer-line"></div>
-          <div class="shimmer-line"></div>
-          <div class="shimmer-line"></div>
-        </div>
-      `;
+      container.innerHTML = loadingHtml(`Carregando ${subName}…`);
+      announce(`Carregando ${subName}…`);
 
       try {
         const params = new URLSearchParams({
@@ -1299,24 +1532,29 @@
         const resp = await fetch(`/api/subgroup-data?${params.toString()}`);
         if (!resp.ok) throw new Error(await resp.text());
         const data = await resp.json();
+        // Ignora respostas que chegam depois de o usuário trocar de seção
+        if (state.selectedGroup !== groupId || state.selectedSub !== subName) return;
         renderSubgroupView(data);
+        announce(`${subName} carregado.`);
       } catch (err) {
-        container.innerHTML = `<div class="table-card"><div class="state-box">Erro ao carregar subgrupo: ${escapeHtml(err.message)}</div></div>`;
+        if (state.selectedGroup !== groupId || state.selectedSub !== subName) return;
+        showError(container, `Não foi possível carregar ${subName}.`, err,
+          () => loadSubgroupContent(groupId, subName, forceRefresh));
       }
     }
 
     function renderSubgroupView(data) {
       const container = document.getElementById("catalogDynamicContent");
       const sections = data.sections || [];
+      const mode = data.sourceSummary || "READY";
 
       let html = `
         <div class="content-header">
-          <div>
-            <div class="breadcrumb-line">${escapeHtml(data.groupId)} / ${escapeHtml(data.subName)}</div>
+          <div class="content-heading">
             <h1 class="content-title">${escapeHtml(data.title)}</h1>
             <div class="ftp-url-bar">${escapeHtml(data.primaryFtpUrl)}</div>
           </div>
-          <span class="source-badge">CONEXÃO: ${escapeHtml(data.sourceSummary)}</span>
+          <span class="source-badge ${mode === "OFFLINE" ? "is-offline" : ""}">${escapeHtml(SOURCE_LABELS[mode] || mode)}</span>
         </div>
       `;
 
@@ -1324,20 +1562,23 @@
         html += `
           <div class="normatives-section">
             <div class="normatives-grid">
-              ${data.normatives.map(n => `
-                <div class="norm-card">
-                  <div>
-                    <div class="norm-card-top">
-                      <span class="norm-code">${escapeHtml(n.code)}</span>
-                      <span class="norm-tag">${escapeHtml(n.tag)}</span>
+              ${data.normatives.map(n => {
+                const external = n.url.startsWith("http");
+                return `
+                  <div class="norm-card">
+                    <div>
+                      <div class="norm-card-top">
+                        <span class="norm-code">${escapeHtml(n.code)}</span>
+                        <span class="norm-tag">${escapeHtml(n.tag)}</span>
+                      </div>
+                      <p class="norm-title" style="margin-top:0.35rem;">${escapeHtml(n.title)}</p>
                     </div>
-                    <p class="norm-title" style="margin-top:0.35rem;">${escapeHtml(n.title)}</p>
+                    <a class="norm-link" href="${escapeHtml(n.url)}" ${external ? 'target="_blank" rel="noopener"' : ""}>
+                      ${external ? "Abrir referência ↗" : "Abrir no SUS-systems →"}
+                    </a>
                   </div>
-                  <a class="norm-link" href="${escapeHtml(n.url)}" ${n.url.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>
-                    <span>Abrir referência →</span>
-                  </a>
-                </div>
-              `).join("")}
+                `;
+              }).join("")}
             </div>
           </div>
         `;
@@ -1349,33 +1590,37 @@
         html += `
           <div class="table-card" data-sec-idx="${secIdx}">
             <div class="table-card-header">
-              <div>
-                <div class="table-card-title">${escapeHtml(sec.title)}</div>
-                <div class="table-card-ftp">${escapeHtml(sec.ftpUrl)}</div>
+              <div class="table-card-heading">
+                <h2 class="table-card-title">${escapeHtml(sec.title)}</h2>
+                <span class="table-card-ftp">${escapeHtml(sec.ftpUrl)}</span>
               </div>
-              ${sec.showNameFilter ? `
-                <input type="search" class="table-filter-input" data-filter-table="${tableId}" placeholder="Filtrar por nome ou descrição…" autocomplete="off" />
+              ${sec.showNameFilter && sec.files.length > 0 ? `
+                <input type="search" class="table-filter-input" data-filter-table="${tableId}"
+                       placeholder="Filtrar por nome ou descrição…" aria-label="Filtrar ${escapeHtml(sec.title)}" autocomplete="off" />
               ` : ""}
             </div>
             ${sec.files.length === 0 ? `
               <div class="state-box">Nenhum arquivo retornado neste diretório.</div>
             ` : `
-              <table class="data-table" id="${tableId}">
-                <thead>
-                  <tr>
-                    ${showDesc ? `<th style="width:22%">Descrição</th>` : ""}
-                    <th>Arquivo</th>
-                    <th style="width:14%">Disponibilizado</th>
-                    <th style="width:15%">Data FTP</th>
-                    <th class="col-right" style="width:10%">Tamanho</th>
-                    <th class="col-right" style="width:18%">Ação / UF</th>
-                    <th class="col-right" style="width:13%">Anteriores</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${sec.files.map((f, fIdx) => renderFileRowHtml(f, sec.ftpUrl, showDesc, `${secIdx}-${fIdx}`)).join("")}
-                </tbody>
-              </table>
+              <div class="table-scroll">
+                <table class="data-table is-catalog ${showDesc ? "has-desc" : ""}" id="${tableId}">
+                  <thead>
+                    <tr>
+                      ${showDesc ? `<th class="col-desc">Descrição</th>` : ""}
+                      <th>Arquivo</th>
+                      <th class="col-avail">Disponibilizado</th>
+                      <th class="col-date">Data FTP</th>
+                      <th class="col-size col-right">Tamanho</th>
+                      <th class="col-action col-right">Ação / UF</th>
+                      <th class="col-hist col-right">Anteriores</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${sec.files.map((f, fIdx) => renderFileRowHtml(f, sec.ftpUrl, showDesc, `${secIdx}-${fIdx}`)).join("")}
+                  </tbody>
+                </table>
+              </div>
+              <div class="state-box filter-empty" hidden>Nenhum arquivo corresponde ao filtro.</div>
             `}
           </div>
         `;
@@ -1400,36 +1645,37 @@
       const modAt = isUf ? (activeMeta ? activeMeta.modifiedAt : null) : f.modifiedAt;
       const sizeBytes = isUf ? (activeMeta ? activeMeta.size : 0) : f.size;
       const histEntries = isUf ? (defaultUf && ufHistMap[defaultUf] ? ufHistMap[defaultUf] : []) : (f.history || []);
+      const needsUf = isUf && !activeMeta;
 
       const rowPayload = encodeURIComponent(JSON.stringify({ f, ftpUrl }));
 
       return `
         <tr data-row-key="${rowKey}" data-row-payload="${rowPayload}">
           ${showDesc ? `<td class="col-desc-badge">${escapeHtml(f.description || "–")}</td>` : ""}
-          <td>
-            ${(!isUf || activeMeta) ? `
+          <td class="cell-name">
+            ${!needsUf ? `
               <button type="button" class="file-link-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(actualDownloadName)}">
                 ${escapeHtml(fileNameToUse)}
               </button>
             ` : `<span class="mono-cell">${escapeHtml(f.displayName)}</span>`}
           </td>
-          <td class="cell-avail">${modAt ? formatRelativeTime(modAt) : "–"}</td>
-          <td class="mono-cell cell-date">${modAt ? formatDateBR(modAt) : "–"}</td>
+          <td class="cell-avail" title="${modAt ? escapeHtml(formatDateBR(modAt)) : ""}">${modAt ? formatRelativeTime(modAt) : "–"}</td>
+          <td class="mono-cell cell-date col-date">${modAt ? formatDateBR(modAt) : "–"}</td>
           <td class="mono-cell cell-size col-right">${sizeBytes ? formatSizeMB(sizeBytes) : "–"}</td>
           <td class="col-right">
             <div class="action-group">
-              <button type="button" class="btn-primary btn-row-dl"
-                      ${(isUf && !activeMeta) ? "disabled" : ""}
-                      data-dl-base="${escapeHtml(ftpUrl)}"
-                      data-dl-file="${escapeHtml(actualDownloadName)}">
-                <span>↓ Download</span>
-              </button>
               ${isUf ? `
-                <select class="uf-select" aria-label="Selecionar UF">
+                <select class="uf-select" aria-label="UF do arquivo ${escapeHtml(f.displayName)}">
                   <option value="">UF…</option>
                   ${availableUfs.map(u => `<option value="${u}" ${u === defaultUf ? "selected" : ""}>${u}</option>`).join("")}
                 </select>
               ` : ""}
+              <button type="button" class="btn-primary btn-row-dl"
+                      ${needsUf ? 'disabled title="Escolha a UF para baixar"' : ""}
+                      data-dl-base="${escapeHtml(ftpUrl)}"
+                      data-dl-file="${escapeHtml(actualDownloadName)}">
+                ${ICON_DOWNLOAD}<span>Download</span>
+              </button>
             </div>
           </td>
           <td class="cell-hist col-right">
@@ -1445,18 +1691,18 @@
       }
       return `
         <div class="hist-wrap">
-          <button type="button" class="btn-hist">
+          <button type="button" class="btn-hist" aria-expanded="false">
             <span>Anteriores (${entries.length})</span>
-            <span>▾</span>
+            ${ICON_CHEVRON}
           </button>
           <ul class="hist-popover">
             ${entries.map(e => {
-              const label = e.label || (e.ym ? `${e.ym.slice(0, 4)}/${e.ym.slice(4)}` : e.name);
+              const label = formatCompetencia(e.label || (e.ym ? `${e.ym.slice(0, 4)}/${e.ym.slice(4)}` : e.name));
               return `
                 <li>
-                  <button type="button" class="hist-item-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(e.name)}">
+                  <button type="button" class="hist-item-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}">
                     <span>${escapeHtml(label)}</span>
-                    <span style="color:var(--text-muted)">↓</span>
+                    ${ICON_DOWNLOAD}
                   </button>
                 </li>
               `;
@@ -1466,22 +1712,35 @@
       `;
     }
 
+    // ── Popover "Anteriores" (position: fixed, alinhado ao botão) ───────────
+    function closeAllPopovers(returnFocus = false) {
+      document.querySelectorAll(".hist-wrap.open").forEach(w => {
+        w.classList.remove("open");
+        const btn = w.querySelector(".btn-hist");
+        btn.setAttribute("aria-expanded", "false");
+        if (returnFocus) btn.focus();
+      });
+    }
+
+    function placePopover(wrap) {
+      const btn = wrap.querySelector(".btn-hist");
+      const pop = wrap.querySelector(".hist-popover");
+      const r = btn.getBoundingClientRect();
+      const width = pop.offsetWidth;
+      const height = pop.offsetHeight;
+      const left = Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8));
+      const spaceBelow = window.innerHeight - r.bottom;
+      const top = spaceBelow < height + 12 && r.top > spaceBelow ? r.top - height - 5 : r.bottom + 5;
+      pop.style.left = `${left}px`;
+      pop.style.top = `${Math.max(8, top)}px`;
+    }
+
     function bindTableInteractions(rootEl) {
       rootEl.querySelectorAll(".norm-link").forEach(a => {
-        const href = a.getAttribute("href") || "";
-        if (href === "#workspace-municipal") {
+        if (a.getAttribute("href") === "#workspace-sigtap") {
           a.addEventListener("click", e => {
             e.preventDefault();
-            switchWorkspace("municipal", true);
-            renderHeaderMenus();
-          });
-        } else if (href === "#workspace-sigtap") {
-          a.addEventListener("click", e => {
-            e.preventDefault();
-            state.selectedGroup = "SIGTAP";
-            state.selectedSub = "Consulta & Comparativo";
-            switchWorkspace("sigtap", true);
-            renderHeaderMenus();
+            navigateTo("SIGTAP", "Consulta & Comparativo");
           });
         }
       });
@@ -1490,6 +1749,7 @@
         btn.addEventListener("click", () => {
           const base = btn.dataset.dlBase;
           const file = btn.dataset.dlFile;
+          closeAllPopovers();
           if (base && file) triggerDownload(base, file);
         });
       });
@@ -1499,9 +1759,16 @@
           e.stopPropagation();
           const wrap = btn.closest(".hist-wrap");
           const wasOpen = wrap.classList.contains("open");
-          document.querySelectorAll(".hist-wrap.open").forEach(w => w.classList.remove("open"));
-          if (!wasOpen) wrap.classList.add("open");
+          closeAllPopovers();
+          if (wasOpen) return;
+          wrap.classList.add("open");
+          btn.setAttribute("aria-expanded", "true");
+          placePopover(wrap);
         });
+      });
+
+      rootEl.querySelectorAll(".hist-popover").forEach(pop => {
+        pop.addEventListener("click", e => e.stopPropagation());
       });
 
       rootEl.querySelectorAll(".uf-select").forEach(sel => {
@@ -1513,7 +1780,7 @@
           const meta = chosenUf && f.ufBySigla ? f.ufBySigla[chosenUf] : null;
           const hist = chosenUf && f.ufHistoryBySigla && f.ufHistoryBySigla[chosenUf] ? f.ufHistoryBySigla[chosenUf] : [];
 
-          const nameCell = tr.querySelector("td:nth-child(" + (tr.querySelector(".col-desc-badge") ? 2 : 1) + ")");
+          const nameCell = tr.querySelector(".cell-name");
           if (meta) {
             nameCell.innerHTML = `<button type="button" class="file-link-btn" data-dl-base="${escapeHtml(ftpUrl)}" data-dl-file="${escapeHtml(meta.name)}">${escapeHtml(meta.name)}</button>`;
             nameCell.querySelector("[data-dl-file]").addEventListener("click", () => triggerDownload(ftpUrl, meta.name));
@@ -1521,12 +1788,15 @@
             nameCell.innerHTML = `<span class="mono-cell">${escapeHtml(f.displayName)}</span>`;
           }
 
-          tr.querySelector(".cell-avail").innerHTML = meta ? formatRelativeTime(meta.modifiedAt) : "–";
+          const availCell = tr.querySelector(".cell-avail");
+          availCell.innerHTML = meta ? formatRelativeTime(meta.modifiedAt) : "–";
+          availCell.title = meta ? formatDateBR(meta.modifiedAt) : "";
           tr.querySelector(".cell-date").textContent = meta ? formatDateBR(meta.modifiedAt) : "–";
           tr.querySelector(".cell-size").textContent = meta ? formatSizeMB(meta.size) : "–";
 
           const dlBtn = tr.querySelector(".btn-row-dl");
           dlBtn.disabled = !meta;
+          dlBtn.title = meta ? "" : "Escolha a UF para baixar";
           dlBtn.dataset.dlFile = meta ? meta.name : "";
 
           const histCell = tr.querySelector(".cell-hist");
@@ -1540,129 +1810,38 @@
           const tbl = document.getElementById(input.dataset.filterTable);
           if (!tbl) return;
           const q = input.value.trim().toLowerCase();
+          let visible = 0;
           tbl.querySelectorAll("tbody tr").forEach(tr => {
-            const text = tr.textContent.toLowerCase();
-            tr.style.display = text.includes(q) ? "" : "none";
+            const match = tr.textContent.toLowerCase().includes(q);
+            tr.style.display = match ? "" : "none";
+            if (match) visible += 1;
           });
+          const empty = tbl.closest(".table-card").querySelector(".filter-empty");
+          if (empty) empty.hidden = visible > 0;
         });
       });
-    }
-
-    // ── Portaria 7.639/2025 & Pacotes Essenciais ────────────────────────────
-    async function loadMunicipalSummary() {
-      const pkgBox = document.getElementById("muniPackagesContainer");
-      const portBox = document.getElementById("muniPortariaContainer");
-      pkgBox.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
-
-      try {
-        const params = new URLSearchParams({ ibge: state.activeMuniIbge, uf: state.activeUf, ano: "2026" });
-        const resp = await fetch(`/api/municipal/summary?${params.toString()}`);
-        const data = await resp.json();
-
-        pkgBox.innerHTML = `
-          <div class="table-card">
-            <div class="table-card-header">
-              <div class="table-card-title">📦 Kit de Atualização Mensal Obrigatória (${escapeHtml(data.municipality.uf)})</div>
-              <span class="table-card-ftp">Últimas versões disponíveis nos servidores FTP do DataSUS</span>
-            </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Sistema / Finalidade</th>
-                  <th>Arquivo Oficial no FTP</th>
-                  <th>Competência</th>
-                  <th>Disponibilizado</th>
-                  <th class="col-right">Tamanho</th>
-                  <th class="col-right">Download Direto</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.essentialPackages.map(p => `
-                  <tr>
-                    <td class="col-desc-badge">${escapeHtml(p.category)}</td>
-                    <td class="mono-cell">${escapeHtml(p.name)}</td>
-                    <td class="mono-cell">${p.ym ? `${p.ym.slice(0,4)}/${p.ym.slice(4)}` : "Atual"}</td>
-                    <td>${formatRelativeTime(p.modifiedAt)}</td>
-                    <td class="mono-cell col-right">${formatSizeMB(p.size)}</td>
-                    <td class="col-right">
-                      <a class="btn-primary" href="${escapeHtml(buildDownloadUrl(p.ftpUrl, p.name))}">↓ Baixar Pacote</a>
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
-        `;
-
-        portBox.innerHTML = `
-          <div class="table-card">
-            <div class="table-card-header">
-              <div class="table-card-title">🛡️ Matriz de Monitoramento — Portaria GM/MS nº 7.639/2025</div>
-              <span class="table-card-ftp">Prevenção de bloqueio de 50% (2 meses) e suspensão de 100% (3 meses) de transferências</span>
-            </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width:5%">#</th>
-                  <th style="width:22%">Sistema</th>
-                  <th style="width:22%">Prazo Legal</th>
-                  <th style="width:12%">Órgão</th>
-                  <th>Impacto / Risco Financeiro</th>
-                  <th class="col-right" style="width:14%">Acesso</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.portaria7639.map(item => `
-                  <tr>
-                    <td class="mono-cell">${item.order}</td>
-                    <td>
-                      <div class="col-desc-badge">${escapeHtml(item.sigla)}</div>
-                      <div style="font-size:0.73rem;color:var(--text-muted)">${escapeHtml(item.nome)}</div>
-                    </td>
-                    <td><span class="status-warn">${escapeHtml(item.prazo)}</span></td>
-                    <td class="mono-cell">${escapeHtml(item.orgao)}</td>
-                    <td style="font-size:0.76rem;">${escapeHtml(item.risco)}</td>
-                    <td class="col-right">
-                      <button type="button" class="btn-hist" data-jump-group="${escapeHtml(item.ftpGroup)}" data-jump-sub="${escapeHtml(item.ftpSub)}">
-                        Abrir →
-                      </button>
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
-        `;
-
-        portBox.querySelectorAll("[data-jump-group]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            state.selectedGroup = btn.dataset.jumpGroup;
-            state.selectedSub = btn.dataset.jumpSub;
-            switchWorkspace("catalog", false);
-            renderHeaderMenus();
-            loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
-          });
-        });
-
-        runEntranceMotion(document.getElementById("ws-municipal"));
-      } catch (err) {
-        pkgBox.innerHTML = `<div class="table-card"><div class="state-box">Erro ao carregar resumo: ${escapeHtml(err.message)}</div></div>`;
-      }
     }
 
     // ── SIGTAP Consulta & Comparativo ───────────────────────────────────────
     async function initSigtapExplorer() {
       const selNew = document.getElementById("sigtapCompNew");
       const selOld = document.getElementById("sigtapCompOld");
+      const box = document.getElementById("sigtapResultsContainer");
+
       if (state.sigtapCompetencias.length === 0) {
-        document.getElementById("sigtapResultsContainer").innerHTML =
-          `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
-        const resp = await fetch("/api/sigtap/competencias");
-        const data = await resp.json();
-        state.sigtapCompetencias = data.competencias || [];
+        box.innerHTML = loadingHtml("Carregando competências do SIGTAP…");
+        try {
+          const resp = await fetch("/api/sigtap/competencias");
+          if (!resp.ok) throw new Error(await resp.text());
+          const data = await resp.json();
+          state.sigtapCompetencias = data.competencias || [];
+        } catch (err) {
+          showError(box, "Não foi possível listar as competências do SIGTAP.", err, initSigtapExplorer);
+          return;
+        }
 
         const opts = state.sigtapCompetencias.map(c =>
-          `<option value="${c.competencia}">${c.label} (${c.file})</option>`
+          `<option value="${escapeHtml(c.competencia)}" title="${escapeHtml(c.file)}">${escapeHtml(formatCompetencia(c.competencia))}</option>`
         ).join("");
         selNew.innerHTML = opts;
         selOld.innerHTML = opts;
@@ -1670,7 +1849,8 @@
           selOld.selectedIndex = 1;
         }
       }
-      runSigtapSearch();
+      // A busca inicial roda uma vez; trocar de aba e voltar mantém o resultado
+      if (!state.sigtapLoaded) runSigtapSearch();
     }
 
     async function runSigtapSearch() {
@@ -1679,68 +1859,89 @@
       const grupo = document.getElementById("sigtapGrupo").value;
       const fin = document.getElementById("sigtapFin").value;
       const box = document.getElementById("sigtapResultsContainer");
+      const limit = 120;
 
-      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      box.innerHTML = loadingHtml("Consultando a Tabela Unificada…");
+      announce("Consultando a Tabela Unificada…");
       try {
-        const params = new URLSearchParams({ comp, q, grupo, financiamento: fin, limit: "120" });
+        const params = new URLSearchParams({ comp, q, grupo, financiamento: fin, limit: String(limit) });
         const resp = await fetch(`/api/sigtap/explore?${params.toString()}`);
         if (!resp.ok) throw new Error(await resp.text());
         const data = await resp.json();
+        const items = data.items || [];
+        state.sigtapLoaded = true;
 
         box.innerHTML = `
-          <div class="kpi-strip">
-            <div class="kpi-box">
-              <div class="kpi-label">Competência Ativa</div>
-              <div class="kpi-val">${escapeHtml(data.competencia.slice(0,4))}/${escapeHtml(data.competencia.slice(4))}</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-label">Total de Procedimentos no SIGTAP</div>
-              <div class="kpi-val" data-count-target="${data.totalInTable}">0</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-label">Exibindo no Filtro</div>
-              <div class="kpi-val" data-count-target="${data.returnedCount}">0</div>
-            </div>
-          </div>
-
           <div class="table-card">
             <div class="table-card-header">
-              <div class="table-card-title">Procedimentos da Tabela Unificada (${escapeHtml(data.file)})</div>
-              <a class="btn-primary" href="${escapeHtml(buildDownloadUrl('ftp://ftp2.datasus.gov.br/pub/sistemas/tup/downloads/', data.file))}">↓ Baixar ZIP Completo</a>
+              <div class="table-card-heading">
+                <h2 class="table-card-title">Procedimentos da Tabela Unificada — ${escapeHtml(formatCompetencia(data.competencia))}</h2>
+                <span class="table-card-ftp">${escapeHtml(data.file)}</span>
+              </div>
+              <a class="btn-primary" href="${escapeHtml(buildDownloadUrl(SIGTAP_FTP, data.file))}">${ICON_DOWNLOAD}<span>Baixar ZIP completo</span></a>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width:14%">Código SIGTAP</th>
-                  <th>Nome do Procedimento</th>
-                  <th style="width:16%">Complexidade</th>
-                  <th style="width:18%">Financiamento</th>
-                  <th style="width:12%">Idade</th>
-                  <th class="col-right" style="width:10%">Valor SA</th>
-                  <th class="col-right" style="width:10%">Valor Hosp</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.items.map(p => `
-                  <tr>
-                    <td class="mono-cell" style="color:var(--accent-primary);font-weight:600;">${escapeHtml(p.formattedCode)}</td>
-                    <td class="col-desc-badge">${escapeHtml(p.name)}</td>
-                    <td>${escapeHtml(p.complexidade)}</td>
-                    <td style="font-size:0.75rem;">${escapeHtml(p.financiamento)}</td>
-                    <td class="mono-cell">${escapeHtml(p.idadeMin)} a ${escapeHtml(p.idadeMax)}</td>
-                    <td class="mono-cell col-right">R$ ${p.vlSA.toFixed(2)}</td>
-                    <td class="mono-cell col-right">R$ ${p.vlTotalHosp.toFixed(2)}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
+            <div class="summary-line">
+              <span><strong>${formatCount(data.totalInTable)}</strong> procedimentos na competência</span>
+              <span><strong class="delta-info">${formatCount(data.returnedCount)}</strong> exibidos${data.returnedCount >= limit ? ` (limite de ${limit}; refine a busca para ver outros)` : ""}</span>
+            </div>
+            ${items.length === 0 ? `
+              <div class="state-box">Nenhum procedimento encontrado com esses filtros.</div>
+            ` : `
+              <div class="table-scroll">
+                <table class="data-table is-sigtap">
+                  <thead>
+                    <tr>
+                      <th class="col-code">Código</th>
+                      <th>Procedimento</th>
+                      <th class="col-comp">Complexidade</th>
+                      <th class="col-fin">Financiamento</th>
+                      <th class="col-age">Idade</th>
+                      <th class="col-money col-right">Valor SA</th>
+                      <th class="col-money col-right">Valor hospitalar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${items.map(p => `
+                      <tr>
+                        <td class="code-cell">${escapeHtml(p.formattedCode)}</td>
+                        <td class="col-desc-badge">${escapeHtml(p.name)}</td>
+                        <td>${escapeHtml(p.complexidade)}</td>
+                        <td>${escapeHtml(p.financiamento)}</td>
+                        <td class="mono-cell">${escapeHtml(formatAgeRange(p.idadeMin, p.idadeMax))}</td>
+                        <td class="mono-cell col-right cell-nowrap">${formatBRL(p.vlSA)}</td>
+                        <td class="mono-cell col-right cell-nowrap">${formatBRL(p.vlTotalHosp)}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            `}
           </div>
         `;
         runEntranceMotion(box);
-        animateCounters(box);
+        announce(`${formatCount(data.returnedCount)} procedimentos exibidos.`);
       } catch (err) {
-        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao consultar SIGTAP: ${escapeHtml(err.message)}</div></div>`;
+        showError(box, "Não foi possível consultar o SIGTAP.", err, runSigtapSearch);
       }
+    }
+
+    function diffCardHtml({ title, total, shown, emptyText, head, rows }) {
+      return `
+        <div class="table-card">
+          <div class="table-card-header">
+            <h2 class="table-card-title">${escapeHtml(title)} (${formatCount(total)})</h2>
+          </div>
+          ${shown === 0 ? `<div class="state-box">${escapeHtml(emptyText)}</div>` : `
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr>${head}</tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+            ${total > shown ? `<div class="cap-note">Mostrando os primeiros ${formatCount(shown)} de ${formatCount(total)}. Baixe o ZIP da competência para a lista completa.</div>` : ""}
+          `}
+        </div>
+      `;
     }
 
     async function runSigtapDiff() {
@@ -1748,196 +1949,259 @@
       const compOld = document.getElementById("sigtapCompOld").value;
       const box = document.getElementById("sigtapResultsContainer");
 
-      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      if (compNew === compOld) {
+        box.innerHTML = `<div class="table-card"><div class="state-box" role="alert"><strong>Escolha duas competências diferentes.</strong><span>A competência de cima é comparada com a de baixo.</span></div></div>`;
+        return;
+      }
+
+      box.innerHTML = loadingHtml("Comparando competências…");
+      announce("Comparando competências…");
       try {
         const params = new URLSearchParams({ comp_new: compNew, comp_old: compOld });
         const resp = await fetch(`/api/sigtap/diff?${params.toString()}`);
         if (!resp.ok) throw new Error(await resp.text());
         const d = await resp.json();
+        const s = d.summary;
+        const oldLabel = formatCompetencia(d.compOld);
+        const newLabel = formatCompetencia(d.compNew);
 
         box.innerHTML = `
-          <div class="kpi-strip">
-            <div class="kpi-box">
-              <div class="kpi-label">Novos Procedimentos Incluídos</div>
-              <div class="kpi-val delta-pos" data-count-target="${d.summary.addedCount}">0</div>
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-heading">
+                <h2 class="table-card-title">Comparativo ${escapeHtml(oldLabel)} → ${escapeHtml(newLabel)}</h2>
+                <span class="table-card-ftp">${escapeHtml(d.fileOld)} → ${escapeHtml(d.fileNew)}</span>
+              </div>
             </div>
-            <div class="kpi-box">
-              <div class="kpi-label">Procedimentos Com Reajuste (R$)</div>
-              <div class="kpi-val" style="color:var(--accent-primary)" data-count-target="${d.summary.valueChangedCount}">0</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-label">Alterações de Regra / Nome / Idade</div>
-              <div class="kpi-val" style="color:var(--accent-amber)" data-count-target="${d.summary.ruleChangedCount}">0</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-label">Procedimentos Excluídos/Revogados</div>
-              <div class="kpi-val delta-neg" data-count-target="${d.summary.removedCount}">0</div>
+            <div class="summary-line">
+              <span><strong class="delta-pos">${formatCount(s.addedCount)}</strong> incluídos</span>
+              <span><strong class="delta-info">${formatCount(s.valueChangedCount)}</strong> com reajuste de valor</span>
+              <span><strong class="delta-warn">${formatCount(s.ruleChangedCount)}</strong> com mudança de regra</span>
+              <span><strong class="delta-neg">${formatCount(s.removedCount)}</strong> excluídos</span>
             </div>
           </div>
 
-          <div class="table-card">
-            <div class="table-card-header">
-              <div class="table-card-title">💰 Reajustes de Valor entre ${escapeHtml(d.compOld)} e ${escapeHtml(d.compNew)} (${d.summary.valueChangedCount})</div>
-            </div>
-            ${d.valueChanged.length === 0 ? `<div class="state-box">Nenhum procedimento teve alteração de valor monetário entre estas competências.</div>` : `
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Procedimento</th>
-                    <th class="col-right">Amb Anterior</th>
-                    <th class="col-right">Amb Novo</th>
-                    <th class="col-right">Δ Amb (SA)</th>
-                    <th class="col-right">Δ Hosp (SH+SP)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${d.valueChanged.map(v => `
-                    <tr>
-                      <td class="mono-cell" style="font-weight:600">${escapeHtml(v.formattedCode)}</td>
-                      <td class="col-desc-badge">${escapeHtml(v.name)}</td>
-                      <td class="mono-cell col-right">R$ ${v.oldSA.toFixed(2)}</td>
-                      <td class="mono-cell col-right">R$ ${v.newSA.toFixed(2)}</td>
-                      <td class="mono-cell col-right ${v.deltaSA >= 0 ? 'delta-pos' : 'delta-neg'}">${v.deltaSA >= 0 ? '+' : ''}R$ ${v.deltaSA.toFixed(2)}</td>
-                      <td class="mono-cell col-right ${(v.deltaSH + v.deltaSP) >= 0 ? 'delta-pos' : 'delta-neg'}">${(v.deltaSH + v.deltaSP) >= 0 ? '+' : ''}R$ ${(v.deltaSH + v.deltaSP).toFixed(2)}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
-            `}
-          </div>
+          ${diffCardHtml({
+            title: "Reajustes de valor",
+            total: s.valueChangedCount,
+            shown: d.valueChanged.length,
+            emptyText: "Nenhum procedimento mudou de valor entre essas competências.",
+            head: `<th>Código</th><th>Procedimento</th><th class="col-right">SA anterior</th><th class="col-right">SA novo</th><th class="col-right">Δ SA</th><th class="col-right">Δ hospitalar (SH+SP)</th>`,
+            rows: d.valueChanged.map(v => {
+              const dHosp = v.deltaSH + v.deltaSP;
+              return `
+                <tr>
+                  <td class="code-cell">${escapeHtml(v.formattedCode)}</td>
+                  <td class="col-desc-badge">${escapeHtml(v.name)}</td>
+                  <td class="mono-cell col-right cell-nowrap">${formatBRL(v.oldSA)}</td>
+                  <td class="mono-cell col-right cell-nowrap">${formatBRL(v.newSA)}</td>
+                  <td class="mono-cell col-right cell-nowrap ${v.deltaSA >= 0 ? "delta-pos" : "delta-neg"}">${formatSignedBRL(v.deltaSA)}</td>
+                  <td class="mono-cell col-right cell-nowrap ${dHosp >= 0 ? "delta-pos" : "delta-neg"}">${formatSignedBRL(dHosp)}</td>
+                </tr>
+              `;
+            }).join("")
+          })}
 
-          <div class="table-card">
-            <div class="table-card-header">
-              <div class="table-card-title">✨ Novos Procedimentos Incluídos em ${escapeHtml(d.compNew)} (${d.summary.addedCount})</div>
-            </div>
-            ${d.added.length === 0 ? `<div class="state-box">Nenhum código novo incluído nesta competência.</div>` : `
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Procedimento</th>
-                    <th>Complexidade</th>
-                    <th>Financiamento</th>
-                    <th class="col-right">Valor SA</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${d.added.map(a => `
-                    <tr>
-                      <td class="mono-cell delta-pos">${escapeHtml(a.formattedCode)}</td>
-                      <td class="col-desc-badge">${escapeHtml(a.name)}</td>
-                      <td>${escapeHtml(a.complexidade)}</td>
-                      <td>${escapeHtml(a.financiamento)}</td>
-                      <td class="mono-cell col-right">R$ ${a.vlSA.toFixed(2)}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
-            `}
-          </div>
+          ${diffCardHtml({
+            title: `Incluídos em ${newLabel}`,
+            total: s.addedCount,
+            shown: d.added.length,
+            emptyText: "Nenhum código novo nesta competência.",
+            head: `<th>Código</th><th>Procedimento</th><th>Complexidade</th><th>Financiamento</th><th class="col-right">Valor SA</th>`,
+            rows: d.added.map(a => `
+              <tr>
+                <td class="code-cell">${escapeHtml(a.formattedCode)}</td>
+                <td class="col-desc-badge">${escapeHtml(a.name)}</td>
+                <td>${escapeHtml(a.complexidade)}</td>
+                <td>${escapeHtml(a.financiamento)}</td>
+                <td class="mono-cell col-right cell-nowrap">${formatBRL(a.vlSA)}</td>
+              </tr>
+            `).join("")
+          })}
+
+          ${diffCardHtml({
+            title: "Mudanças de regra, nome ou idade",
+            total: s.ruleChangedCount,
+            shown: (d.ruleChanged || []).length,
+            emptyText: "Nenhuma mudança de regra entre essas competências.",
+            head: `<th>Código</th><th>Procedimento</th><th>O que mudou</th>`,
+            rows: (d.ruleChanged || []).map(r => `
+              <tr>
+                <td class="code-cell">${escapeHtml(r.formattedCode)}</td>
+                <td class="col-desc-badge">${escapeHtml(r.name)}</td>
+                <td>${escapeHtml(r.changes)}</td>
+              </tr>
+            `).join("")
+          })}
+
+          ${diffCardHtml({
+            title: `Excluídos em ${newLabel}`,
+            total: s.removedCount,
+            shown: (d.removed || []).length,
+            emptyText: "Nenhum procedimento foi excluído nesta competência.",
+            head: `<th>Código</th><th>Procedimento</th><th>Complexidade</th><th>Financiamento</th><th class="col-right">Valor SA</th>`,
+            rows: (d.removed || []).map(r => `
+              <tr>
+                <td class="code-cell">${escapeHtml(r.formattedCode)}</td>
+                <td class="col-desc-badge">${escapeHtml(r.name)}</td>
+                <td>${escapeHtml(r.complexidade)}</td>
+                <td>${escapeHtml(r.financiamento)}</td>
+                <td class="mono-cell col-right cell-nowrap">${formatBRL(r.vlSA)}</td>
+              </tr>
+            `).join("")
+          })}
         `;
         runEntranceMotion(box);
-        animateCounters(box);
+        announce(`Comparativo ${oldLabel} para ${newLabel} pronto.`);
       } catch (err) {
-        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao calcular comparativo: ${escapeHtml(err.message)}</div></div>`;
+        showError(box, "Não foi possível comparar as competências.", err, runSigtapDiff);
       }
     }
 
     // ── Remessas SIA (LogCarga) ─────────────────────────────────────────────
-    async function loadRemessaTable(ibge, ano) {
+    function cleanStatus(text) {
+      return String(text || "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+    }
+
+    function statusTone(text) {
+      const t = String(text || "").toLowerCase();
+      if (/sem erro|sucesso|carregad/.test(t)) return "ok";
+      if (/erro|rejeit|falh|inconsist|bloque/.test(t)) return "err";
+      if (/processad/.test(t)) return "ok";
+      return "neutral";
+    }
+
+    async function loadRemessaTable(force = false) {
+      const ibge = document.getElementById("remIbgeInput").value.trim();
+      const ano = document.getElementById("remAnoSelect").value;
       const box = document.getElementById("remessaResultsContainer");
-      box.innerHTML = `<div class="table-card shimmer-box"><div class="shimmer-line"></div><div class="shimmer-line"></div></div>`;
+      const key = `${ibge}|${ano}`;
+      if (!force && state.remessaLoadedKey === key) return;
+
+      box.innerHTML = loadingHtml("Consultando remessas no LogCarga…");
+      announce("Consultando remessas no LogCarga…");
       try {
         const params = new URLSearchParams({ ibge, ano });
         const resp = await fetch(`/api/remessa?${params.toString()}`);
+        if (!resp.ok) throw new Error(await resp.text());
         const data = await resp.json();
+        if (data.error) throw new Error(data.error);
         const rows = data.rows || [];
+        const ftpUrl = data.ftpUrl || LOGCARGA_FTP;
+        state.remessaLoadedKey = key;
 
         if (rows.length === 0) {
-          box.innerHTML = `<div class="table-card"><div class="state-box">Nenhuma remessa encontrada para o código IBGE ${escapeHtml(ibge)} em ${escapeHtml(ano)}.</div></div>`;
+          box.innerHTML = `<div class="table-card"><div class="state-box"><strong>Nenhuma remessa encontrada.</strong><span>Não há registros para o IBGE ${escapeHtml(ibge)} em ${escapeHtml(ano)}. Confira o código ou escolha outro ano.</span></div></div>`;
+          announce("Nenhuma remessa encontrada.");
           return;
         }
 
+        const errCount = rows.filter(r => statusTone(r.status) === "err").length;
         box.innerHTML = `
           <div class="table-card">
             <div class="table-card-header">
-              <div class="table-card-title">Histórico de Remessas Processadas — IBGE ${escapeHtml(ibge)} (${escapeHtml(ano)})</div>
-              <span class="table-card-ftp">${escapeHtml(data.ftpUrl || "ftp://arpoador.datasus.gov.br/siasus/LogCarga/")}</span>
+              <div class="table-card-heading">
+                <h2 class="table-card-title">Remessas processadas — IBGE ${escapeHtml(ibge)} · ${escapeHtml(ano)}</h2>
+                <span class="table-card-ftp">${escapeHtml(ftpUrl)}</span>
+              </div>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Competência</th>
-                  <th>Remessa</th>
-                  <th>Recebido em</th>
-                  <th>Verificado em</th>
-                  <th>Carga em</th>
-                  <th>Status / Arquivo de Log</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rows.map(r => `
+            <div class="summary-line">
+              <span><strong>${formatCount(rows.length)}</strong> remessas</span>
+              <span><strong class="${errCount ? "delta-neg" : "delta-pos"}">${formatCount(errCount)}</strong> com erro</span>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
                   <tr>
-                    <td class="mono-cell" style="font-weight:700">${escapeHtml(r.competencia)}</td>
-                    <td class="mono-cell">${escapeHtml(r.remessa)}</td>
-                    <td class="mono-cell">${escapeHtml(r.recebidoEm)}</td>
-                    <td class="mono-cell">${escapeHtml(r.verificadoEm)}</td>
-                    <td class="mono-cell">${escapeHtml(r.cargaEm)}</td>
-                    <td>
-                      ${r.statusFile ? `
-                        <a class="file-link-btn" href="${escapeHtml(buildDownloadUrl(data.ftpUrl || 'ftp://arpoador.datasus.gov.br/siasus/LogCarga/', r.statusFile))}">
-                          ${escapeHtml(r.status)} (↓ Baixar Log)
-                        </a>
-                      ` : escapeHtml(r.status)}
-                    </td>
+                    <th>Competência</th>
+                    <th>Remessa</th>
+                    <th>Recebida em</th>
+                    <th>Verificada em</th>
+                    <th>Carga em</th>
+                    <th>Situação</th>
                   </tr>
-                `).join("")}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  ${rows.map(r => {
+                    const tone = statusTone(r.status);
+                    return `
+                      <tr class="${tone === "err" ? "row-err" : ""}">
+                        <td class="mono-cell cell-nowrap" style="font-weight:700">${escapeHtml(formatCompetencia(r.competencia))}</td>
+                        <td class="mono-cell">${escapeHtml(r.remessa)}</td>
+                        <td class="mono-cell cell-nowrap">${escapeHtml(r.recebidoEm)}</td>
+                        <td class="mono-cell cell-nowrap">${escapeHtml(r.verificadoEm)}</td>
+                        <td class="mono-cell cell-nowrap">${escapeHtml(r.cargaEm)}</td>
+                        <td>
+                          <div class="status-cell">
+                            <span class="status-pill status-${tone}">${escapeHtml(cleanStatus(r.status))}</span>
+                            ${r.statusFile ? `
+                              <a class="link-inline" href="${escapeHtml(buildDownloadUrl(ftpUrl, r.statusFile))}">
+                                ${ICON_DOWNLOAD}<span>Baixar log</span>
+                              </a>
+                            ` : ""}
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
           </div>
         `;
         runEntranceMotion(box);
+        announce(`${rows.length} remessas carregadas, ${errCount} com erro.`);
       } catch (err) {
-        box.innerHTML = `<div class="table-card"><div class="state-box">Erro ao consultar remessas: ${escapeHtml(err.message)}</div></div>`;
+        showError(box, "Não foi possível consultar as remessas.", err, () => loadRemessaTable(true));
       }
     }
 
     // ── Boot & Event Listeners ──────────────────────────────────────────────
     async function bootApp() {
-      document.addEventListener("click", () => {
-        document.querySelectorAll(".hist-wrap.open").forEach(w => w.classList.remove("open"));
+      document.addEventListener("click", () => closeAllPopovers());
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeAllPopovers(true);
+      });
+      // Rolar a página (ou uma tabela) fecha o popover, que está preso à posição do botão
+      window.addEventListener("scroll", e => {
+        const t = e.target;
+        if (t instanceof Element && t.closest(".hist-popover")) return;
+        closeAllPopovers();
+      }, true);
+      window.addEventListener("resize", () => {
+        updateNavGlider();
+        closeAllPopovers();
+      });
+      window.addEventListener("hashchange", () => {
+        const h = readHash();
+        if (h && (h.groupId !== state.selectedGroup || h.subName !== state.selectedSub)) {
+          navigateTo(h.groupId, h.subName);
+        }
       });
 
-      window.addEventListener("resize", updateNavGlider);
-
       document.getElementById("btnHomeLogo").addEventListener("click", () => {
-        state.selectedGroup = "SIA";
-        state.selectedSub = "APAC";
-        switchWorkspace("catalog", false);
-        renderHeaderMenus();
-        loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+        navigateTo(DEFAULT_GROUP, DEFAULT_SUB);
       });
 
       document.getElementById("btnForceRefresh").addEventListener("click", () => {
         const icon = document.getElementById("iconRefresh");
-        if (typeof window.anime === "function") {
+        if (typeof window.anime === "function" && !reducedMotion.matches) {
           anime({ targets: icon, rotate: [0, 360], duration: 550, easing: "easeInOutSine" });
         }
-        if (state.activeWorkspace === "catalog") {
-          loadSubgroupContent(state.selectedGroup, state.selectedSub, true);
-        } else if (state.activeWorkspace === "municipal") {
-          loadMunicipalSummary();
-        }
+        refreshActiveView();
       });
 
-      // Alternar Tema (Abre em Modo Claro por padrão -> Lua visível)
+      // Alternar Tema (Abre em Modo Claro por padrão -> Lua visível; a escolha não é salva)
       document.getElementById("btnThemeToggle").addEventListener("click", () => {
         const htmlEl = document.documentElement;
+        const btn = document.getElementById("btnThemeToggle");
         const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
         htmlEl.setAttribute("data-theme", next);
         document.getElementById("iconSun").style.display = next === "dark" ? "block" : "none";
         document.getElementById("iconMoon").style.display = next === "dark" ? "none" : "block";
+        const label = next === "dark" ? "Ativar modo claro" : "Ativar modo escuro";
+        btn.title = label;
+        btn.setAttribute("aria-label", label);
       });
 
       document.getElementById("btnSigtapSearch").addEventListener("click", runSigtapSearch);
@@ -1946,21 +2210,32 @@
       });
       document.getElementById("btnSigtapDiff").addEventListener("click", runSigtapDiff);
 
+      const yearSel = document.getElementById("remAnoSelect");
+      const currentYear = new Date().getFullYear();
+      yearSel.innerHTML = [0, 1, 2, 3].map(i => `<option value="${currentYear - i}">${currentYear - i}</option>`).join("");
+
       document.getElementById("remessaForm").addEventListener("submit", e => {
         e.preventDefault();
-        loadRemessaTable(
-          document.getElementById("remIbgeInput").value,
-          document.getElementById("remAnoSelect").value
-        );
+        loadRemessaTable(true);
       });
 
-      const resp = await fetch("/api/catalog");
-      const data = await resp.json();
-      state.catalog = data.areas || [];
-      state.ufs = data.ufs || [];
+      const container = document.getElementById("catalogDynamicContent");
+      container.innerHTML = loadingHtml("Carregando o catálogo…");
+      try {
+        const resp = await fetch("/api/catalog");
+        if (!resp.ok) throw new Error(await resp.text());
+        const data = await resp.json();
+        state.catalog = data.areas || [];
+        state.ufs = data.ufs || [];
+      } catch (err) {
+        showError(container, "Não foi possível carregar o catálogo.", err, () => window.location.reload());
+        return;
+      }
 
-      renderHeaderMenus();
-      loadSubgroupContent(state.selectedGroup, state.selectedSub, false);
+      const h = readHash();
+      if (!(h && navigateTo(h.groupId, h.subName))) {
+        navigateTo(DEFAULT_GROUP, DEFAULT_SUB);
+      }
     }
 
     bootApp();

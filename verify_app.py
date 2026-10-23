@@ -8,21 +8,31 @@ def run_checks():
     r_home = client.get("/")
     assert r_home.status_code == 200
     html = r_home.text
-    assert 'data-theme="dark"' in html
+    assert 'data-theme="light"' in html
     assert "anime.min.js" in html
-    assert "echarts.min.js" in html
-    assert "Explorer & Diff" not in html
-    assert "Explorer &amp; Diff" not in html
-    print("[OK] GET / -> Abre em Modo Escuro por padrão (data-theme='dark'), Anime.js + ECharts integrados, sem 'Explorer & Diff'")
+    assert "echarts" not in html
+    assert "Portaria 7.639" not in html
+    assert 'rel="icon"' in html
+    print("[OK] GET / -> Abre em Modo Claro por padrão, sem ECharts, sem Portaria 7.639 e com favicon")
+
+    for icon in ("favicon.svg", "favicon.ico", "apple-touch-icon.png"):
+        r_icon = client.get(f"/{icon}")
+        assert r_icon.status_code == 200 and r_icon.content, icon
+    assert client.get("/nao-existe.txt").status_code == 404
+    print("[OK] GET /favicon.svg, /favicon.ico, /apple-touch-icon.png -> servidos na raiz")
 
     r_cat = client.get("/api/catalog")
     assert r_cat.status_code == 200
     areas = r_cat.json()["areas"]
-    all_group_ids = [g["id"] for a in areas for g in a["groups"]]
-    all_group_names = [g["name"] for a in areas for g in a["groups"]]
-    assert "VIG_EPIDEMIOLOGICA" not in all_group_ids
-    assert "VIG_SANITARIA" not in all_group_ids
-    print("[OK] GET /api/catalog -> Vigilâncias Epidemiológica e Sanitária removidas. Menus alinhados:", all_group_names)
+    groups = {g["id"]: g for a in areas for g in a["groups"]}
+    assert "VIG_EPIDEMIOLOGICA" not in groups
+    assert "VIG_SANITARIA" not in groups
+    sia_subs = [s["name"] for s in groups["SIA"]["subGroups"]]
+    assert sia_subs == ["BPA", "SIA", "FPO", "RAAS", "Remessa"], sia_subs
+    print("[OK] GET /api/catalog -> SIA sem APAC, na ordem:", sia_subs)
+
+    assert client.get("/api/municipal/summary").status_code == 404
+    print("[OK] GET /api/municipal/summary -> removido (Portaria 7.639)")
 
     r_health = client.get("/api/health")
     assert r_health.status_code == 200
