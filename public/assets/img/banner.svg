@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="100%" height="100%">
+  <defs>
+    <!-- Background -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070a12"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </linearGradient>
+
+    <!-- Brand Cyan-Teal -->
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+
+    <!-- Soft Glow -->
+    <radialGradient id="radial-glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+
+    <pattern id="dot-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#334155" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="380" fill="url(#bg)"/>
+  <rect width="1200" height="380" fill="url(#dot-grid)"/>
+  <circle cx="600" cy="180" r="320" fill="url(#radial-glow)"/>
+
+  <!-- Top Accent Line -->
+  <rect x="0" y="0" width="1200" height="2" fill="url(#brand)"/>
+
+  <!-- Center Content Block -->
+  <g transform="translate(600, 190)" text-anchor="middle">
+    
+    <!-- Minimalist Logo Icon -->
+    <g transform="translate(0, -95)">
+      <!-- Soft Ring -->
+      <circle cx="0" cy="0" r="38" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+      <!-- Glowing Cross -->
+      <path d="M -7,-20 L 7,-20 Q 8,-20 8,-19 L 8,-8 L 19,-8 Q 20,-8 20,-7 L 20,7 Q 20,8 19,8 L 8,8 L 8,19 Q 8,20 7,20 L -7,20 Q -8,20 -8,19 L -8,8 L -19,8 Q -20,8 -20,7 L -20,-7 Q -20,-8 -19,-8 L -8,-8 L -8,-19 Q -8,-20 -7,-20 Z" 
+            fill="url(#brand)"/>
+      <circle cx="0" cy="0" r="3" fill="#ffffff"/>
+    </g>
+
+    <!-- Main Title -->
+    <text y="-5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif" font-size="54" font-weight="800" letter-spacing="-1.2">
+      <tspan fill="#f8fafc">SUS-</tspan><tspan fill="url(#brand)">systems</tspan>
+    </text>
+
+    <!-- Subtitle (Clean & Direct) -->
+    <text y="42" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif" font-size="19" font-weight="400" letter-spacing="-0.2">
+      Acesso moderno, extração e auditoria para as bases de dados do Datasus
+    </text>
+
+    <!-- Minimal Badges Pill Row -->
+    <g transform="translate(0, 88)">
+      <!-- Badge: Streaming HTTP -->
+      <g transform="translate(-230, 0)">
+        <rect x="-60" y="-14" width="120" height="28" rx="14" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <text y="4.5" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500">Streaming HTTP</text>
+      </g>
+
+      <!-- Badge: SIGTAP Parser -->
+      <g transform="translate(-80, 0)">
+        <rect x="-60" y="-14" width="120" height="28" rx="14" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <text y="4.5" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500">Parser SIGTAP</text>
+      </g>
+
+      <!-- Badge: Portaria 7.639 -->
+      <g transform="translate(80, 0)">
+        <rect x="-65" y="-14" width="130" height="28" rx="14" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+        <text y="4.5" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500">Portaria 7.639</text>
+      </g>
+
+      <!-- Badge: Open Source -->
+      <g transform="translate(230, 0)">
+        <rect x="-55" y="-14" width="110" height="28" rx="14" fill="#0f172a" stroke="#34d399" stroke-width="1" stroke-opacity="0.5"/>
+        <text y="4.5" fill="#6ee7b7" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600">Open Source</text>
+      </g>
+    </g>
+
+  </g>
+</svg>

@@ -1,0 +1,5 @@
+# Apache: tudo que não for arquivo físico vai para o front controller
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
