@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://sus-systems.vercel.app"><img src="https://img.shields.io/badge/Demo_Online-sus--systems.vercel.app-00dfa2?style=for-the-badge&logo=vercel&logoColor=black" alt="Demo Online"></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+"></a>
-  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"></a>
+  <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.2%2B%20%7C%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2+ | 8.3"></a>
+  <img src="https://img.shields.io/badge/Depend%C3%AAncias-Zero%20(Pure%20PHP)-success?style=for-the-badge" alt="Zero Dependencies">
+  <a href="docker-compose.yml"><img src="https://img.shields.io/badge/Docker-Pronto-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-38bdf8?style=for-the-badge" alt="MIT License"></a>
 </p>
 
@@ -13,12 +13,14 @@
 
 ## Visão Geral
 
-O **SUS-systems** é uma aplicação open-source para consultar, baixar e auditar dados públicos do Datasus (Ministério da Saúde). 
+O **SUS-systems 3.0** é uma plataforma moderna, leve e open-source para consultar, auditar e baixar dados públicos oficiais do DataSUS (Ministério da Saúde do Brasil).
 
-O projeto elimina a necessidade de clientes FTP legados e converte estruturas de arquivos antigas em fluxos HTTP diretos, com suporte a streaming de arquivos grandes e parser posicional da tabela SIGTAP.
+Reescrito em **PHP 8.2+ / 8.3 sem frameworks pesados nem dependências externas**, o sistema converte protocolos legados (FTP passivo RFC 959 com listagens IIS e Unix) em fluxos HTTP/HTTPS modernos e estruturados. Permite streaming em tempo real de grandes volumes de dados sem estourar memória, além de incluir um motor de consulta e diff posicional para a tabela unificada **SIGTAP** e consulta nativa de remessas mensais do SIA diretamente via FTP LogCarga (sem depender de proxies externos).
 
-🌐 **Acesso online:** [sus-systems.vercel.app](https://sus-systems.vercel.app)  
-💻 **Execução local:** recomendada para extração massiva de bases completas (sem limites de payload).
+A aplicação roda perfeitamente em:
+- **Containers Docker** (imagem oficial Apache + PHP 8.3);
+- **Hospedagem compartilhada** (cPanel / Apache com `.htaccess` e DocumentRoot em `public/`);
+- **Servidor embutido do PHP** (`php -S`) para desenvolvimento local rápido.
 
 ---
 
@@ -26,108 +28,163 @@ O projeto elimina a necessidade de clientes FTP legados e converte estruturas de
 
 ```mermaid
 flowchart TD
-    subgraph Clientes["Navegadores Modernos"]
-        Browser["Chrome / Edge / Firefox<br/>(Sem suporte a FTP nativo)"]
+    Navegador["Navegador Web / Cliente HTTP (Porta 8090)"] --> FrontController["Front Controller (public/index.php)"]
+    FrontController --> Core["Core (Router, Request, Response, Cache em Arquivo)"]
+    Core --> FtpDomain & SigtapDomain & CatalogDomain & RemessaDomain
+
+    subgraph Dominios["Módulos de Domínio (src/Domain)"]
+        FtpDomain["Ftp (FtpClient, ListingParser, FileGrouper)"]
+        SigtapDomain["Sigtap (SigtapRepository - Parser tb_procedimento)"]
+        CatalogDomain["Catalog (Catalog de Sistemas e UFs)"]
+        RemessaDomain["Remessa (RemessaService - LogCarga Nativo)"]
     end
 
-    subgraph Core["SUS-systems"]
-        Bridge["Motor HTTP & Chunks 64KB"]
-        Parsers["Parser SIGTAP & LogCarga SIA"]
-    end
-
-    subgraph Origem["Clusters Oficiais Datasus"]
-        FTP["arpoador • ftp • ftp2<br/>(Conexão Passiva RFC 959)"]
-    end
-
-    Browser -->|HTTP 1.1 / Porta 8090| Bridge
-    Bridge -->|Consulta estruturada| Parsers
-    Bridge -->|Streaming passivo| FTP
+    CatalogDomain --> FtpDomain
+    FtpDomain --> ClustersFTP["Clusters FTP Oficiais DataSUS (arpoador, ftp, ftp2)"]
+    SigtapDomain --> ClustersFTP
+    RemessaDomain --> ClustersFTP
 ```
 
----
-
-## O que a ferramenta entrega
-
-- **Download sem cliente FTP:** Navegadores modernos removeram o suporte ao protocolo `ftp://`. O SUS-systems atua como ponte transparente em HTTP.
-- **Leitor SIGTAP integrado:** Lê os registros posicionais do arquivo `tb_procedimento.txt` sem depender de ferramentas legadas de 32 bits.
-- **Interface responsiva:** Tema claro por padrão (com opção de escuro), navegação por abas com transições fluidas e busca instantânea de arquivos e tabelas.
-- **Autonomia local:** Roda diretamente no Windows, Linux ou via container Docker sem exigência de banco de dados externo.
+### Características Centrais
+1. **Zero Dependências Externas**: Utiliza apenas extensões nativas do PHP (`ftp`, `zip`, `curl`, `mbstring`). Autoload PSR-4 próprio em `src/bootstrap.php`.
+2. **Streaming sob Demanda**: Transferência de arquivos em chunks (64 KB) através de `StreamResponse`, mantendo o consumo de memória baixo e estável.
+3. **Cache de Alta Performance em Disco**: Armazenamento local com TTL ajustável para listagens e índices SIGTAP, minimizando requisições redundantes aos servidores do DataSUS.
+4. **Remessas SIA Nativas**: Consulta de remessas e logs de processamento mensal (LogCarga`<ano>`) conectando-se diretamente via FTP ao cluster oficial do DataSUS, eliminando a dependência do proxy legado downloadsus.
+5. **Proteção Anti-SSRF**: Validação estrita de hosts autorizados (`allowed_hosts`), bloqueando redirecionamentos indevidos.
 
 ---
 
-## Sistemas Integrados
+## Como Rodar
 
-| Sistema | Sigla / Área | Conteúdo Principal |
-| :--- | :--- | :--- |
-| **SIA** | Ambulatorial | BPA, BDSIA, FPO, RAAS e acompanhamento de remessas (LogCarga) |
-| **SIGTAP** | Tabela Unificada | Procedimentos, compatibilidades, medicamentos e valores SUS |
-| **CNES** | Estabelecimentos | Dados cadastrais de unidades de saúde, profissionais e leitos |
-| **e-SUS APS** | Atenção Primária | Pacotes de instalação e migração do Prontuário Eletrônico (PEC) |
-| **PNI & SISVAN** | Imunização / Nutrição | Base histórica do SI-PNI (até 2019) e atalho para o SISVAN Web |
-| **TabWin & DBC** | Tabuladores | Instalador e manual do TabWin e atalho para os microdados .DBC |
+### Opção 1: Docker Compose (Recomendado)
 
----
-
-## Como Rodar Localmente
-
-### Opção 1: Windows (1 Clique)
-
-Dê um duplo clique no arquivo [`run_windows.bat`](run_windows.bat) ou execute via terminal:
-
-```cmd
-run_windows.bat
-```
-
-> O script cria automaticamente o ambiente virtual `.venv`, instala as dependências e abre o navegador em `http://127.0.0.1:8090`.
-
----
-
-### Opção 2: Docker
+Suba o container pré-configurado:
 
 ```bash
 docker compose up -d --build
 ```
 
-Acesse em: `http://localhost:8090`
+Acesse no navegador:
+👉 `http://localhost:8090`
 
----
-
-### Opção 3: Manual (Linux / macOS / Windows)
-
+Para rodar os testes dentro do container:
 ```bash
-# 1. Clonar o projeto
-git clone https://github.com/weesrnp/SUS-systems.git
-cd SUS-systems
-
-# 2. Configurar ambiente
-python3 -m venv .venv
-source .venv/bin/activate  # No Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-# 3. Iniciar servidor
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8090
+docker exec sus-systems-app php tests/run.php
 ```
 
 ---
 
-## Endpoints da API
+### Opção 2: Servidor Embutido do PHP (Local)
 
-| Rota | Descrição |
-| :--- | :--- |
-| `GET /api/health` | Status de integridade e conectividade dos clusters FTP |
-| `GET /api/catalog` | Lista de sistemas e diretórios públicos disponíveis |
-| `GET /api/browse?system_id=...` | Listagem em tempo real de arquivos e subpastas no Datasus |
-| `GET /api/download?system_id=...&file_path=...` | Streaming HTTP direto do arquivo selecionado |
-| `GET /api/sigtap/explore?comp=...&q=...` | Consulta de procedimentos na tabela unificada |
+Requer PHP 8.2 ou superior instalado com extensões `ftp`, `zip`, `curl` e `mbstring`:
 
-Documentação Swagger interativa: `http://127.0.0.1:8090/docs`
+```bash
+php -S localhost:8090 -t public public/index.php
+```
 
 ---
 
-## Conformidade e Dados Públicos
+### Opção 3: Hospedagem Compartilhada (Apache / cPanel)
 
-Este projeto consome exclusivamente dados públicos disponibilizados pelo Datasus em conformidade com a Lei de Acesso à Informação (Lei nº 12.527/2011) e a LGPD (Lei nº 13.709/2018). Trata-se de uma iniciativa de código aberto, sem vínculo governamental oficial.
+1. Faça o upload dos arquivos para a sua hospedagem.
+2. Aponte o **DocumentRoot** do domínio/subdomínio para a pasta `public/`.
+3. Certifique-se de que o Apache esteja com o módulo `mod_rewrite` ativado (o arquivo `public/.htaccess` já direciona as requisições para o `index.php`).
+4. Garanta permissão de escrita para o servidor web na pasta `storage/cache/`.
+
+---
+
+### Opção 4: Scripts de Inicialização Rápida
+
+- **Windows**: Dê duplo clique em `run_windows.bat` (sobe via Docker Compose ou fallback com `php -S`).
+- **Linux / macOS**: Execute `./run_linux.sh`.
+
+---
+
+## Variáveis de Ambiente (`config/app.php`)
+
+As configurações podem ser definidas via variáveis de ambiente no container ou no arquivo `.env`:
+
+| Variável | Padrão | Descrição |
+| :--- | :--- | :--- |
+| `APP_DEBUG` | `false` | Exibe mensagens detalhadas de exceções em caso de erro |
+| `CACHE_DIR` | `SUS_ROOT/storage/cache` | Diretório em disco para os arquivos serializados de cache |
+| `FTP_CACHE_TTL` | `600` | Tempo de vida (TTL) do cache de listagens FTP (em segundos, padrão: 10 min) |
+| `SIGTAP_CACHE_TTL` | `86400` | TTL para parsing da competência SIGTAP (em segundos, padrão: 24 horas) |
+| `FTP_TIMEOUT` | `8` | Timeout em segundos para conexão com servidores FTP do DataSUS |
+| `FTP_HTTPS_BRIDGE` | `""` | URL opcional de ponte HTTPS caso a porta 21 esteja bloqueada na rede |
+
+---
+
+## Tabela de Endpoints da API
+
+A API mantém total compatibilidade com o legado, respondendo tanto com prefixo `/api/*` quanto diretamente na raiz:
+
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/` | Interface gráfica web do sistema (Server-Side Rendering) |
+| `GET` | `/api/health` | Diagnóstico de integridade do app e conectividade com clusters FTP |
+| `GET` | `/api/catalog` | Áreas, sistemas e diretórios públicos mapeados |
+| `GET` | `/api/subgroup-data` | Metadados e arquivos de um subgrupo (`group_id`, `sub_name`) |
+| `GET` | `/api/ftp-list` | Listagem processada de arquivos com agrupamento de versões e UFs |
+| `GET` | `/api/ftp-download` | Streaming HTTP direto do arquivo selecionado (`url`, `filename`) |
+| `GET` | `/api/remessa` | Consulta nativa FTP de arquivos de remessa SIA (LogCarga por `ibge`, `ano`) |
+| `GET` | `/api/sigtap/competencias`| Lista de competências disponíveis para download no SIGTAP |
+| `GET` | `/api/sigtap/explore` | Pesquisa de procedimentos por código, nome, grupo e financiamento |
+| `GET` | `/api/sigtap/diff` | Comparativo posicional de procedimentos entre duas competências |
+
+---
+
+## Estrutura de Pastas
+
+```
+SUS-systems/
+├── assets/                 # Imagens institucionais (banner, ilustrações)
+├── config/                 # Configurações gerais, catálogo e mapeamento de rotas
+│   ├── app.php             # Variáveis de ambiente e parâmetros do sistema
+│   ├── catalog.php         # Definição dos sistemas, regras de extração e UFs
+│   └── routes.php          # Registro das rotas web e API
+├── docker/                 # Arquivos de infraestrutura de container
+│   └── Dockerfile          # Imagem php:8.3-apache com extensões compiladas
+├── docs/                   # Documentação técnica e guias
+│   ├── ARCHITECTURE.md     # Contrato de arquitetura e interfaces
+│   ├── DEPLOY.md           # Guia de implantação em produção
+│   ├── QA.md               # Relatórios e roteiros de garantia de qualidade
+│   └── TESTING.md          # Guia do runner e execução de testes
+├── legacy-python/          # Backend Python legado (apenas referência, somente leitura)
+├── public/                 # DocumentRoot público
+│   ├── assets/             # CSS, JavaScript e ícones
+│   ├── .htaccess           # Regras de reescrita Apache para o Front Controller
+│   └── index.php           # Front Controller da aplicação
+├── src/                    # Código-fonte PHP 8.2+ (namespace SusSystems)
+│   ├── bootstrap.php       # Autoload PSR-4 nativo e inicialização do ambiente
+│   ├── helpers.php         # Funções auxiliares (escape HTML, asset versioning)
+│   ├── Core/               # Motor HTTP (Router, Request, Response, Cache, Config)
+│   ├── Domain/             # Regras de negócio (Ftp, Sigtap, Catalog, Remessa)
+│   └── Http/Controllers/  # Controllers web e REST
+├── storage/                # Armazenamento volátil (cache em disco)
+│   └── cache/
+├── templates/              # Templates PHP limpos (layout, páginas e partials)
+├── tests/                  # Suíte de testes unitários e de integração
+│   ├── helpers.php         # Asserções globais (assert_same, assert_throws, etc.)
+│   ├── run.php             # Runner CLI sem dependências externas
+│   └── *Test.php           # Casos de teste
+├── docker-compose.yml      # Orquestração do container local
+├── run_linux.sh            # Script de inicialização para Linux / macOS
+└── run_windows.bat         # Script de inicialização para Windows
+```
+
+---
+
+## Conformidade, LAI e LGPD
+
+O **SUS-systems** consome e indexa unicamente informações e bases de dados abertas do DataSUS, em conformidade com:
+- **Lei de Acesso à Informação (Lei nº 12.527/2011)**: Amplo acesso aos dados públicos de saúde;
+- **Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD)**: Tratamento exclusivo de dados não identificáveis e estatísticas públicas anonimizadas.
+
+> **Nota:** Trata-se de uma iniciativa de código aberto independente, sem qualquer vínculo institucional ou governamental com o Ministério da Saúde.
+
+---
 
 ## Licença
 
-Distribuído sob licença [MIT](LICENSE).
+Distribuído sob a licença [MIT](LICENSE).
