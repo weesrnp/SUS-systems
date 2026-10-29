@@ -40,6 +40,24 @@ final class FtpClient
             return [$entries, $source === 'OFFLINE' ? 'CACHE' : $source];
         } catch (\RuntimeException) { return [[], 'OFFLINE']; }
     }
+    /** Lista um padrão restrito sem baixar o diretório inteiro. */
+    public function listPattern(string $ftpUrl, string $pattern): array
+    {
+        self::assertAllowedUrl($ftpUrl);
+        if (!preg_match('/^[A-Za-z0-9*_]+$/D', $pattern)) throw new HttpException(400, 'Padrão FTP inválido.');
+        $ftp = $this->connect($ftpUrl);
+        try {
+            if (!@ftp_chdir($ftp, $this->path($ftpUrl))) throw new \RuntimeException('Diretório FTP indisponível.');
+            $lines = @ftp_rawlist($ftp, $pattern);
+            if ($lines === false) return [];
+            $parser = new ListingParser(); $entries = [];
+            foreach ($lines as $line) {
+                $entry = $parser->parse($line);
+                if ($entry !== null) $entries[] = $entry;
+            }
+            return $entries;
+        } finally { ftp_close($ftp); }
+    }
     public function streamFile(string $baseFtpUrl, string $filename, callable $write): int
     {
         self::assertAllowedUrl($baseFtpUrl); $filename = $this->safeName($filename);

@@ -80,7 +80,7 @@ public function ufs(): array;                  // siglas ordenadas
 public function findSubgroup(string $groupId, string $subName): ?array;
 ```
 
-### `SusSystems\Domain\Sigtap\SigtapRepository` — dono: **Alpha**
+### `SusSystems\Domain\Sigtap\SigtapRepository` — dono: **Lucio**
 ```php
 public function competencias(bool $forceRefresh = false): array;
 public function search(string $comp, string $q, string $grupo, string $complexidade, string $financiamento, int $limit): array;
@@ -92,8 +92,8 @@ public function diff(string $compNew, string $compOld): array;
 | Agente | Escopo (arquivos que só ele edita) |
 | --- | --- |
 | **Claude Code** (maestro) | `src/Core/*`, `config/app.php`, `config/routes.php`, `public/index.php`, integração, revisão, merge |
-| **Lucio** | `src/Domain/{Ftp,Catalog}/*`, `config/catalog.php`, `Http/Controllers/{Ftp,Catalog}Controller.php`, `tests/{Ftp,Catalog}*Test.php` |
-| **Alpha** | `src/Domain/{Sigtap,Remessa}/*`, `Http/Controllers/{Sigtap,Remessa}Controller.php`, `tests/{Sigtap,Remessa}*Test.php` |
+| **Lucio** | `src/Domain/{Ftp,Catalog,Sigtap,Remessa}/*`, `config/catalog.php`, `Http/Controllers/{Ftp,Catalog,Sigtap,Remessa}Controller.php`, `tests/{Ftp,Catalog,Sigtap,Remessa}*Test.php` |
+| **Alpha** | (terminal indisponível — escopo transferido ao Lucio) |
 | **Noticia** | `templates/**`, `public/assets/{css,js}/**`, `Http/Controllers/PageController.php` |
 | **Midia** | `tests/run.php`, `.github/workflows/*`, `README.md`, `docs/*` (exceto este arquivo), `run_windows.bat`, `run_linux.sh`, QA no portal |
 
