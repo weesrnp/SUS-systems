@@ -73,7 +73,7 @@ public function group(array $rawFiles, array $section): array;
 // description, size, modifiedAt, ym, kind, history, ufBySigla, ufHistoryBySigla).
 ```
 
-### `SusSystems\Domain\Catalog\Catalog` — dono: **Alpha**
+### `SusSystems\Domain\Catalog\Catalog` — dono: **Lucio**
 ```php
 public function areas(): array;               // config/catalog.php
 public function ufs(): array;                  // siglas ordenadas
@@ -92,8 +92,8 @@ public function diff(string $compNew, string $compOld): array;
 | Agente | Escopo (arquivos que só ele edita) |
 | --- | --- |
 | **Claude Code** (maestro) | `src/Core/*`, `config/app.php`, `config/routes.php`, `public/index.php`, integração, revisão, merge |
-| **Lucio** | `src/Domain/Ftp/*`, `src/Http/Controllers/FtpController.php`, `tests/Ftp*Test.php` |
-| **Alpha** | `config/catalog.php`, `src/Domain/{Catalog,Sigtap,Remessa}/*`, `Http/Controllers/{Catalog,Sigtap,Remessa}Controller.php`, `tests/{Catalog,Sigtap,Remessa}*Test.php` |
+| **Lucio** | `src/Domain/{Ftp,Catalog}/*`, `config/catalog.php`, `Http/Controllers/{Ftp,Catalog}Controller.php`, `tests/{Ftp,Catalog}*Test.php` |
+| **Alpha** | `src/Domain/{Sigtap,Remessa}/*`, `Http/Controllers/{Sigtap,Remessa}Controller.php`, `tests/{Sigtap,Remessa}*Test.php` |
 | **Noticia** | `templates/**`, `public/assets/{css,js}/**`, `Http/Controllers/PageController.php` |
 | **Midia** | `tests/run.php`, `.github/workflows/*`, `README.md`, `docs/*` (exceto este arquivo), `run_windows.bat`, `run_linux.sh`, QA no portal |
 
