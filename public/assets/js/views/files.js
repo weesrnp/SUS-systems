@@ -150,7 +150,7 @@ function renderSubgroupHtml(container, data, activeUf, onNavigateSpecial) {
               </tbody>
             </table>
           </div>
-          <div class="state-box filter-empty" hidden>Nenhum arquivo corresponde ao filtro de busca.</div>
+          <div class="state-box filter-empty" hidden style="display: none;">Nenhum arquivo corresponde ao filtro de busca.</div>
         `}
       </div>
     `;
@@ -333,12 +333,20 @@ function bindTableEvents(container, activeUf, onNavigateSpecial) {
       const q = input.value.trim().toLowerCase();
       let visible = 0;
       tbl.querySelectorAll('tbody tr').forEach(tr => {
-        const match = tr.textContent.toLowerCase().includes(q);
+        const match = !q || tr.textContent.toLowerCase().includes(q);
         tr.style.display = match ? '' : 'none';
         if (match) visible++;
       });
       const empty = tbl.closest('.table-card').querySelector('.filter-empty');
-      if (empty) empty.hidden = visible > 0;
+      if (empty) {
+        if (q.length > 0 && visible === 0) {
+          empty.removeAttribute('hidden');
+          empty.style.display = 'flex';
+        } else {
+          empty.setAttribute('hidden', '');
+          empty.style.display = 'none';
+        }
+      }
     });
   });
 }

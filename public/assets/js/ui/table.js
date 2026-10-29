@@ -72,9 +72,19 @@ export function formatCompetencia(raw) {
 }
 
 export function formatAgeRange(min, max) {
-  if (min === undefined || max === undefined || (min === 0 && max === 999)) return 'Todas as idades';
-  if (min === max) return `${min} ano(s)`;
-  return `${min} a ${max} anos`;
+  const minStr = String(min ?? '').trim();
+  const maxStr = String(max ?? '').trim();
+
+  if (!minStr && !maxStr) return '–';
+  if (minStr.toLowerCase() === 'não se aplica' && maxStr.toLowerCase() === 'não se aplica') {
+    return 'Não se aplica';
+  }
+  if (minStr === maxStr) {
+    return minStr;
+  }
+  if (!minStr) return maxStr;
+  if (!maxStr) return minStr;
+  return `${minStr} a ${maxStr}`;
 }
 
 export function loadingSkeletonHtml(label = 'Carregando dados...') {

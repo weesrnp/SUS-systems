@@ -130,10 +130,11 @@ function parseHash() {
 
   const parts = hash.split('/');
   if (parts.length >= 2) {
+    const rawSub = parts.slice(1).join('/').replace(/\+/g, ' ');
     return {
       type: 'subgroup',
-      group: decodeURIComponent(parts[0]),
-      sub: decodeURIComponent(parts.slice(1).join('/'))
+      group: decodeURIComponent(parts[0].replace(/\+/g, ' ')),
+      sub: decodeURIComponent(rawSub)
     };
   }
 

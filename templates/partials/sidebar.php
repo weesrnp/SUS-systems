@@ -67,7 +67,7 @@ $areas = $catalog['areas'] ?? [];
                   <?php
                     $subName = (string) ($sub['name'] ?? '');
                     $specialView = (string) ($sub['specialView'] ?? '');
-                    $targetHash = $specialView !== '' ? "#/{$specialView}" : "#/{$grpId}/" . urlencode($subName);
+                    $targetHash = $specialView !== '' ? "#/{$specialView}" : "#/{$grpId}/" . rawurlencode($subName);
                   ?>
                   <li>
                     <a href="<?= e($targetHash) ?>"
