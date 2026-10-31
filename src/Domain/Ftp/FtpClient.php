@@ -147,18 +147,23 @@ final class FtpClient
     {
         return rtrim($bridge, '/') . '/api/' . $endpoint . '?' . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
     }
+    private function bridgeProtocol(string $bridge): int
+    {
+        return strtolower((string) parse_url($bridge, PHP_URL_SCHEME)) === 'http' ? CURLPROTO_HTTP : CURLPROTO_HTTPS;
+    }
     private function bridgeRequest(string $bridge, string $endpoint, array $query): string|false
     {
         $curl = curl_init($this->bridgeUrl($bridge, $endpoint, $query));
-        curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER=>true, CURLOPT_TIMEOUT=>(int) Config::get('ftp.timeout', 8), CURLOPT_FOLLOWLOCATION=>false, CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS]);
+        curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER=>true, CURLOPT_TIMEOUT=>(int) Config::get('ftp.timeout', 8), CURLOPT_FOLLOWLOCATION=>false, CURLOPT_PROTOCOLS=>$this->bridgeProtocol($bridge)]);
         $result = curl_exec($curl); $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE); curl_close($curl);
         return $status === 200 && is_string($result) ? $result : false;
     }
     private function streamBridge(string $base, string $file, callable $write): int
     {
         $this->downloadMode = 'HTTPS_STREAM_BRIDGE'; $total = 0; $status = 0;
-        $curl = curl_init($this->bridgeUrl((string) Config::get('ftp.https_bridge'), 'ftp-download', ['base'=>$base, 'file'=>$file]));
-        curl_setopt_array($curl, [CURLOPT_FOLLOWLOCATION=>false, CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS, CURLOPT_CONNECTTIMEOUT=>(int) Config::get('ftp.timeout', 8), CURLOPT_HEADERFUNCTION=>static function($curl, string $header) use (&$status): int { if (preg_match('~^HTTP/\S+\s+(\d{3})~', $header, $match)) $status = (int) $match[1]; return strlen($header); }, CURLOPT_WRITEFUNCTION=>static function($curl, string $data) use ($write, &$total, &$status): int { if ($status === 200) { $write($data); $total += strlen($data); } return strlen($data); }]);
+        $bridge = (string) Config::get('ftp.https_bridge');
+        $curl = curl_init($this->bridgeUrl($bridge, 'ftp-download', ['base'=>$base, 'file'=>$file]));
+        curl_setopt_array($curl, [CURLOPT_FOLLOWLOCATION=>false, CURLOPT_PROTOCOLS=>$this->bridgeProtocol($bridge), CURLOPT_CONNECTTIMEOUT=>(int) Config::get('ftp.timeout', 8), CURLOPT_HEADERFUNCTION=>static function($curl, string $header) use (&$status): int { if (preg_match('~^HTTP/\S+\s+(\d{3})~', $header, $match)) $status = (int) $match[1]; return strlen($header); }, CURLOPT_WRITEFUNCTION=>static function($curl, string $data) use ($write, &$total, &$status): int { if ($status === 200) { $write($data); $total += strlen($data); } return strlen($data); }]);
         $ok = curl_exec($curl); $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE); curl_close($curl);
         if (!$ok || $status !== 200) throw new HttpException(502, 'Falha ao baixar pela ponte HTTPS.');
         return $total;
