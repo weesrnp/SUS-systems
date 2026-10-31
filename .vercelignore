@@ -1,3 +1,5 @@
 legacy-python
 storage/cache/*
 !storage/cache/.gitignore
+public/index.php
+public/.htaccess
