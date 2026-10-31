@@ -7,7 +7,7 @@ import {
   escapeHtml,
   formatCount,
   formatCompetencia,
-  loadingSkeletonHtml,
+  remessaSkeletonHtml,
   ICON_DOWNLOAD
 } from '../ui/table.js';
 import { showToast } from '../ui/toast.js';
@@ -15,11 +15,15 @@ import { showToast } from '../ui/toast.js';
 const LOGCARGA_FTP = 'ftp://arpoador.datasus.gov.br/siasus/LogCarga/';
 
 let lastLoadedKey = '';
+let remessaSeq = 0;
+let activeAbortController = null;
+let slowTimer = null;
 
 export function initRemessaView(force = false) {
   const form = document.getElementById('remessaForm');
   const chips = document.querySelectorAll('.quick-ibge-chip');
   const ibgeInput = document.getElementById('remIbgeInput');
+  const anoSelect = document.getElementById('remAnoSelect');
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
@@ -31,6 +35,12 @@ export function initRemessaView(force = false) {
       }
     });
   });
+
+  if (anoSelect) {
+    anoSelect.addEventListener('change', () => {
+      loadRemessas(true);
+    });
+  }
 
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -54,16 +64,80 @@ export async function loadRemessas(force = false) {
   const key = `${ibge}|${ano}`;
   if (!force && lastLoadedKey === key) return;
 
-  container.innerHTML = loadingSkeletonHtml(`Consultando remessas para IBGE ${ibge} (${ano})...`);
+  // Cancela requisições anteriores ativas
+  if (activeAbortController) {
+    activeAbortController.abort();
+    activeAbortController = null;
+  }
+  if (slowTimer) {
+    clearTimeout(slowTimer);
+    slowTimer = null;
+  }
+
+  const currentSeq = ++remessaSeq;
+  activeAbortController = new AbortController();
+
+  // Renderiza skeleton realista com linhas de tabela e mensagem inicial
+  container.innerHTML = remessaSkeletonHtml(ibge, ano);
+
+  // Após ~3s de carregamento, atualiza a mensagem para alertar da primeira consulta
+  slowTimer = setTimeout(() => {
+    if (currentSeq !== remessaSeq) return;
+    const msgEl = document.getElementById('remessaLoadingText');
+    if (msgEl) {
+      msgEl.textContent = 'Ainda consultando — a primeira consulta do ano pode levar alguns segundos';
+      msgEl.classList.add('is-slow');
+    }
+    const liveEl = document.getElementById('liveStatus');
+    if (liveEl) {
+      liveEl.textContent = 'Ainda consultando o LogCarga do DataSUS — a primeira consulta do ano pode levar alguns segundos';
+    }
+  }, 3000);
 
   try {
-    const data = await getRemessa(ibge, ano);
+    const data = await getRemessa(ibge, ano, { signal: activeAbortController.signal });
+    if (currentSeq !== remessaSeq) return; // Requisição obsoleta descartada
+
+    if (slowTimer) {
+      clearTimeout(slowTimer);
+      slowTimer = null;
+    }
+    activeAbortController = null;
+
     if (data.error) throw new Error(data.error);
 
     lastLoadedKey = key;
     renderRemessaTable(container, data, ibge, ano);
+    updateRemessaBadge(data.sourceMode);
   } catch (err) {
+    if (err.name === 'AbortError') return; // Cancelamento intencional por troca de filtro
+    if (currentSeq !== remessaSeq) return;
+
+    if (slowTimer) {
+      clearTimeout(slowTimer);
+      slowTimer = null;
+    }
+    activeAbortController = null;
+
     renderError(container, 'Não foi possível consultar as remessas no LogCarga.', err, () => loadRemessas(true));
+  }
+}
+
+function updateRemessaBadge(mode) {
+  const badge = document.getElementById('remessaSourceBadge');
+  if (!badge) return;
+  if (mode === 'HTTPS_BRIDGE' || mode === 'HTTPS_STREAM_BRIDGE') {
+    badge.className = 'source-badge badge-bridge';
+    badge.textContent = 'via ponte HTTPS';
+    badge.title = 'Conexão ao LogCarga via ponte HTTPS';
+  } else if (mode === 'OFFLINE') {
+    badge.className = 'source-badge badge-offline';
+    badge.textContent = 'offline — dados em cache';
+    badge.title = 'FTP LogCarga inacessível — exibindo dados locais em cache';
+  } else {
+    badge.className = 'source-badge badge-ftp';
+    badge.textContent = 'FTP LogCarga DataSUS';
+    badge.title = 'Conexão direta ao FTP arpoador.datasus.gov.br';
   }
 }
 

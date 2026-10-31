@@ -40,6 +40,9 @@ declare(strict_types=1);
       <span class="mun-sep">·</span>
       <span class="mun-ibge">IBGE 410965</span>
     </div>
+
+    <!-- Indicador discreto de telemetria de conexão DataSUS (via ponte HTTPS / offline) -->
+    <span class="network-mode-badge" id="topbarModeBadge" style="display:none;" aria-live="polite"></span>
   </div>
 
   <!-- Segmented Workspace Switcher (Centro) -->

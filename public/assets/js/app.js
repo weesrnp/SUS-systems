@@ -3,7 +3,7 @@
  * Módulo ES nativo sem ferramentas de build.
  */
 
-import { getCatalog } from './api.js';
+import { getCatalog, onNetworkModeChange } from './api.js';
 import { closeAllPopovers } from './ui/table.js';
 import { showToast } from './ui/toast.js';
 import { initCommandPalette } from './ui/command-palette.js';
@@ -402,6 +402,26 @@ function closeMobileSidebar() {
  */
 function setupGlobalListeners() {
   loadSavedTheme();
+
+  // Monitora telemetria do modo de conexão (ponte HTTPS / offline na Vercel)
+  const topbarBadge = document.getElementById('topbarModeBadge');
+  if (topbarBadge) {
+    onNetworkModeChange((mode) => {
+      if (mode === 'HTTPS_BRIDGE' || mode === 'HTTPS_STREAM_BRIDGE' || mode === 'HTTPS_MIRROR') {
+        topbarBadge.className = 'network-mode-badge badge-bridge';
+        topbarBadge.textContent = 'via ponte HTTPS';
+        topbarBadge.title = 'Requisições FTP DataSUS operando através da ponte HTTPS';
+        topbarBadge.style.display = 'inline-flex';
+      } else if (mode === 'OFFLINE') {
+        topbarBadge.className = 'network-mode-badge badge-offline';
+        topbarBadge.textContent = 'offline — dados em cache';
+        topbarBadge.title = 'Sem conexão com o FTP DataSUS; exibindo dados em cache local';
+        topbarBadge.style.display = 'inline-flex';
+      } else {
+        topbarBadge.style.display = 'none';
+      }
+    });
+  }
 
   // Fecha popovers ao clicar fora
   document.addEventListener('click', () => closeAllPopovers());

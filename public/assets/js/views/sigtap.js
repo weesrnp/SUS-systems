@@ -10,6 +10,7 @@ import {
   formatCount,
   formatCompetencia,
   formatAgeRange,
+  highlightTerm,
   loadingSkeletonHtml,
   ICON_DOWNLOAD
 } from '../ui/table.js';
@@ -95,13 +96,33 @@ async function runSearch() {
 
   try {
     const data = await searchSigtap({ comp, q, grupo, financiamento: fin, limit: 120 });
-    renderSearchResults(container, data);
+    renderSearchResults(container, data, q);
+    updateSigtapBadge(data.sourceMode);
   } catch (err) {
+    updateSigtapBadge('OFFLINE');
     renderError(container, 'Não foi possível consultar os procedimentos do SIGTAP.', err, runSearch);
   }
 }
 
-function renderSearchResults(container, data) {
+function updateSigtapBadge(mode) {
+  const badge = document.getElementById('sigtapSourceBadge');
+  if (!badge) return;
+  if (mode === 'HTTPS_BRIDGE' || mode === 'HTTPS_STREAM_BRIDGE') {
+    badge.className = 'source-badge badge-bridge';
+    badge.textContent = 'via ponte HTTPS';
+    badge.title = 'Tabela Unificada obtida através da ponte HTTPS';
+  } else if (mode === 'OFFLINE') {
+    badge.className = 'source-badge badge-offline';
+    badge.textContent = 'offline — dados em cache';
+    badge.title = 'Servidor SIGTAP inacessível — dados locais em cache';
+  } else {
+    badge.className = 'source-badge badge-ftp';
+    badge.textContent = 'Tabela Unificada Oficial';
+    badge.title = 'Conexão direta ao FTP ftp2.datasus.gov.br';
+  }
+}
+
+function renderSearchResults(container, data, query = '') {
   const items = data.items || [];
   const limit = 120;
   const zipUrl = buildDownloadUrl(SIGTAP_FTP, data.file || '');
@@ -144,8 +165,8 @@ function renderSearchResults(container, data) {
             <tbody>
               ${items.map(p => `
                 <tr>
-                  <td class="code-cell">${escapeHtml(p.formattedCode || p.code)}</td>
-                  <td class="col-desc-badge">${escapeHtml(p.name)}</td>
+                  <td class="code-cell">${highlightTerm(p.formattedCode || p.code, query)}</td>
+                  <td class="col-desc-badge">${highlightTerm(p.name, query)}</td>
                   <td>${escapeHtml(p.complexidade || '–')}</td>
                   <td>${escapeHtml(p.financiamento || '–')}</td>
                   <td class="mono-cell">${escapeHtml(formatAgeRange(p.idadeMin, p.idadeMax))}</td>

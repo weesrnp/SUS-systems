@@ -22,11 +22,18 @@ let currentRequestKey = '';
 const SOURCE_LABELS = {
   CACHE: 'Fonte: cache local (10 min)',
   FTP_DIRECT: 'Fonte: FTP direto DataSUS',
-  HTTPS_BRIDGE: 'Fonte: espelho HTTPS',
-  HTTPS_MIRROR: 'Fonte: espelho HTTPS',
-  READY: 'Fonte: pronta',
-  OFFLINE: 'Sem conexão com o FTP DataSUS'
+  HTTPS_BRIDGE: 'via ponte HTTPS',
+  HTTPS_STREAM_BRIDGE: 'via ponte HTTPS',
+  HTTPS_MIRROR: 'via ponte HTTPS',
+  READY: 'Catálogo Oficial',
+  OFFLINE: 'offline — dados em cache'
 };
+
+function getSourceBadgeClass(mode) {
+  if (mode === 'OFFLINE') return 'badge-offline';
+  if (mode === 'HTTPS_BRIDGE' || mode === 'HTTPS_STREAM_BRIDGE' || mode === 'HTTPS_MIRROR') return 'badge-bridge';
+  return 'badge-ftp';
+}
 
 /**
  * Renderiza o conteúdo do subgrupo selecionado na área do catálogo.
@@ -76,7 +83,7 @@ function renderSubgroupHtml(container, data, activeUf, onNavigateSpecial) {
         </div>
       </div>
       <div class="content-header-badges">
-        <span class="source-badge ${mode === 'OFFLINE' ? 'badge-offline' : 'badge-ftp'}">
+        <span class="source-badge ${getSourceBadgeClass(mode)}" title="${mode === 'HTTPS_BRIDGE' || mode === 'HTTPS_STREAM_BRIDGE' ? 'Requisições através da ponte HTTPS' : (mode === 'OFFLINE' ? 'Servidor FTP inacessível; exibindo dados em cache' : 'Conexão DataSUS')}">
           ${escapeHtml(SOURCE_LABELS[mode] || mode)}
         </span>
       </div>

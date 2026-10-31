@@ -100,6 +100,136 @@ export function loadingSkeletonHtml(label = 'Carregando dados...') {
 }
 
 /**
+ * Constrói regex insensível a acentos e maiúsculas/minúsculas para um termo.
+ * Se o termo for numérico (ex.: 030101), permite pontuação opcional (03.01.01).
+ * @param {string} term
+ * @returns {string}
+ */
+export function buildAccentRegex(term) {
+  if (!term) return '';
+  const trimmed = String(term).trim();
+  if (/^\d{2,}$/.test(trimmed)) {
+    return trimmed.split('').join('[.\\s-]*');
+  }
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const charMap = {
+    'a': '[aáàãâäAÁÀÃÂÄ]',
+    'e': '[eéèêëEÉÈÊË]',
+    'i': '[iíìîïIÍÌÎÏ]',
+    'o': '[oóòõôöOÓÒÕÔÖ]',
+    'u': '[uúùûüUÚÙÛÜ]',
+    'c': '[cçCÇ]',
+    'A': '[aáàãâäAÁÀÃÂÄ]',
+    'E': '[eéèêëEÉÈÊË]',
+    'I': '[iíìîïIÍÌÎÏ]',
+    'O': '[oóòõôöOÓÒÕÔÖ]',
+    'U': '[uúùûüUÚÙÛÜ]',
+    'C': '[cçCÇ]'
+  };
+  const deaccented = escaped.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let pattern = '';
+  for (const ch of deaccented) {
+    pattern += charMap[ch] || ch;
+  }
+  return pattern;
+}
+
+/**
+ * Destaca ocorrências do termo de busca no texto ignorando acentos e case.
+ * @param {string} text Texto original a ser renderizado
+ * @param {string} query Termo ou termos buscados pelo usuário
+ * @returns {string} Fragmento HTML com partes correspondentes envolvidas em <mark class="search-highlight">
+ */
+export function highlightTerm(text, query) {
+  if (!text) return '';
+  const raw = String(text);
+  const q = String(query || '').trim();
+  if (!q) return escapeHtml(raw);
+
+  const tokens = q.split(/\s+/).filter(t => t.length >= 1);
+  const patterns = tokens.map(buildAccentRegex).filter(Boolean);
+  if (patterns.length === 0) return escapeHtml(raw);
+
+  try {
+    const rx = new RegExp(patterns.join('|'), 'gi');
+    let lastIndex = 0;
+    let html = '';
+    let match;
+    while ((match = rx.exec(raw)) !== null) {
+      const matchIndex = match.index;
+      const matchedText = match[0];
+      if (matchIndex > lastIndex) {
+        html += escapeHtml(raw.substring(lastIndex, matchIndex));
+      }
+      html += `<mark class="search-highlight">${escapeHtml(matchedText)}</mark>`;
+      lastIndex = matchIndex + matchedText.length;
+      if (matchedText.length === 0) {
+        rx.lastIndex++;
+      }
+    }
+    if (lastIndex < raw.length) {
+      html += escapeHtml(raw.substring(lastIndex));
+    }
+    return html;
+  } catch (_) {
+    return escapeHtml(raw);
+  }
+}
+
+/**
+ * Renderiza o skeleton realista em linhas de tabela para o carregamento do LogCarga Remessas.
+ * @param {string} ibge
+ * @param {string} ano
+ * @returns {string}
+ */
+export function remessaSkeletonHtml(ibge, ano) {
+  const skeletonRows = Array.from({ length: 6 }).map((_, i) => `
+    <tr>
+      <td><div class="skeleton-line" style="width: 75px; height: 18px;"></div></td>
+      <td><div class="skeleton-line" style="width: 60px; height: 18px;"></div></td>
+      <td><div class="skeleton-line" style="width: 110px; height: 18px;"></div></td>
+      <td><div class="skeleton-line" style="width: 110px; height: 18px;"></div></td>
+      <td><div class="skeleton-line" style="width: 110px; height: 18px;"></div></td>
+      <td><div class="skeleton-line" style="width: ${i % 2 === 0 ? '70%' : '50%'}; height: 22px; border-radius: 9999px;"></div></td>
+    </tr>
+  `).join('');
+
+  return `
+    <div class="table-card shimmer-box remessa-loading-card" aria-busy="true">
+      <div class="table-card-header">
+        <div class="table-card-heading">
+          <h2 class="table-card-title">Remessas Processadas — Município IBGE ${escapeHtml(ibge)} · Ano ${escapeHtml(ano)}</h2>
+          <span class="table-card-ftp">ftp://arpoador.datasus.gov.br/siasus/LogCarga/</span>
+        </div>
+      </div>
+
+      <div class="remessa-loading-status" id="remessaLoadingStatus" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span class="remessa-loading-text" id="remessaLoadingText">Consultando o LogCarga do DataSUS…</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 130px;">Competência</th>
+              <th style="width: 100px;">Remessa</th>
+              <th style="width: 155px;">Recebida em</th>
+              <th style="width: 155px;">Verificada em</th>
+              <th style="width: 155px;">Carga em</th>
+              <th>Situação do Processamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${skeletonRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * Fecha todos os popovers de versões anteriores abertos na página.
  */
 export function closeAllPopovers(returnFocus = false) {

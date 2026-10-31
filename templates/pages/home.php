@@ -59,13 +59,16 @@ $currentYear = (int) date('Y');
         </div>
 
         <div class="field-group is-wide">
-          <label for="sigtapQuery" class="field-label">Código ou nome do procedimento</label>
+          <label for="sigtapQuery" class="field-label">
+            <span>Código ou nome do procedimento</span>
+            <span class="field-hint">acentos opcionais</span>
+          </label>
           <div class="input-with-icon">
             <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="search" id="sigtapQuery" class="field-control" placeholder="Ex.: 0301010072 ou consulta médica" autocomplete="off">
+            <input type="search" id="sigtapQuery" class="field-control" placeholder="Nome ou código — acentos opcionais" autocomplete="off" title="Busca por código ou nome (acentos opcionais)">
           </div>
         </div>
 
@@ -157,7 +160,7 @@ $currentYear = (int) date('Y');
         </div>
       </div>
       <div class="content-header-badges">
-        <span class="source-badge badge-ftp">FTP LogCarga DataSUS</span>
+        <span class="source-badge badge-ftp" id="remessaSourceBadge">FTP LogCarga DataSUS</span>
       </div>
     </div>
 
