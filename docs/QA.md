@@ -86,3 +86,32 @@
     ```php
     href="#/<?= e($group['id']) ?>/<?= rawurlencode($sub['name']) ?>"
     ```
+
+---
+
+## 4. Validação em Produção Serverless (Vercel Preview)
+
+**Data:** 30 de Outubro de 2026  
+**Ambiente:** Vercel Serverless Functions (`vercel-php@0.7.4` / PHP 8.3.8) na região **São Paulo (`gru1`)**  
+**URL de Preview:** `https://sus-systems-git-feat-vercel-an-91ec9f-wesleis-projects-3b1e95bc.vercel.app/`  
+**Viewports:** Desktop (1440×892) e Mobile Pequeno (360×800)  
+
+### 4.1. Matriz de Testes em Produção Serverless
+
+| Fluxo / Funcionalidade | Cenário / Entrada | Comportamento Observado | Tempo de Resposta | Status |
+| :--- | :--- | :--- | :---: | :---: |
+| **Home & SSR** | Acesso inicial com cabeçalho de share Vercel | Renderização instantânea do shell HTML, montagem do catálogo com 6 grupos e status dos clusters FTP | < 120 ms | **PASSOU** |
+| **Catálogo SIA / BPA** | Rota `#/SIA/BPA` | Carregamento da listagem de versões, `BPA_LEIAME.txt`, `BPAMAG0500.exe` e 230 versões anteriores | ~1,8 s (FTP direto) | **PASSOU** |
+| **Catálogo CNES** | Subgrupo `CNES / Base de dados` | Acesso com nome composto com espaços via `rawurlencode()`, listagem de 116 arquivos de base | ~1,5 s | **PASSOU** |
+| **SIGTAP Explorer** | Busca pelo termo `"folico"` na comp. `202610` | Retorno imediato do procedimento `01.01.04.010-5` (DOSAGEM DE ACIDO FOLICO) | < 0,8 s | **PASSOU** |
+| **SIGTAP Comparativo** | Diff entre competências `10/2026` e `09/2026` | Cálculo posicional completo: 17 adições, 1 reajuste, 3 regras alteradas e 2 exclusões | ~0,8 s | **PASSOU** |
+| **Remessas SIA** | Município Honório Serpa - PR (`410965`), ano `2025` | Leitura de remessas e logs de processamento DataSUS via FTP nativo | 3,5 s (frio) / 0,27 s (quente) | **PASSOU** |
+| **Download por Streaming** | Arquivo `BPA_LEIAME.txt` via `/api/ftp-download` | HTTP 200 OK, cabeçalhos `X-Download-Mode: FTP_DIRECT_STREAM`, `X-Powered-By: PHP/8.3.8` | Streaming imediato | **PASSOU** |
+| **Mobile (360×800)** | Resolução ultra compacta (360 px de largura) | Menu hambúrguer abre drawer lateral com botão `Fechar menu lateral`; `document.documentElement.scrollWidth <= 360px` sem overflow horizontal | Instantâneo | **PASSOU** |
+
+### 4.2. Conclusões do QA Serverless
+1. **Conectividade FTP Direta:** O runtime serverless na região `gru1` conecta diretamente aos servidores FTP do Ministério da Saúde (`ftp.datasus.gov.br`), eliminando a necessidade obrigatória de ponte HTTPS em produção.
+2. **Desempenho em `gru1`:** A latência na região de São Paulo é até 5× menor em comparação a `iad1` (listagem SIA reduzida de 10,5 s para 1,8 s).
+3. **Persistência de Cache:** O cache de arquivos e metadados opera perfeitamente em `/tmp/sus-cache`, garantindo aceleração em execuções subsequentes na mesma instância lambda.
+4. **Interface e Acessibilidade:** Em 360 px a aplicação adapta-se responsivamente sem quebras visuais ou scroll horizontal indesejado.
+

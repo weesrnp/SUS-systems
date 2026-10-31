@@ -30,6 +30,36 @@ async function parseError(response) {
   return err;
 }
 
+let currentNetworkMode = '';
+const modeListeners = new Set();
+
+/**
+ * Registra um callback para notificações de alteração no modo de conexão.
+ * @param {Function} fn
+ * @returns {Function} Função para cancelar a inscrição.
+ */
+export function onNetworkModeChange(fn) {
+  modeListeners.add(fn);
+  if (currentNetworkMode) {
+    try { fn(currentNetworkMode); } catch (_) {}
+  }
+  return () => modeListeners.delete(fn);
+}
+
+/**
+ * Notifica a aplicação do modo de conexão detectado (FTP_DIRECT, HTTPS_BRIDGE, OFFLINE, CACHE).
+ * @param {string} mode
+ */
+export function reportNetworkMode(mode) {
+  if (!mode || typeof mode !== 'string') return;
+  const upper = mode.toUpperCase();
+  if (upper === currentNetworkMode) return;
+  currentNetworkMode = upper;
+  modeListeners.forEach(fn => {
+    try { fn(currentNetworkMode); } catch (_) {}
+  });
+}
+
 /**
  * Wrapper genérico para fetch com headers e tratamento de erros.
  * @param {string} url
@@ -46,13 +76,28 @@ async function fetchJson(url, options = {}) {
       ...options
     });
 
+    // Detecta telemetria de conexão DataSUS pelos cabeçalhos da resposta
+    const sourceHeader = response.headers.get('x-datasus-source') || response.headers.get('x-download-mode');
+    if (sourceHeader) {
+      reportNetworkMode(sourceHeader);
+    }
+
     if (!response.ok) {
       throw await parseError(response);
     }
 
-    return await response.json();
+    const data = await response.json();
+    if (data && typeof data === 'object') {
+      if (data.sourceSummary) reportNetworkMode(data.sourceSummary);
+      else if (data.sourceMode) reportNetworkMode(data.sourceMode);
+    }
+    return data;
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw err;
+    }
     if (err.name === 'TypeError' && /failed to fetch|networkerror/i.test(err.message)) {
+      reportNetworkMode('OFFLINE');
       throw new Error('Falha de conexão com o servidor SUS-systems. Verifique se o container está ativo.');
     }
     throw err;
@@ -144,10 +189,11 @@ export async function diffSigtap(compNew, compOld) {
  * Consulta remessas do SIA no LogCarga por IBGE e ano.
  * @param {string} ibge
  * @param {string} ano
+ * @param {RequestInit} [options={}]
  */
-export async function getRemessa(ibge, ano) {
+export async function getRemessa(ibge, ano, options = {}) {
   const params = new URLSearchParams({ ibge, ano });
-  return await fetchJson(`/api/remessa?${params.toString()}`);
+  return await fetchJson(`/api/remessa?${params.toString()}`, options);
 }
 
 /**

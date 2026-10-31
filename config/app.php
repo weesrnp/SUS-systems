@@ -9,7 +9,8 @@ return [
     'debug'   => filter_var($env('APP_DEBUG', false), FILTER_VALIDATE_BOOL),
 
     'cache' => [
-        'dir'         => $env('CACHE_DIR', SUS_ROOT . '/storage/cache'),
+        // Na Vercel só /tmp é gravável (e efêmero)
+        'dir'         => $env('CACHE_DIR', $env('VERCEL') ? sys_get_temp_dir() . '/sus-cache' : SUS_ROOT . '/storage/cache'),
         'ftp_ttl'     => (int) $env('FTP_CACHE_TTL', 600),      // listagens FTP: 10 min
         'sigtap_ttl'  => (int) $env('SIGTAP_CACHE_TTL', 86400), // competência SIGTAP parseada: 24 h
     ],
