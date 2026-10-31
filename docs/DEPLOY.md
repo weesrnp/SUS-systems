@@ -142,40 +142,102 @@ zlib.output_compression = Off
 
 ## 5. Plataformas Serverless (Vercel)
 
-É possível publicar a aplicação na Vercel utilizando o runtime mantido pela comunidade (`vercel-php`).
+A publicação do backend PHP no ecossistema serverless da Vercel é realizada em produção através do runtime comunitário `vercel-php@0.7.4` (baseado em PHP 8.3.8 e AWS Lambda).
 
-### Arquivo `vercel.json` de Exemplo:
+### 5.1. Arquitetura de Deploy Real (`vercel.json`)
+
+Para que o runtime funcione perfeitamente com Server-Side Rendering (SSR) e assets estáticos sem conflito com o preset FastAPI legado:
+
+1. **`framework: null`**: Sobrepõe a autodetecção da Vercel que tentava associar o projeto ao FastAPI/Python por conta da pasta `legacy-python/`.
+2. **`outputDirectory: "public"`**: Servido diretamente pela CDN na borda (Edge) para entrega de alta velocidade de CSS, JS e imagens.
+3. **`regions: ["gru1"]`**: Execução alocada em **São Paulo (GRU1)**, diminuindo drasticamente a latência de rede com os clusters oficiais do DataSUS no Brasil.
+4. **`functions: {"api/index.php": { ... }}`**: Front controller serverless com `maxDuration: 60` segundos e exclusão de pastas desnecessárias (`excludeFiles`).
+5. **`rewrites: [ { "source": "/(.*)", "destination": "/api/index.php" } ]`**: Redireciona todas as rotas web e endpoints da API para o ponto de entrada serverless `api/index.php`.
+6. **`.vercelignore`**: Exclui estritamente `public/index.php` e `public/.htaccess`, evitando que a Vercel sirva o arquivo PHP como texto plano estático pela CDN.
+
+#### Configuração `vercel.json` Oficial:
 ```json
 {
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": "public",
+  "regions": ["gru1"],
   "functions": {
-    "public/index.php": {
-      "runtime": "vercel-php@0.7.0"
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.4",
+      "maxDuration": 60,
+      "excludeFiles": "{legacy-python/**,tests/**,docs/**,storage/cache/**,.github/**,docker/**,public/**}"
     }
   },
-  "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/public/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/index.php"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
 ```
 
-### Análise: Prós e Contras do Deploy Serverless
+#### Ponto de Entrada Serverless (`api/index.php`):
+```php
+<?php
+declare(strict_types=1);
+
+use SusSystems\Core\App;
+use SusSystems\Core\Request;
+use SusSystems\Core\Router;
+
+require dirname(__DIR__) . '/src/bootstrap.php';
+
+$router = new Router();
+(require SUS_ROOT . '/config/routes.php')($router);
+
+(new App($router))->handle(Request::fromGlobals())->send();
+```
+
+#### Arquivo `.vercelignore`:
+```
+legacy-python
+storage/cache/*
+!storage/cache/.gitignore
+public/index.php
+public/.htaccess
+```
+
+---
+
+### 5.2. Fatos Medidos em Produção e Ajustes de Desempenho
+
+Diferente de suposições genéricas sobre ambientes serverless, a validação empírica na Vercel demonstrou:
+
+1. **FTP Direto Funciona Nativamente (`sourceMode: FTP_DIRECT`)**:
+   - As conexões FTP passivas RFC 959 com os clusters oficiais do DataSUS (`arpoador`, `ftp`, `ftp2`) **funcionam perfeitamente sem necessidade de ponte HTTPS**.
+   - O `FtpClient` conecta-se diretamente à porta 21 e negocia o canal de dados sem bloqueio pela infraestrutura serverless da Vercel.
+   - A ponte `FTP_HTTPS_BRIDGE` permanece apenas como contingência opcional.
+
+2. **Impacto Decisivo da Região `gru1` (São Paulo)**:
+   - Medições comparativas entre `iad1` (Washington D.C., EUA) e `gru1` (São Paulo, Brasil):
+     - **Remessa 410965**, partida fria: `iad1` ~10,5 s (ano 2026, 8 competências) vs `gru1` 3,5 s (ano 2025, 12 competências — mais arquivos e ainda assim ~3x mais rápido); em cache quente: **0,27 s**
+     - **SIGTAP explore** (competência ainda não carregada, com descompactação/parse): **0,8 s**
+     - **ftp-list SIA** (listagem completa de 4,3 MB): **1,8 s**
+   - A proximidade com os servidores FTP do DataSUS no Brasil explica o ganho: cada comando FTP é uma ida e volta de rede.
+
+3. **Armazenamento e Cache (`/tmp/sus-cache`)**:
+   - Como o sistema de arquivos da função é `read-only`, o `config/app.php` detecta automaticamente o ambiente (`$env('VERCEL')`) e direciona o cache para `sys_get_temp_dir() . '/sus-cache'`.
+   - O diretório `/tmp` é gravável, mas volátil (efêmero por instância lambda). Requisições em instâncias ativas reutilizam o cache quente com tempos inferiores a 300ms.
+
+4. **Timeout de 60 Segundos (`maxDuration: 60`)**:
+   - O limite de 60 segundos atende com folga as operações de catálogo, SIGTAP e remessas.
+   - Para downloads de arquivos gigantescos (> 500 MB) em conexões lentas de usuários finais, recomenda-se a execução local via Docker Compose (`run_windows.bat` / `run_linux.sh`).
+
+---
+
+### 5.3. Análise: Prós e Contras do Deploy na Vercel
 
 #### ✅ Prós:
-- **Custo e Nível Gratuito**: Ideal para demonstrações públicas e consultas leves sem custo fixo de servidor.
-- **Deploy Contínuo (CI/CD)**: Cada push no repositório GitHub gera automaticamente um preview ou produção.
-- **SSL e CDN Globais**: Certificados TLS/HTTPS automáticos e distribuição de assets estáticos na borda (Edge).
+- **Zero Custo Fixo**: Escalabilidade sob demanda sem necessidade de manter servidor VPS ligado.
+- **Latência Menor com GRU1**: respostas em cache abaixo de 0,5 s; consultas frias em poucos segundos graças à proximidade com os servidores do DataSUS.
+- **Assets em Edge CDN**: Entrega imediata de folhas de estilo e JavaScript modular nativo.
+- **Deploy Git Automatizado**: Integração contínua a cada branch/PR.
 
-#### ⚠️ Contras e Limitações Críticas:
-- **Timeouts Rígidos de Execução**: Na Vercel, lambdas possuem timeout máximo de 10 a 60 segundos. O download e streaming de arquivos pesados de bases completas do SUS (que podem levar minutos via FTP) serão abruptamente interrompidos.
-- **Portas e Redes Restritas para FTP**: O protocolo FTP ativo/passivo requer abertura de portas efêmeras altas (1024–65535). Ambientes serverless frequentemente bloqueiam conexões FTP de saída arbitrárias, necessitando de uma ponte HTTPS intermediária (`FTP_HTTPS_BRIDGE`).
-- **Sistema de Arquivos Read-Only**: O disco da função serverless é somente-leitura (com exceção efêmera do `/tmp`). O cache serializado em `storage/cache/` perde a persistência entre diferentes invocações da lambda.
-- **Runtime Comunitário**: O pacote `vercel-php` não é suportado oficialmente pela equipe da Vercel.
-
-> **Recomendação**: Para uso em produção, extração contínua e processamento de remessas/SIGTAP, priorize **Docker**, **VPS Nginx** ou **Hospedagem Apache**.
+#### ⚠️ Limitações Operacionais:
+- Cache em disco não é persistente globalmente entre diferentes nós efêmeros (cada nova réplica de função inicia fria).
+- Timeout de 60s inviabiliza streaming de arquivos em gigabytes sob conexões muito lentas.
