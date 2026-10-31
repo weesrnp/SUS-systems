@@ -146,9 +146,9 @@ A publicação do backend PHP no ecossistema serverless da Vercel é realizada e
 
 ### 5.1. Arquitetura de Deploy Real (`vercel.json`)
 
-Para que o runtime funcione perfeitamente com Server-Side Rendering (SSR) e assets estáticos sem conflito com o preset FastAPI legado:
+Configurações do projeto no painel da Vercel (Settings): **Framework Preset = Other**, região padrão das funções **gru1**, **Vercel Authentication desligada** (previews e produção públicos — o site não tem dados sigilosos) e nenhuma variável de ambiente obrigatória (`FTP_HTTPS_BRIDGE` é opcional). O `vercel.json` repete o essencial para que o deploy não dependa do painel:
 
-1. **`framework: null`**: Sobrepõe a autodetecção da Vercel que tentava associar o projeto ao FastAPI/Python por conta da pasta `legacy-python/`.
+1. **`framework: null`**: Garante "Other" mesmo que a autodetecção tente associar o projeto ao FastAPI/Python por conta da pasta `legacy-python/`.
 2. **`outputDirectory: "public"`**: Servido diretamente pela CDN na borda (Edge) para entrega de alta velocidade de CSS, JS e imagens.
 3. **`regions: ["gru1"]`**: Execução alocada em **São Paulo (GRU1)**, diminuindo drasticamente a latência de rede com os clusters oficiais do DataSUS no Brasil.
 4. **`functions: {"api/index.php": { ... }}`**: Front controller serverless com `maxDuration: 60` segundos e exclusão de pastas desnecessárias (`excludeFiles`).
