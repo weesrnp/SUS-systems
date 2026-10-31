@@ -3,6 +3,7 @@
   "buildCommand": "",
   "installCommand": "",
   "outputDirectory": "public",
+  "regions": ["gru1"],
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.4",
