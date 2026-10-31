@@ -1,57 +1,44 @@
 @echo off
 setlocal enabledelayedexpansion
-title SUS-systems v2.2 - Hub de Dados do Datasus
 
-echo =======================================================
-echo          SUS-systems - Datasus Data Platform
-echo =======================================================
-echo [i] Inicializando ambiente local...
+echo ========================================================
+echo               SUS-systems 3.0 (PHP)
+echo ========================================================
+echo.
 
-:: 1. Verificar presenca do Python
-where python >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [!] ERRO: Python nao encontrado no PATH do sistema.
-    echo [!] Por favor, instale o Python 3.10 ou superior: https://www.python.org/
-    pause
-    exit /b 1
-)
-
-:: 2. Criar ambiente virtual se nao existir
-if not exist ".venv" (
-    echo [*] Criando ambiente virtual isolado (.venv)...
-    python -m venv .venv
-    if %errorlevel% neq 0 (
-        echo [!] Falha ao criar ambiente virtual.
+where docker >nul 2>nul
+if %ERRORLEVEL% equ 0 (
+    echo [*] Docker detectado. Subindo container via docker compose...
+    docker compose up -d --build
+    if %ERRORLEVEL% neq 0 (
+        echo [!] Falha ao iniciar containers Docker.
         pause
         exit /b 1
     )
+    echo [*] Container ativo! Abrindo http://localhost:8090 no navegador...
+    timeout /t 2 /nobreak >nul
+    start http://localhost:8090
+    echo [*] Pronto! Pressione qualquer tecla para encerrar este terminal (o container continuara rodando).
+    pause >nul
+    exit /b 0
 )
 
-:: 3. Ativar virtualenv
-call .venv\Scripts\activate.bat
-
-:: 4. Instalar dependencias
-echo [*] Verificando dependencias (FastAPI, Uvicorn, HTTPX, Pydantic)...
-python -m pip install --upgrade pip --quiet
-pip install -r requirements.txt --quiet
-if %errorlevel% neq 0 (
-    echo [!] Falha ao instalar dependencias do requirements.txt
-    pause
-    exit /b 1
+where php >nul 2>nul
+if %ERRORLEVEL% equ 0 (
+    echo [*] Docker nao encontrado, mas PHP foi detectado no PATH.
+    echo [*] Iniciando servidor embutido do PHP na porta 8090...
+    timeout /t 1 /nobreak >nul
+    start http://localhost:8090
+    php -S localhost:8090 -t public public\index.php
+    exit /b 0
 )
 
-:: 5. Abrir navegador e iniciar servidor
-echo [OK] Servidor pronto para execucao.
-echo [*] Abrindo aplicacao em: http://127.0.0.1:8090
-start "" "http://127.0.0.1:8090"
-
+echo [!] ERRO: Nem o Docker nem o executavel do PHP foram encontrados no PATH do Windows.
 echo.
-echo =======================================================
-echo  SUS-systems executando em http://127.0.0.1:8090
-echo  Pressione CTRL+C para encerrar o servidor.
-echo =======================================================
+echo Para executar o SUS-systems, por favor:
+echo   1. Instale o Docker Desktop: https://www.docker.com/products/docker-desktop
+echo   OU
+echo   2. Instale o PHP 8.2+: https://windows.php.net/download/
 echo.
-
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8090
-
 pause
+exit /b 1

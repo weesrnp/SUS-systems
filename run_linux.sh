@@ -1,45 +1,39 @@
 #!/usr/bin/env bash
 set -e
 
-echo "======================================================="
-echo "         SUS-systems - Datasus Data Platform          "
-echo "======================================================="
-echo "[i] Inicializando ambiente local..."
-
-# 1. Verificar presenca do Python
-if ! command -v python3 &> /dev/null; then
-    echo "[!] ERRO: Python 3 nao encontrado."
-    echo "[!] Instale o Python 3.10 ou superior antes de prosseguir."
-    exit 1
-fi
-
-# 2. Criar ambiente virtual se nao existir
-if [ ! -d ".venv" ]; then
-    echo "[*] Criando ambiente virtual isolado (.venv)..."
-    python3 -m venv .venv
-fi
-
-# 3. Ativar virtualenv
-source .venv/bin/activate
-
-# 4. Instalar dependencias
-echo "[*] Verificando dependencias..."
-pip install --upgrade pip --quiet
-pip install -r requirements.txt --quiet
-
-# 5. Abrir navegador se suportado
-URL="http://127.0.0.1:8090"
-if command -v xdg-open &> /dev/null; then
-    xdg-open "$URL" &
-elif command -v open &> /dev/null; then
-    open "$URL" &
-fi
-
-echo ""
-echo "======================================================="
-echo " SUS-systems executando em $URL"
-echo " Pressione CTRL+C para encerrar o servidor."
-echo "======================================================="
+echo "========================================================"
+echo "              SUS-systems 3.0 (PHP)"
+echo "========================================================"
 echo ""
 
-exec python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8090
+open_browser() {
+    local url="http://localhost:8090"
+    if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url" >/dev/null 2>&1 &
+    elif command -v open >/dev/null 2>&1; then
+        open "$url" >/dev/null 2>&1 &
+    else
+        echo "[*] Abra o seguinte endereço no seu navegador: $url"
+    fi
+}
+
+if command -v docker >/dev/null 2>&1; then
+    echo "[*] Docker detectado. Subindo container via docker compose..."
+    docker compose up -d --build
+    echo "[*] Container em execução. Abrindo navegador..."
+    sleep 2
+    open_browser
+    echo "[*] Pronto! SUS-systems ativo em http://localhost:8090"
+    exit 0
+fi
+
+if command -v php >/dev/null 2>&1; then
+    echo "[*] Docker não encontrado, mas PHP foi detectado no PATH."
+    echo "[*] Iniciando servidor embutido do PHP na porta 8090..."
+    (sleep 1 && open_browser) &
+    exec php -S localhost:8090 -t public public/index.php
+fi
+
+echo "[!] ERRO: Nem o Docker nem o PHP foram encontrados no PATH." >&2
+echo "Instale o Docker ou o PHP 8.2+ com as extensões ftp, zip, curl e mbstring." >&2
+exit 1

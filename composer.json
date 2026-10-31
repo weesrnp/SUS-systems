@@ -1,0 +1,16 @@
+{
+    "name": "weesrnp/sus-systems",
+    "description": "SUS-systems — central de dados públicos do DataSUS (FTP, SIGTAP, CNES, SIA)",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-ftp": "*",
+        "ext-zip": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": { "SusSystems\\": "src/" }
+    }
+}

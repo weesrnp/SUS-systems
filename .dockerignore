@@ -1,0 +1,4 @@
+.git
+legacy-python
+storage/cache/*
+node_modules
