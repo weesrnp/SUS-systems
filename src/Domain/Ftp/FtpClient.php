@@ -43,19 +43,36 @@ final class FtpClient
     /** Lista um padrão restrito sem baixar o diretório inteiro. */
     public function listPattern(string $ftpUrl, string $pattern): array
     {
+        return $this->withPattern($ftpUrl, $pattern, static fn(array $entries, callable $download): array => $entries);
+    }
+
+    /** Mantém a conexão aberta para baixar os arquivos selecionados. */
+    public function withPattern(string $ftpUrl, string $pattern, callable $callback): mixed
+    {
         self::assertAllowedUrl($ftpUrl);
         if (!preg_match('/^[A-Za-z0-9*_]+$/D', $pattern)) throw new HttpException(400, 'Padrão FTP inválido.');
         $ftp = $this->connect($ftpUrl);
         try {
             if (!@ftp_chdir($ftp, $this->path($ftpUrl))) throw new \RuntimeException('Diretório FTP indisponível.');
             $lines = @ftp_rawlist($ftp, $pattern);
-            if ($lines === false) return [];
             $parser = new ListingParser(); $entries = [];
-            foreach ($lines as $line) {
+            if (is_array($lines)) foreach ($lines as $line) {
                 $entry = $parser->parse($line);
                 if ($entry !== null) $entries[] = $entry;
             }
-            return $entries;
+            $download = function (string $filename) use ($ftp): string {
+                $filename = $this->safeName($filename);
+                $stream = fopen('php://temp/maxmemory:1048576', 'w+b');
+                if ($stream === false) throw new \RuntimeException('Não foi possível abrir arquivo temporário.');
+                try {
+                    if (!@ftp_fget($ftp, $stream, mb_convert_encoding($filename, 'ISO-8859-1', 'UTF-8'), FTP_BINARY)) throw new \RuntimeException('Falha ao baixar relatório FTP.');
+                    rewind($stream);
+                    $content = stream_get_contents($stream);
+                    if ($content === false) throw new \RuntimeException('Falha ao ler relatório FTP.');
+                    return $content;
+                } finally { fclose($stream); }
+            };
+            return $callback($entries, $download);
         } finally { ftp_close($ftp); }
     }
     public function streamFile(string $baseFtpUrl, string $filename, callable $write): int

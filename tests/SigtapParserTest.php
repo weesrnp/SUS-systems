@@ -21,6 +21,28 @@ return [
         assert_same('Procedimentos clínicos', $item['grupoNome']);
         assert_same(null, $repo->parseLine('curta'));
     },
+    'SIGTAP busca ignora acentos sem alterar JSON' => static function() use ($line): void {
+        $repo = new SigtapRepository();
+        $first = $repo->parseLine($line('0301010072', 'ACIDO FÓLICO', '0000', '9999', '0', '0', '0'));
+        $second = $repo->parseLine($line('0301010073', 'ACIDO ASCORBICO', '0000', '9999', '0', '0', '0'));
+        do {
+            $comp = (string) random_int(900000, 999999);
+            $key = 'sigtap-bundle:v2:' . $comp;
+            $cacheFile = (string) \SusSystems\Core\Config::get('cache.dir') . '/' . sha1($key) . '.cache';
+        } while (is_file($cacheFile));
+        \SusSystems\Core\Cache::default()->set($key, ['competencia'=>$comp, 'file'=>'fixture.zip', 'totalProcedures'=>2, 'procs'=>[$first['code']=>$first, $second['code']=>$second]]);
+        try {
+            foreach (['folico', 'FÓLICO', "FO\u{0301}LICO"] as $query) {
+                $result = $repo->search($comp, $query, '', '', '', 120);
+                assert_same(1, $result['returnedCount']);
+                assert_same('ACIDO FÓLICO', $result['items'][0]['name']);
+                assert_true(!array_key_exists('searchKey', $result['items'][0]));
+            }
+            $result = $repo->search($comp, 'ácido', '', '', '', 120);
+            assert_same(2, $result['returnedCount']);
+            assert_same('ACIDO ASCORBICO', $result['items'][1]['name']);
+        } finally { @unlink($cacheFile); }
+    },
     'SIGTAP interpreta idade livre, meses e anos' => static function() use ($line): void {
         $repo = new SigtapRepository();
         $item = $repo->parseLine($line('0301010072','TESTE','0000','0024','0','0','0'));

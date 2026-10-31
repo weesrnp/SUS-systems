@@ -109,14 +109,43 @@ final class SigtapRepository
         return $years ? "{$years} anos" : "{$months} meses";
     }
 
+    private function searchText(string $value): string
+    {
+        $value = mb_strtolower($value, 'UTF-8');
+        if (class_exists(\Normalizer::class)) {
+            $normalized = \Normalizer::normalize($value, \Normalizer::FORM_D);
+            if ($normalized !== false) $value = $normalized;
+        } else {
+            $value = strtr($value, [
+                'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'ç'=>'c', 'è'=>'e',
+                'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ñ'=>'n',
+                'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u',
+                'ü'=>'u', 'ý'=>'y', 'ÿ'=>'y', 'ā'=>'a', 'ă'=>'a', 'ą'=>'a', 'ć'=>'c', 'ĉ'=>'c',
+                'ċ'=>'c', 'č'=>'c', 'ď'=>'d', 'ē'=>'e', 'ĕ'=>'e', 'ė'=>'e', 'ę'=>'e', 'ě'=>'e',
+                'ĝ'=>'g', 'ğ'=>'g', 'ġ'=>'g', 'ģ'=>'g', 'ĥ'=>'h', 'ĩ'=>'i', 'ī'=>'i', 'ĭ'=>'i',
+                'į'=>'i', 'ĵ'=>'j', 'ķ'=>'k', 'ĺ'=>'l', 'ļ'=>'l', 'ľ'=>'l', 'ń'=>'n', 'ņ'=>'n',
+                'ň'=>'n', 'ō'=>'o', 'ŏ'=>'o', 'ő'=>'o', 'ŕ'=>'r', 'ŗ'=>'r', 'ř'=>'r', 'ś'=>'s',
+                'ŝ'=>'s', 'ş'=>'s', 'š'=>'s', 'ţ'=>'t', 'ť'=>'t', 'ũ'=>'u', 'ū'=>'u', 'ŭ'=>'u',
+                'ů'=>'u', 'ű'=>'u', 'ų'=>'u', 'ŵ'=>'w', 'ŷ'=>'y', 'ź'=>'z', 'ż'=>'z', 'ž'=>'z',
+                'ơ'=>'o', 'ư'=>'u', 'ǎ'=>'a', 'ǐ'=>'i', 'ǒ'=>'o', 'ǔ'=>'u', 'ǖ'=>'u', 'ǘ'=>'u',
+                'ǚ'=>'u', 'ǜ'=>'u', 'ǟ'=>'a', 'ǡ'=>'a', 'ǧ'=>'g', 'ǩ'=>'k', 'ǫ'=>'o', 'ǭ'=>'o',
+                'ǰ'=>'j', 'ǵ'=>'g', 'ǹ'=>'n', 'ǻ'=>'a', 'ȁ'=>'a', 'ȃ'=>'a', 'ȅ'=>'e', 'ȇ'=>'e',
+                'ȉ'=>'i', 'ȋ'=>'i', 'ȍ'=>'o', 'ȏ'=>'o', 'ȑ'=>'r', 'ȓ'=>'r', 'ȕ'=>'u', 'ȗ'=>'u',
+                'ș'=>'s', 'ț'=>'t', 'ȟ'=>'h', 'ȧ'=>'a', 'ȩ'=>'e', 'ȫ'=>'o', 'ȭ'=>'o', 'ȯ'=>'o',
+                'ȱ'=>'o', 'ȳ'=>'y'
+            ]);
+        }
+        return preg_replace('/\p{Mn}/u', '', $value) ?? $value;
+    }
+
     public function search(string $comp, string $q, string $grupo, string $complexidade, string $financiamento, int $limit): array
     {
-        $bundle = $this->load($comp); $query = mb_strtolower(trim($q)); $digits = preg_replace('/\D/', '', $query); $items = [];
+        $bundle = $this->load($comp); $query = $this->searchText(trim($q)); $digits = preg_replace('/\D/', '', $query); $items = [];
         foreach ($bundle['procs'] as $proc) {
             if ($grupo !== '' && $proc['grupo'] !== $grupo) continue;
             if ($complexidade !== '' && $proc['complexidadeCode'] !== $complexidade) continue;
             if ($financiamento !== '' && $proc['financiamentoCode'] !== $financiamento) continue;
-            if ($query !== '' && !str_contains(mb_strtolower($proc['name']), $query) && !($digits !== '' && str_contains($proc['code'], $digits)) && !str_contains(mb_strtolower($proc['formattedCode']), $query)) continue;
+            if ($query !== '' && !str_contains($this->searchText($proc['name']), $query) && !($digits !== '' && str_contains($proc['code'], $digits)) && !str_contains(mb_strtolower($proc['formattedCode']), $query)) continue;
             $items[] = $proc;
             if (count($items) >= $limit) break;
         }
